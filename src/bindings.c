@@ -33,3 +33,19 @@ int http_parser__on_http09(http_parser_state_t* s, const char* p,
   s->http_minor = 9;
   return 0;
 }
+
+
+int http_parser__on_major(http_parser_state_t* s, const char* p,
+                          const char* endp) {
+  fprintf(stderr, "http_parser__on_major=%d\n", s->match);
+  s->http_major = s->match;
+  return 0;
+}
+
+
+int http_parser__on_minor(http_parser_state_t* s, const char* p,
+                          const char* endp) {
+  fprintf(stderr, "http_parser__on_minor=%d\n", s->match);
+  s->http_minor = s->match;
+  return 0;
+}
