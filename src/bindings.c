@@ -10,8 +10,8 @@ int http_parser__start(http_parser_state_t* s, const char* p,
 
 
 int http_parser__on_method(http_parser_state_t* s, const char* p,
-                           const char* endp) {
-  s->method = s->match;
+                           const char* endp, int value) {
+  s->method = value;
   fprintf(stderr, "http_parser__on_method, method: %d\n", s->method);
   return 0;
 }
@@ -43,16 +43,16 @@ int http_parser__on_http09(http_parser_state_t* s, const char* p,
 
 
 int http_parser__on_major(http_parser_state_t* s, const char* p,
-                          const char* endp) {
-  s->http_major = s->match;
+                          const char* endp, int value) {
+  s->http_major = value;
   fprintf(stderr, "http_parser__on_major=%d\n", s->http_major);
   return 0;
 }
 
 
 int http_parser__on_minor(http_parser_state_t* s, const char* p,
-                          const char* endp) {
-  s->http_minor = s->match;
+                          const char* endp, int value) {
+  s->http_minor = value;
   fprintf(stderr, "http_parser__on_minor=%d\n", s->http_minor);
   return 0;
 }

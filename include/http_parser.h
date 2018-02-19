@@ -7,7 +7,6 @@ struct http_parser_state_s {
   int32_t error;
   const char* reason;
   int32_t index;
-  int32_t match;
 
   unsigned short http_major;
   unsigned short http_minor;
