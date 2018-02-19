@@ -2,7 +2,7 @@ CC ?= clang
 LD ?= clang
 
 CFLAGS ?=
-CFLAGS += -Os -Wall -Wextra -Wno-unused-parameter
+CFLAGS += -g3 -Os -Wall -Wextra -Wno-unused-parameter
 
 all: build build/libhttp_parser.a
 

@@ -27,6 +27,6 @@
     "mocha": "^5.0.1"
   },
   "dependencies": {
-    "llparse": "^1.2.0"
+    "llparse": "^1.3.0"
   }
 }
