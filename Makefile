@@ -17,7 +17,7 @@ build/test: build/libhttp_parser.a src/test.c
 build/libhttp_parser.a: build/bindings.o build/http.o
 	$(AR) rcs $@ build/bindings.o build/http.o
 
-build/bindings.o: src/bindings.c
+build/bindings.o: src/bindings.c include/http_parser.h
 	$(CC) $(CFLAGS) -Iinclude/ -c src/bindings.c -o $@
 
 build/http.o: build/http.ll

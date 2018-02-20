@@ -2,6 +2,11 @@
 
 #include <stdio.h>
 
+void http_parser__debug(http_parser_state_t* s, const char* p,
+                        const char* endp, const char* msg) {
+  fprintf(stderr, "debug: %s\n", msg);
+}
+
 int http_parser__start(http_parser_state_t* s, const char* p,
                        const char* endp) {
   fprintf(stderr, "http_parser__start\n");
