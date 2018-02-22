@@ -16,6 +16,7 @@ struct http_parser_state_s {
   uint16_t http_major;
   uint16_t http_minor;
   const char* _span_start0;
+  void* _span_cb0;
 };
 
 void http_parser_init(http_parser_state_t* s);

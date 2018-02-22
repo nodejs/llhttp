@@ -22,6 +22,21 @@ int http_parser__on_url(http_parser_state_t* s, const char* p,
 }
 
 
+int http_parser__on_header_field(http_parser_state_t* s, const char* p,
+                                 const char* endp) {
+  fprintf(stderr, "http_parser__on_header_field, field: \"%.*s\"\n",
+      (int) (endp - p), p);
+  return 0;
+}
+
+
+int http_parser__on_specific_header(http_parser_state_t* s, const char* p,
+                                    const char* endp, int value) {
+  fprintf(stderr, "http_parser__on_specific_header header=%d\n", value);
+  return 0;
+}
+
+
 int http_parser__is_connect(http_parser_state_t* s, const char* p,
                             const char* endp) {
   /* TODO(indutny): rewrite this insanity, possibly move to assembly */
