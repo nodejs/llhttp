@@ -14,27 +14,18 @@ int http_parser__start(http_parser_state_t* s, const char* p,
 }
 
 
-int http_parser__on_method(http_parser_state_t* s, const char* p,
-                           const char* endp, int value) {
-  s->method = value;
-  fprintf(stderr, "http_parser__on_method, method: %d\n", s->method);
+int http_parser__on_url(http_parser_state_t* s, const char* p,
+                        const char* endp) {
+  fprintf(stderr, "http_parser__on_url, method: %d url: \"%.*s\"\n",
+      s->method, (int) (endp - p), p);
   return 0;
 }
 
 
-int http_parser__on_url_start(http_parser_state_t* s, const char* p,
-                              const char* endp) {
-  fprintf(stderr, "http_parser__on_url_start\n");
-
+int http_parser__is_connect(http_parser_state_t* s, const char* p,
+                            const char* endp) {
   /* TODO(indutny): rewrite this insanity, possibly move to assembly */
   return s->method == 5;
-}
-
-
-int http_parser__on_url_end(http_parser_state_t* s, const char* p,
-                            const char* endp) {
-  fprintf(stderr, "http_parser__on_url_end\n");
-  return 0;
 }
 
 

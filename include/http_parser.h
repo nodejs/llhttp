@@ -10,10 +10,12 @@ struct http_parser_state_s {
   int32_t error;
   const char* reason;
   int32_t index;
+  void* data;
 
+  uint8_t method;
   uint16_t http_major;
   uint16_t http_minor;
-  uint8_t method;
+  const char* _span_start0;
 };
 
 void http_parser_init(http_parser_state_t* s);
