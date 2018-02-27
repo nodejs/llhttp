@@ -6,7 +6,9 @@ const fixtures = require('./fixtures');
 
 const http = require('../');
 
-describe('http_parser/url', () => {
+describe('http_parser/url', function() {
+  this.timeout(fixtures.TIMEOUT);
+
   [
     'loose',
     'strict'

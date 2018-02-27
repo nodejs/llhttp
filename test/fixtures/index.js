@@ -8,3 +8,6 @@ const fixture = require('llparse-test-fixture').create({
 });
 
 exports.build = (...args) => fixture.build(...args);
+
+// For CI
+exports.TIMEOUT = 10000;
