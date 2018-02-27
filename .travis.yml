@@ -1,0 +1,6 @@
+sudo: false
+language: node_js
+node_js:
+  - "stable"
+script:
+  CFLAGS="-O0" npm test
