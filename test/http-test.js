@@ -38,7 +38,18 @@ describe('http_parser/http', function() {
           'Header2:\t Value2\r\n' +
           '\r\n';
 
-        url(req, '', callback);
+        const expected = [
+          'off=8 len=4 span[url]="/url"',
+          'off=23 len=7 span[header_field]="Header1"',
+          'off=32 len=6 span[header_value]="Value1"',
+          'off=40 finished header',
+          'off=40 len=7 span[header_field]="Header2"',
+          'off=50 len=6 span[header_value]="Value2"',
+          'off=58 finished header',
+          'off=58 headers complete'
+        ].join('\n') + '\n';
+
+        url(req, expected, callback);
       });
     });
   });

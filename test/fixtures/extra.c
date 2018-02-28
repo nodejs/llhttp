@@ -19,9 +19,16 @@ int http_parser__on_header_value(llparse_state_t* s, const char* p,
 }
 
 
-int http_parser__on_specific_header(llparse_state_t* s, const char* p,
-                                    const char* endp, int match) {
-  llparse__print(p, endp, "specific header=%d", match);
+int http_parser__on_finished_header(llparse_state_t* s, const char* p,
+                                    const char* endp) {
+  llparse__print(p, endp, "finished header");
+  return 0;
+}
+
+
+int http_parser__on_headers_complete(llparse_state_t* s, const char* p,
+                                     const char* endp) {
+  llparse__print(p, endp, "headers complete");
   return 0;
 }
 
