@@ -26,7 +26,7 @@
   "devDependencies": {
     "async": "^2.6.0",
     "eslint": "^4.18.1",
-    "llparse-test-fixture": "^1.1.0",
+    "llparse-test-fixture": "^1.2.0",
     "mocha": "^5.0.1"
   },
   "dependencies": {

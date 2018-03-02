@@ -39,7 +39,9 @@ int http_parser__on_headers_complete(llparse_state_t* s, const char* p,
                                      const char* endp) {
   if (llparse__in_bench)
     return 0;
-  llparse__print(p, endp, "headers complete");
+  llparse__print(p, endp,
+      "headers complete method=%d v=%d/%d flags=%x content_length=%llu",
+      s->method, s->http_major, s->http_minor, s->flags, s->content_length);
   return 0;
 }
 
