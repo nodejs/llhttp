@@ -56,7 +56,7 @@ describe('http_parser/http', function() {
           'off=4 len=4 span[url]="/url"',
           'off=19 len=14 span[header_field]="Content-Length"',
           'off=35 len=3 span[header_value]="123"',
-          'off=40 headers complete method=1 v=1/1 flags=0 content_length=123'
+          'off=40 headers complete method=1 v=1/1 flags=20 content_length=123'
         ];
 
         url(req, expected, callback);
@@ -73,6 +73,24 @@ describe('http_parser/http', function() {
           'off=19 len=14 span[header_field]="Content-Length"',
           'off=35 len=21 span[header_value]="100000000000000000000"',
           'off=56 error code=-9 reason="Content-Length overflow"'
+        ];
+
+        url(req, expected, callback);
+      });
+
+      it('should handle duplicate content-length', (callback) => {
+        const req =
+          'GET /url HTTP/1.1\r\n' +
+          'Content-Length: 1\r\n' +
+          'Content-Length: 2\r\n' +
+          '\r\n';
+
+        const expected = [
+          'off=4 len=4 span[url]="/url"',
+          'off=19 len=14 span[header_field]="Content-Length"',
+          'off=35 len=1 span[header_value]="1"',
+          'off=38 len=14 span[header_field]="Content-Length"',
+          'off=54 error code=-10 reason="Duplicate Content-Length"'
         ];
 
         url(req, expected, callback);
@@ -178,6 +196,26 @@ describe('http_parser/http', function() {
 
         url(req, expected, callback);
       });
+    });
+
+    it('should not allow content-length with chunked', (callback) => {
+      const req =
+        'GET /url HTTP/1.1\r\n' +
+        'Content-Length: 1\r\n' +
+        'Transfer-Encoding: chunked\r\n' +
+        '\r\n';
+
+      const expected = [
+        'off=4 len=4 span[url]="/url"',
+        'off=19 len=14 span[header_field]="Content-Length"',
+        'off=35 len=1 span[header_value]="1"',
+        'off=38 len=17 span[header_field]="Transfer-Encoding"',
+        'off=57 len=7 span[header_value]="chunked"',
+        'off=66 error code=-10 reason="Content-Length can\'t ' +
+          'be present with chunked encoding"'
+      ];
+
+      url(req, expected, callback);
     });
   };
 
