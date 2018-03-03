@@ -112,6 +112,73 @@ describe('http_parser/http', function() {
         url(req, expected, callback);
       });
     });
+
+    describe('connection', () => {
+      it('should parse `connection: keep-alive`', (callback) => {
+        const req =
+          'GET /url HTTP/1.1\r\n' +
+          'Connection: keep-alive\r\n' +
+          '\r\n';
+
+        const expected = [
+          'off=4 len=4 span[url]="/url"',
+          'off=19 len=10 span[header_field]="Connection"',
+          'off=31 len=10 span[header_value]="keep-alive"',
+          'off=43 headers complete method=1 v=1/1 flags=1 content_length=0'
+        ];
+
+        url(req, expected, callback);
+      });
+
+      it('should parse `connection: close`', (callback) => {
+        const req =
+          'GET /url HTTP/1.1\r\n' +
+          'Connection: close\r\n' +
+          '\r\n';
+
+        const expected = [
+          'off=4 len=4 span[url]="/url"',
+          'off=19 len=10 span[header_field]="Connection"',
+          'off=31 len=5 span[header_value]="close"',
+          'off=38 headers complete method=1 v=1/1 flags=2 content_length=0'
+        ];
+
+        url(req, expected, callback);
+      });
+
+      it('should parse `connection: upgrade`', (callback) => {
+        const req =
+          'GET /url HTTP/1.1\r\n' +
+          'Connection: upgrade\r\n' +
+          '\r\n';
+
+        const expected = [
+          'off=4 len=4 span[url]="/url"',
+          'off=19 len=10 span[header_field]="Connection"',
+          'off=31 len=7 span[header_value]="upgrade"',
+          'off=40 headers complete method=1 v=1/1 flags=4 content_length=0'
+        ];
+
+        url(req, expected, callback);
+      });
+
+      it('should parse `connection: tokens`', (callback) => {
+        const req =
+          'GET /url HTTP/1.1\r\n' +
+          'Connection: close, token, upgrade, token, keep-alive\r\n' +
+          '\r\n';
+
+        const expected = [
+          'off=4 len=4 span[url]="/url"',
+          'off=19 len=10 span[header_field]="Connection"',
+          'off=31 len=40 span[header_value]="close, token, upgrade, token, ' +
+            'keep-alive"',
+          'off=73 headers complete method=1 v=1/1 flags=7 content_length=0'
+        ];
+
+        url(req, expected, callback);
+      });
+    });
   };
 
   [
