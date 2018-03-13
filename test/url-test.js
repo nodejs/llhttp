@@ -46,7 +46,7 @@ describe('http_parser/url', function() {
         const input = 'schema:/path?query=value#schema';
         url(
           input,
-          /off=8 error code=-3 reason="Unexpected char in url schema"\n/g,
+          /off=8 error code=3 reason="Unexpected char in url schema"\n/g,
           callback);
       });
     });
