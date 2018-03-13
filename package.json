@@ -25,11 +25,11 @@
   "homepage": "https://github.com/indutny/llhttp#readme",
   "devDependencies": {
     "async": "^2.6.0",
-    "eslint": "^4.18.1",
-    "llparse-test-fixture": "^1.2.1",
-    "mocha": "^5.0.1"
+    "eslint": "^4.18.2",
+    "llparse-test-fixture": "^1.3.0",
+    "mocha": "^5.0.4"
   },
   "dependencies": {
-    "llparse": "^2.5.2"
+    "llparse": "^3.0.0-beta1"
   }
 }
