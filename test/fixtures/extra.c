@@ -36,4 +36,12 @@ int http_parser__on_headers_complete(llparse_state_t* s, const char* p,
   return 0;
 }
 
+
+int http_parser__on_message_complete(llparse_state_t* s, const char* p,
+                                     const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  llparse__print(p, endp, "message complete");
+  return 0;
+}
 #endif  /* HTTP_PARSER__TEST_HTTP */
