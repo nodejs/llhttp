@@ -12,7 +12,11 @@ fs.writeFileSync(CHEADERS_FILE, cheaders);
 
 const fixture = require('llparse-test-fixture').create({
   buildDir: BUILD_DIR,
-  extra: [ '-include', CHEADERS_FILE, path.join(__dirname, 'extra.c') ]
+  extra: [
+    '-DLLPARSE__ERROR_PAUSE=' + llhttp.constants.ERROR.PAUSED,
+    '-include', CHEADERS_FILE,
+    path.join(__dirname, 'extra.c')
+  ]
 });
 
 exports.build = (...args) => fixture.build(...args);
