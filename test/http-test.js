@@ -1,6 +1,7 @@
 'use strict';
 /* globals describe it before */
 
+const path = require('path');
 const llparse = require('llparse');
 const fixtures = require('./fixtures');
 
@@ -22,7 +23,10 @@ describe('http_parser/http', function() {
       result.exit.restart.otherwise(result.entry.req);
 
       url = fixtures.build(p, result.entry.req, 'http-req-' + mode, {
-        extra: [ '-DHTTP_PARSER__TEST_HTTP' ]
+        extra: [
+          '-DHTTP_PARSER__TEST_HTTP',
+          path.join(__dirname, '..', 'src', 'http.c')
+        ]
       });
     });
 
@@ -39,7 +43,7 @@ describe('http_parser/http', function() {
         'off=32 len=6 span[header_value]="Value1"',
         'off=40 len=7 span[header_field]="Header2"',
         'off=50 len=6 span[header_value]="Value2"',
-        'off=58 headers complete method=6 v=1/1 flags=0 content_length=0'
+        'off=59 headers complete method=6 v=1/1 flags=0 content_length=0'
       ];
 
       url(req, expected, callback);
@@ -56,7 +60,7 @@ describe('http_parser/http', function() {
           'off=4 len=4 span[url]="/url"',
           'off=19 len=14 span[header_field]="Content-Length"',
           'off=35 len=3 span[header_value]="123"',
-          'off=40 headers complete method=1 v=1/1 flags=20 content_length=123'
+          'off=41 headers complete method=1 v=1/1 flags=20 content_length=123'
         ];
 
         url(req, expected, callback);
@@ -108,7 +112,7 @@ describe('http_parser/http', function() {
           'off=4 len=4 span[url]="/url"',
           'off=19 len=17 span[header_field]="Transfer-Encoding"',
           'off=38 len=7 span[header_value]="chunked"',
-          'off=47 headers complete method=1 v=1/1 flags=8 content_length=0'
+          'off=48 headers complete method=1 v=1/1 flags=8 content_length=0'
         ];
 
         url(req, expected, callback);
@@ -124,7 +128,7 @@ describe('http_parser/http', function() {
           'off=4 len=4 span[url]="/url"',
           'off=19 len=17 span[header_field]="Transfer-Encoding"',
           'off=38 len=7 span[header_value]="pigeons"',
-          'off=47 headers complete method=1 v=1/1 flags=0 content_length=0'
+          'off=48 headers complete method=1 v=1/1 flags=0 content_length=0'
         ];
 
         url(req, expected, callback);
@@ -142,7 +146,7 @@ describe('http_parser/http', function() {
           'off=4 len=4 span[url]="/url"',
           'off=19 len=10 span[header_field]="Connection"',
           'off=31 len=10 span[header_value]="keep-alive"',
-          'off=43 headers complete method=1 v=1/1 flags=1 content_length=0'
+          'off=44 headers complete method=1 v=1/1 flags=1 content_length=0'
         ];
 
         url(req, expected, callback);
@@ -158,7 +162,7 @@ describe('http_parser/http', function() {
           'off=4 len=4 span[url]="/url"',
           'off=19 len=10 span[header_field]="Connection"',
           'off=31 len=5 span[header_value]="close"',
-          'off=38 headers complete method=1 v=1/1 flags=2 content_length=0'
+          'off=39 headers complete method=1 v=1/1 flags=2 content_length=0'
         ];
 
         url(req, expected, callback);
@@ -174,7 +178,7 @@ describe('http_parser/http', function() {
           'off=4 len=4 span[url]="/url"',
           'off=19 len=10 span[header_field]="Connection"',
           'off=31 len=7 span[header_value]="upgrade"',
-          'off=40 headers complete method=1 v=1/1 flags=4 content_length=0'
+          'off=41 headers complete method=1 v=1/1 flags=4 content_length=0'
         ];
 
         url(req, expected, callback);
@@ -191,7 +195,7 @@ describe('http_parser/http', function() {
           'off=19 len=10 span[header_field]="Connection"',
           'off=31 len=40 span[header_value]="close, token, upgrade, token, ' +
             'keep-alive"',
-          'off=73 headers complete method=1 v=1/1 flags=7 content_length=0'
+          'off=74 headers complete method=1 v=1/1 flags=7 content_length=0'
         ];
 
         url(req, expected, callback);
@@ -211,7 +215,7 @@ describe('http_parser/http', function() {
         'off=35 len=1 span[header_value]="1"',
         'off=38 len=17 span[header_field]="Transfer-Encoding"',
         'off=57 len=7 span[header_value]="chunked"',
-        'off=66 error code=10 reason="Content-Length can\'t ' +
+        'off=67 error code=10 reason="Content-Length can\'t ' +
           'be present with chunked encoding"'
       ];
 
