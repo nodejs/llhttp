@@ -1,6 +1,5 @@
 # llhttp
 [![Build Status](https://secure.travis-ci.org/indutny/llhttp.svg)](http://travis-ci.org/indutny/llhttp)
-[![NPM version](https://badge.fury.io/js/llhttp.svg)](https://badge.fury.io/js/llhttp)
 
 Port of [http_parser][0] to [llparse][1].
 
