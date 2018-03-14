@@ -42,8 +42,8 @@ to machine code with [clang][6] compiler.
 
 So far llhttp outperforms http_parser:
 
-|                 | input size |  bandwidth  |  reqs/sec  | time    |
-|:----------------|-----------:|------------:|-----------:|:--------|
+|                 | input size |  bandwidth  |  reqs/sec  |   time  |
+|:----------------|-----------:|------------:|-----------:|--------:|
 | **llhttp**      | 8192.00 mb | 863.16 mb/s | 1740551.83 | 9.49 s  |
 | **http_parser** | 8192.00 mb | 603.73 mb/s | 1217410.95 | 13.57 s |
 
