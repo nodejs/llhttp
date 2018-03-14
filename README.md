@@ -26,9 +26,10 @@ degradation. Most of this degradation comes from the extensive [spilling][2]
 that is inevitable for such large function as `http_parser_execute`.
 
 Splitting the big switch statement into small functions naively should work,
-but, in practice, is feasible only through using a dispatch loop in `execute`,
-which is slow due to lots of failed branch predictions. Dispatch loop can be
-avoided by use of [tail calls][3], which cannot be guaranteed in C language.
+but, in practice, is feasible only through using a dispatch loop in
+`http_parser_execute`, which is slow due to lots of failed branch predictions.
+The loop can be avoided by use of [tail calls][3], but their generation can not
+be enforced in C language.
 
 To overcome this impediment, this project utilizes [llparse][1] for converting
 the switch statement into [LLVM bitcode][4]. Small functions for each separate
