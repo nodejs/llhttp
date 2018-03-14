@@ -17,11 +17,23 @@ This project aims to:
 
 ## How?
 
-Over time, I've tried different approaches for improving [http_parser][0]'s code
-base. However, all of them were destined to fail miserably due to
-significant performance degradation resulting from them.
+Over time, different approaches for improving [http_parser][0]'s code base were
+tried. However, all of them failed due to resulting significant performance
+degradation. Most of this degradation comes from the extensive [spilling][2]
+that is inevitable for such large function as `http_parser_execute`.
 
-Then
+Splitting the big switch statement into small functions naively should work,
+but, in practice, is feasible only through using a dispatch loop in `execute`,
+which is slow due to lots of failed branch predictions. Dispatch loop can be
+avoided by use of [tail calls][3], which cannot be guaranteed in C language.
+
+To overcome this impediment, this project utilizes [llparse][1] for converting
+the switch statement into [LLVM bitcode][4]. Small functions for each separate
+state of the parser are created and linked together through [`musttail`][5]
+calls.
+
+The end result of such process is a binary bitcode file, that could be compiled
+to machine code with [clang][6] compiler.
 
 #### LICENSE
 
@@ -50,3 +62,8 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 [0]: https://github.com/nodejs/http-parser
 [1]: https://github.com/indutny/llparse
+[2]: https://en.wikipedia.org/wiki/Register_allocation#Spilling
+[3]: https://en.wikipedia.org/wiki/Tail_call
+[4]: https://llvm.org/docs/LangRef.html
+[5]: https://llvm.org/docs/LangRef.html#call-instruction
+[6]: https://clang.llvm.org/
