@@ -54,7 +54,7 @@ llhttp is faster by approximately **43%**.
 llhttp project has less 1000 LoC (lines of code), while the same code in
 [http_parser][0] is implemented in approximately 2000 LoC. All optimizations
 and multi-character matching in llhttp is generated automatically, and thus
-doesn't and any maintenance cost at all.
+doesn't add any extra maintenance cost.
 
 ## Verification
 
