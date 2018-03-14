@@ -5,24 +5,24 @@ const path = require('path');
 const llparse = require('llparse');
 const fixtures = require('./fixtures');
 
-const http = require('../');
+const llhttp = require('../');
 
 describe('http_parser/http', function() {
   this.timeout(fixtures.TIMEOUT);
 
   const test = (mode) => {
-    let url;
+    let http;
     before(() => {
       const p = llparse.create();
 
-      const instance = new http.HTTP(p, mode === 'strict');
+      const instance = new llhttp.HTTP(p, mode === 'strict');
 
       const result = instance.build();
 
       // Loop
       result.exit.restart.otherwise(result.entry.req);
 
-      url = fixtures.build(p, result.entry.req, 'http-req-' + mode, {
+      http = fixtures.build(p, result.entry.req, 'http-req-' + mode, {
         extra: [
           '-DHTTP_PARSER__TEST_HTTP',
           path.join(__dirname, '..', 'src', 'http.c')
@@ -48,7 +48,7 @@ describe('http_parser/http', function() {
         `off=${req.length} message complete`
       ];
 
-      url(req, expected, callback);
+      http(req, expected, callback);
     });
 
     describe('content-length', () => {
@@ -68,7 +68,7 @@ describe('http_parser/http', function() {
           `off=${req.length} message complete`
         ];
 
-        url(req, expected, callback);
+        http(req, expected, callback);
       });
 
       it('should handle content-length overflow', (callback) => {
@@ -84,7 +84,7 @@ describe('http_parser/http', function() {
           'off=56 error code=9 reason="Content-Length overflow"'
         ];
 
-        url(req, expected, callback);
+        http(req, expected, callback);
       });
 
       it('should handle duplicate content-length', (callback) => {
@@ -102,7 +102,7 @@ describe('http_parser/http', function() {
           'off=54 error code=10 reason="Duplicate Content-Length"'
         ];
 
-        url(req, expected, callback);
+        http(req, expected, callback);
       });
     });
 
@@ -121,7 +121,7 @@ describe('http_parser/http', function() {
             'flags=8 content_length=0'
         ];
 
-        url(req, expected, callback);
+        http(req, expected, callback);
       });
 
       it('should ignore `transfer-encoding: pigeons`', (callback) => {
@@ -139,7 +139,7 @@ describe('http_parser/http', function() {
           `off=${req.length} message complete`
         ];
 
-        url(req, expected, callback);
+        http(req, expected, callback);
       });
     });
 
@@ -159,7 +159,7 @@ describe('http_parser/http', function() {
           `off=${req.length} message complete`
         ];
 
-        url(req, expected, callback);
+        http(req, expected, callback);
       });
 
       it('should parse `connection: close`', (callback) => {
@@ -177,7 +177,7 @@ describe('http_parser/http', function() {
           `off=${req.length} message complete`
         ];
 
-        url(req, expected, callback);
+        http(req, expected, callback);
       });
 
       it('should parse `connection: upgrade`', (callback) => {
@@ -199,7 +199,7 @@ describe('http_parser/http', function() {
           `off=${req.length} pause`
         ];
 
-        url(req, expected, callback);
+        http(req, expected, callback);
       });
 
       it('should parse `connection: tokens`', (callback) => {
@@ -218,7 +218,7 @@ describe('http_parser/http', function() {
           `off=${req.length} message complete`,
         ];
 
-        url(req, expected, callback);
+        http(req, expected, callback);
       });
     });
 
@@ -239,7 +239,51 @@ describe('http_parser/http', function() {
           'be present with chunked encoding"'
       ];
 
-      url(req, expected, callback);
+      http(req, expected, callback);
+    });
+
+    describe('keep-alive', () => {
+      it('should restart request when keep-alive is on', (callback) => {
+        const req =
+          'PUT /url HTTP/1.1\r\n' +
+          'Connection: keep-alive\r\n' +
+          '\r\n' +
+          'PUT /url HTTP/1.1\r\n' +
+          'Connection: keep-alive\r\n' +
+          '\r\n';
+
+        const expected = [
+          'off=4 len=4 span[url]="/url"',
+          'off=19 len=10 span[header_field]="Connection"',
+          'off=31 len=10 span[header_value]="keep-alive"',
+          'off=45 headers complete method=4 v=1/1 flags=1 content_length=0',
+          'off=45 message complete',
+          'off=49 len=4 span[url]="/url"',
+          'off=64 len=10 span[header_field]="Connection"',
+          'off=76 len=10 span[header_value]="keep-alive"',
+          'off=90 headers complete method=4 v=1/1 flags=1 content_length=0',
+          `off=${req.length} message complete`
+        ];
+
+        http(req, expected, callback);
+      });
+
+      it('should not restart request when keep-alive is off', (callback) => {
+        const req =
+          'PUT /url HTTP/1.0\r\n' +
+          '\r\n' +
+          'PUT /url HTTP/1.1\r\n' +
+          '\r\n';
+
+        const expected = [
+          'off=4 len=4 span[url]="/url"',
+          'off=21 headers complete method=4 v=1/0 flags=0 content_length=0',
+          'off=21 message complete',
+          'off=22 error code=14 reason="Data after `Connection: close`"'
+        ];
+
+        http(req, expected, callback);
+      });
     });
 
     describe('chunked encoding', () => {
@@ -266,7 +310,7 @@ describe('http_parser/http', function() {
           `off=${req.length} message complete`
         ];
 
-        url(req, expected, callback);
+        http(req, expected, callback);
       });
     });
   };
