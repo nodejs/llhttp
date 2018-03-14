@@ -52,4 +52,22 @@ int http_parser__on_body(llparse_state_t* s, const char* p, const char* endp) {
   return llparse__print_span("body", p, endp);
 }
 
+
+int http_parser__on_chunk_header(llparse_state_t* s, const char* p,
+                                 const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  llparse__print(p, endp, "chunk header len=%d", (int) s->content_length);
+  return 0;
+}
+
+
+int http_parser__on_chunk_complete(llparse_state_t* s, const char* p,
+                                   const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  llparse__print(p, endp, "chunk complete");
+  return 0;
+}
+
 #endif  /* HTTP_PARSER__TEST_HTTP */
