@@ -60,6 +60,8 @@ The state machine graph is encoded explicitly in llhttp.
 
 WIP.
 
+---
+
 #### LICENSE
 
 This software is licensed under the MIT License.
