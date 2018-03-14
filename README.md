@@ -2,15 +2,15 @@
 [![Build Status](https://secure.travis-ci.org/indutny/llhttp.svg)](http://travis-ci.org/indutny/llhttp)
 [![NPM version](https://badge.fury.io/js/llhttp.svg)](https://badge.fury.io/js/llhttp)
 
-Port of [http_parser][0] to [llparse][1].
+Port of [`http_parser`][0] to [`llparse`][1].
 
 **NOTE: Only trunk and upcoming 6.0.1 version of clang are supported at the
 moment**
 
 ## Why?
 
-Let's face it, [http_parser][0] is practically unmaintainable. Even introduction
-of a single new method results in a significant code churn.
+Let's face it, [`http_parser`][0] is practically unmaintainable. Even
+introduction of a single new method results in a significant code churn.
 
 This project aims to:
 
@@ -20,8 +20,8 @@ This project aims to:
 
 ## How?
 
-Over time, different approaches for improving [http_parser][0]'s code base were
-tried. However, all of them failed due to resulting significant performance
+Over time, different approaches for improving [`http_parser`][0]'s code base
+were tried. However, all of them failed due to resulting significant performance
 degradation. Most of this degradation comes from the extensive [spilling][2]
 that is inevitable for such large function as `http_parser_execute`.
 
@@ -30,7 +30,7 @@ but, in practice, is feasible only through using a dispatch loop in `execute`,
 which is slow due to lots of failed branch predictions. Dispatch loop can be
 avoided by use of [tail calls][3], which cannot be guaranteed in C language.
 
-To overcome this impediment, this project utilizes [llparse][1] for converting
+To overcome this impediment, this project utilizes [`llparse`][1] for converting
 the switch statement into [LLVM bitcode][4]. Small functions for each separate
 state of the parser are created and linked together through [`musttail`][5]
 calls.
@@ -46,6 +46,19 @@ So far `llhttp` outperforms `http_parser`:
 |:------------|-----------:|------------:|:--------|
 | llhttp      | 8192.00 mb | 886.66 mb/s | 9.24 s  |
 | http_parser | 8192.00 mb | 605.06 mb/s | 13.54 s |
+
+## Maintenance
+
+`llhttp` project has less 1000 LoC (lines of code), while the same code in
+[`http_parser`][0] is implemented in approximately 2000 LoC. All optimizations
+and multi-character matching in `llhttp` is generated automatically, and thus
+doesn't and any maintenance cost at all.
+
+## Verification
+
+The state machine graph is encoded explicitly in `llhttp`.
+
+WIP.
 
 #### LICENSE
 
