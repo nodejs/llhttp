@@ -241,6 +241,34 @@ describe('http_parser/http', function() {
 
       url(req, expected, callback);
     });
+
+    describe('chunked encoding', () => {
+      it('should parse chunks', (callback) => {
+        const req =
+          'PUT /url HTTP/1.1\r\n' +
+          'Transfer-Encoding: chunked\r\n' +
+          '\r\n' +
+          '3\r\n' +
+          'abc\r\n' +
+          '0\r\n' +
+          '\r\n';
+
+        const expected = [
+          'off=4 len=4 span[url]="/url"',
+          'off=19 len=17 span[header_field]="Transfer-Encoding"',
+          'off=38 len=7 span[header_value]="chunked"',
+          'off=49 headers complete method=4 v=1/1 flags=8 content_length=0',
+          'off=52 chunk header len=3',
+          'off=52 len=3 span[body]="abc"',
+          'off=57 chunk complete',
+          'off=60 chunk header len=0',
+          `off=${req.length} chunk complete`,
+          `off=${req.length} message complete`
+        ];
+
+        url(req, expected, callback);
+      });
+    });
   };
 
   [
