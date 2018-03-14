@@ -8,6 +8,10 @@ const BUILD_DIR = path.join(__dirname, '..', 'tmp');
 const CHEADERS_FILE = path.join(BUILD_DIR, 'cheaders.h');
 
 const cheaders = new llhttp.CHeaders().build();
+try {
+  fs.mkdirSync(BUILD_DIR);
+} catch (e) {
+}
 fs.writeFileSync(CHEADERS_FILE, cheaders);
 
 const fixture = require('llparse-test-fixture').create({
