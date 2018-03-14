@@ -4,6 +4,9 @@
 
 Port of [http_parser][0] to [llparse][1].
 
+**NOTE: Only trunk and upcoming 6.0.1 version of clang are supported at the
+moment**
+
 ## Why?
 
 Let's face it, [http_parser][0] is practically unmaintainable. Even introduction
@@ -34,6 +37,17 @@ calls.
 
 The end result of such process is a binary bitcode file, that could be compiled
 to machine code with [clang][6] compiler.
+
+## Peformance
+
+So far `llhttp` outperforms `http_parser`:
+
+```
+|             | input size |  bandwidth  |  time   |
+|:------------|-----------:|------------:|:--------|
+| llhttp      | 8192.00 mb | 886.66 mb/s | 9.24 s  |
+| http_parser | 8192.00 mb | 605.06 mb/s | 13.54 s |
+```
 
 #### LICENSE
 
