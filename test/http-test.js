@@ -19,10 +19,7 @@ describe('http_parser/http', function() {
 
       const result = instance.build();
 
-      // Loop
-      result.exit.restart.otherwise(result.entry.req);
-
-      http = fixtures.build(p, result.entry.req, 'http-req-' + mode, {
+      http = fixtures.build(p, result.entry, 'http-req-' + mode, {
         extra: [
           '-DHTTP_PARSER__TEST_HTTP',
           path.join(__dirname, '..', 'src', 'http.c')
