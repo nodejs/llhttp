@@ -43,8 +43,9 @@ describe('http_parser/http', function() {
         'off=32 len=6 span[header_value]="Value1"',
         'off=40 len=7 span[header_field]="Header2"',
         'off=50 len=6 span[header_value]="Value2"',
-        'off=59 headers complete method=6 v=1/1 flags=0 content_length=0',
-        'off=59 message complete'
+        `off=${req.length} headers complete method=6 v=1/1 ` +
+          'flags=0 content_length=0',
+        `off=${req.length} message complete`
       ];
 
       url(req, expected, callback);
@@ -54,14 +55,17 @@ describe('http_parser/http', function() {
       it('should parse content-length', (callback) => {
         const req =
           'PUT /url HTTP/1.1\r\n' +
-          'Content-Length: 123\r\n' +
-          '\r\n';
+          'Content-Length: 003\r\n' +
+          '\r\n' +
+          'abc';
 
         const expected = [
           'off=4 len=4 span[url]="/url"',
           'off=19 len=14 span[header_field]="Content-Length"',
-          'off=35 len=3 span[header_value]="123"',
-          'off=41 headers complete method=4 v=1/1 flags=20 content_length=123'
+          'off=35 len=3 span[header_value]="003"',
+          'off=42 headers complete method=4 v=1/1 flags=20 content_length=3',
+          'off=42 len=3 span[body]="abc"',
+          `off=${req.length} message complete`
         ];
 
         url(req, expected, callback);
@@ -113,7 +117,8 @@ describe('http_parser/http', function() {
           'off=4 len=4 span[url]="/url"',
           'off=19 len=17 span[header_field]="Transfer-Encoding"',
           'off=38 len=7 span[header_value]="chunked"',
-          'off=48 headers complete method=4 v=1/1 flags=8 content_length=0'
+          `off=${req.length} headers complete method=4 v=1/1 ` +
+            'flags=8 content_length=0'
         ];
 
         url(req, expected, callback);
@@ -129,8 +134,9 @@ describe('http_parser/http', function() {
           'off=4 len=4 span[url]="/url"',
           'off=19 len=17 span[header_field]="Transfer-Encoding"',
           'off=38 len=7 span[header_value]="pigeons"',
-          'off=48 headers complete method=4 v=1/1 flags=0 content_length=0',
-          'off=48 message complete'
+          `off=${req.length} headers complete method=4 v=1/1 ` +
+            'flags=0 content_length=0',
+          `off=${req.length} message complete`
         ];
 
         url(req, expected, callback);
@@ -148,8 +154,9 @@ describe('http_parser/http', function() {
           'off=4 len=4 span[url]="/url"',
           'off=19 len=10 span[header_field]="Connection"',
           'off=31 len=10 span[header_value]="keep-alive"',
-          'off=44 headers complete method=4 v=1/1 flags=1 content_length=0',
-          'off=44 message complete'
+          `off=${req.length} headers complete method=4 v=1/1 ` +
+            'flags=1 content_length=0',
+          `off=${req.length} message complete`
         ];
 
         url(req, expected, callback);
@@ -165,8 +172,9 @@ describe('http_parser/http', function() {
           'off=4 len=4 span[url]="/url"',
           'off=19 len=10 span[header_field]="Connection"',
           'off=31 len=5 span[header_value]="close"',
-          'off=39 headers complete method=4 v=1/1 flags=2 content_length=0',
-          'off=39 message complete'
+          `off=${req.length} headers complete method=4 v=1/1 ` +
+            'flags=2 content_length=0',
+          `off=${req.length} message complete`
         ];
 
         url(req, expected, callback);
@@ -185,9 +193,10 @@ describe('http_parser/http', function() {
           'off=31 len=7 span[header_value]="upgrade"',
           'off=40 len=7 span[header_field]="Upgrade"',
           'off=49 len=2 span[header_value]="ws"',
-          'off=54 headers complete method=4 v=1/1 flags=14 content_length=0',
-          'off=54 message complete',
-          'off=54 pause'
+          `off=${req.length} headers complete method=4 v=1/1 ` +
+            'flags=14 content_length=0',
+          `off=${req.length} message complete`,
+          `off=${req.length} pause`
         ];
 
         url(req, expected, callback);
@@ -204,8 +213,9 @@ describe('http_parser/http', function() {
           'off=19 len=10 span[header_field]="Connection"',
           'off=31 len=40 span[header_value]="close, token, upgrade, token, ' +
             'keep-alive"',
-          'off=74 headers complete method=4 v=1/1 flags=7 content_length=0',
-          'off=74 message complete',
+          `off=${req.length} headers complete method=4 v=1/1 ` +
+            'flags=7 content_length=0',
+          `off=${req.length} message complete`,
         ];
 
         url(req, expected, callback);
@@ -225,7 +235,7 @@ describe('http_parser/http', function() {
         'off=35 len=1 span[header_value]="1"',
         'off=38 len=17 span[header_field]="Transfer-Encoding"',
         'off=57 len=7 span[header_value]="chunked"',
-        'off=67 error code=10 reason="Content-Length can\'t ' +
+        `off=${req.length} error code=10 reason="Content-Length can't ` +
           'be present with chunked encoding"'
       ];
 

@@ -44,4 +44,12 @@ int http_parser__on_message_complete(llparse_state_t* s, const char* p,
   llparse__print(p, endp, "message complete");
   return 0;
 }
+
+
+int http_parser__on_body(llparse_state_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  return llparse__print_span("body", p, endp);
+}
+
 #endif  /* HTTP_PARSER__TEST_HTTP */
