@@ -5,8 +5,9 @@
 # define http_parser_t llparse_state_t
 #endif  /* */
 
-/* TODO(indutny): this was public before */
+/* TODO(indutny): this was public before, what should we do? */
 int http_message_needs_eof(const http_parser_t* parser);
+int http_should_keep_alive(const http_parser_t* parser);
 
 int http_parser__before_headers_complete(http_parser_t* parser, const char* p,
                                          const char* endp) {
@@ -69,6 +70,13 @@ int http_parser__after_headers_complete(http_parser_t* parser, const char* p,
 }
 
 
+int http_parser__after_message_complete(http_parser_t* parser, const char* p,
+                                        const char* endp) {
+  parser->flags = 0;
+  return http_should_keep_alive(parser);
+}
+
+
 int http_message_needs_eof(const http_parser_t* parser) {
   if (parser->type == HTTP_REQUEST) {
     return 0;
@@ -87,4 +95,21 @@ int http_message_needs_eof(const http_parser_t* parser) {
   }
 
   return 1;
+}
+
+
+int http_should_keep_alive(const http_parser_t* parser) {
+  if (parser->http_major > 0 && parser->http_minor > 0) {
+    /* HTTP/1.1 */
+    if (parser->flags & F_CONNECTION_CLOSE) {
+      return 0;
+    }
+  } else {
+    /* HTTP/1.0 or earlier */
+    if (!(parser->flags & F_CONNECTION_KEEP_ALIVE)) {
+      return 0;
+    }
+  }
+
+  return !http_message_needs_eof(parser);
 }
