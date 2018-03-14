@@ -48,6 +48,30 @@ describe('http_parser/http', function() {
       http(req, expected, callback);
     });
 
+    it('should parse simple response', (callback) => {
+      const req =
+        'HTTP/1.1 200 OK\r\n' +
+        'Header1: Value1\r\n' +
+        'Header2:\t Value2\r\n' +
+        'Content-Length: 0\r\n' +
+        '\r\n';
+
+      const expected = [
+        'off=13 len=2 span[status]="OK"',
+        'off=17 len=7 span[header_field]="Header1"',
+        'off=26 len=6 span[header_value]="Value1"',
+        'off=34 len=7 span[header_field]="Header2"',
+        'off=44 len=6 span[header_value]="Value2"',
+        'off=52 len=14 span[header_field]="Content-Length"',
+        'off=68 len=1 span[header_value]="0"',
+        `off=${req.length} headers complete status=200 v=1/1 ` +
+          'flags=20 content_length=0',
+        `off=${req.length} message complete`
+      ];
+
+      http(req, expected, callback);
+    });
+
     describe('content-length', () => {
       it('should parse content-length', (callback) => {
         const req =
