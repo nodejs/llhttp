@@ -102,7 +102,7 @@ describe('http_parser/http', function() {
           'off=4 len=4 span[url]="/url"',
           'off=19 len=14 span[header_field]="Content-Length"',
           'off=35 len=21 span[header_value]="100000000000000000000"',
-          'off=56 error code=9 reason="Content-Length overflow"'
+          'off=56 error code=11 reason="Content-Length overflow"'
         ];
 
         http(req, expected, callback);
@@ -120,7 +120,7 @@ describe('http_parser/http', function() {
           'off=19 len=14 span[header_field]="Content-Length"',
           'off=35 len=1 span[header_value]="1"',
           'off=38 len=14 span[header_field]="Content-Length"',
-          'off=54 error code=10 reason="Duplicate Content-Length"'
+          'off=54 error code=4 reason="Duplicate Content-Length"'
         ];
 
         http(req, expected, callback);
@@ -256,7 +256,7 @@ describe('http_parser/http', function() {
         'off=35 len=1 span[header_value]="1"',
         'off=38 len=17 span[header_field]="Transfer-Encoding"',
         'off=57 len=7 span[header_value]="chunked"',
-        `off=${req.length} error code=10 reason="Content-Length can't ` +
+        `off=${req.length} error code=4 reason="Content-Length can't ` +
           'be present with chunked encoding"'
       ];
 
@@ -300,7 +300,7 @@ describe('http_parser/http', function() {
           'off=4 len=4 span[url]="/url"',
           'off=21 headers complete method=4 v=1/0 flags=0 content_length=0',
           'off=21 message complete',
-          'off=22 error code=14 reason="Data after `Connection: close`"'
+          'off=22 error code=5 reason="Data after `Connection: close`"'
         ];
 
         http(req, expected, callback);

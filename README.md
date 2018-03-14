@@ -2,7 +2,26 @@
 [![Build Status](https://secure.travis-ci.org/indutny/llhttp.svg)](http://travis-ci.org/indutny/llhttp)
 [![NPM version](https://badge.fury.io/js/llhttp.svg)](https://badge.fury.io/js/llhttp)
 
-WIP
+Port of [http_parser][0] to [llparse][1].
+
+## Why?
+
+Let's face it, [http_parser][0] is practically unmaintainable. Even introduction
+of a single new method results in a significant code churn.
+
+This project aims to:
+
+* Make it maintainable
+* Verifiable
+* Improving benchmarks where possible
+
+## How?
+
+Over time, I've tried different approaches for improving [http_parser][0]'s code
+base. However, all of them were destined to fail miserably due to
+significant performance degradation resulting from them.
+
+Then
 
 #### LICENSE
 
@@ -28,3 +47,6 @@ NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+[0]: https://github.com/nodejs/http-parser
+[1]: https://github.com/indutny/llparse
