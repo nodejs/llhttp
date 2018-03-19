@@ -9,6 +9,7 @@
     "src"
   ],
   "scripts": {
+    "bench": "ts-node bench/",
     "build": "tsc",
     "clean": "rm -rf lib",
     "prepare": "npm run clean && npm run build",
