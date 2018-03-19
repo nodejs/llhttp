@@ -1,16 +1,21 @@
-'use strict';
+import * as assert from 'assert';
+import { code, LLParse, node as apiNode, Span } from 'llparse';
 
-const assert = require('assert');
+import Match = apiNode.Match;
+import Node = apiNode.Node;
 
-const llhttp = require('../llhttp');
-const constants = llhttp.constants;
-const ERROR = constants.ERROR;
-const SPECIAL_HEADERS = constants.SPECIAL_HEADERS;
-const HEADER_STATE = constants.HEADER_STATE;
-const FLAGS = constants.FLAGS;
-const TYPE = constants.TYPE;
+import {
+  CharList,
+  CONNECTION_TOKEN_CHARS, ERROR, FLAGS, HEADER_CHARS, HEADER_STATE, HEX_MAP,
+  HTTPMode,
+  MAJOR, METHOD_MAP, METHODS, MINOR, NUM_MAP, SPECIAL_HEADERS, STRICT_TOKEN,
+  TOKEN, TYPE,
+} from './constants';
+import { URL } from './url';
 
-const NODES = [
+type MaybeNode = string | Match | Node;
+
+const NODES: ReadonlyArray<string> = [
   'start',
   'start_req',
   'start_res',
@@ -75,24 +80,68 @@ const NODES = [
   'eof',
   'cleanup',
   'closed',
-  'restart'
+  'restart',
 ];
 
-class HTTP {
-  constructor(p, isStrict = false) {
-    this.p = p;
-    this.isStrict = isStrict;
+interface ISpanMap {
+  readonly body: Span;
+  readonly headerField: Span;
+  readonly headerValue: Span;
+  readonly status: Span;
+}
 
-    this.url = new llhttp.URL(p, isStrict);
-    this.TOKEN = this.isStrict ? constants.STRICT_TOKEN : constants.TOKEN;
+interface ICallbackMap {
+  readonly afterHeadersComplete: code.Code;
+  readonly afterMessageComplete: code.Code;
+  readonly beforeHeadersComplete: code.Code;
+  readonly onChunkComplete: code.Code;
+  readonly onChunkHeader: code.Code;
+  readonly onHeadersComplete: code.Code;
+  readonly onMessageComplete: code.Code;
+}
+
+interface IMulTargets {
+  readonly overflow: string | Node;
+  readonly success: string | Node;
+}
+
+interface IMulOptions {
+  readonly base: number;
+  readonly max?: number;
+  readonly signed: boolean;
+}
+
+interface IIsEqualTargets {
+  readonly equal: string | Node;
+  readonly notEqual: string | Node;
+}
+
+export interface IHTTPResult {
+  readonly entry: Node;
+}
+
+export class HTTP {
+  private readonly url: URL;
+  private readonly TOKEN: CharList;
+  private readonly span: ISpanMap;
+  private readonly callback: ICallbackMap;
+  private readonly nodes: Map<string, Match> = new Map();
+
+  constructor(private readonly llparse: LLParse,
+              private readonly mode: HTTPMode = 'loose') {
+    const p = llparse;
+
+    this.url = new URL(p, mode);
+    this.TOKEN = mode === 'strict' ? STRICT_TOKEN : TOKEN;
 
     this.span = {
-      status: p.span(p.code.span('http_parser__on_status')),
+      body: p.span(p.code.span('http_parser__on_body')),
       headerField: p.span(p.code.span('http_parser__on_header_field')),
       headerValue: p.span(p.code.span('http_parser__on_header_value')),
-      body: p.span(p.code.span('http_parser__on_body'))
+      status: p.span(p.code.span('http_parser__on_status')),
     };
 
+    /* tslint:disable:object-literal-sort-keys */
     this.callback = {
       // User callbacks
       onHeadersComplete: p.code.match('http_parser__on_headers_complete'),
@@ -103,93 +152,16 @@ class HTTP {
       // Internal callbacks `src/http.c`
       beforeHeadersComplete:
         p.code.match('http_parser__before_headers_complete'),
-      afterHeadersComplete:
-        p.code.match('http_parser__after_headers_complete'),
-      afterMessageComplete: p.code.match('http_parser__after_message_complete')
+      afterHeadersComplete: p.code.match('http_parser__after_headers_complete'),
+      afterMessageComplete: p.code.match('http_parser__after_message_complete'),
     };
+    /* tslint:enable:object-literal-sort-keys */
 
-    this.nodes = new Map();
-    NODES.forEach(name => this.nodes.set(name, p.node(name)));
+    NODES.forEach((name) => this.nodes.set(name, p.node(name) as Match));
   }
 
-  node(name) {
-    if (typeof name === 'object')
-      return name;
-
-    assert(this.nodes.has(name), 'Unknown node: ' + name);
-    return this.nodes.get(name);
-  }
-
-  load(name, map, next) {
-    const res = this.p.invoke(this.p.code.load(name), map);
-    if (next)
-      res.otherwise(this.node(next));
-    return res;
-  }
-
-  store(name, next) {
-    const res = this.p.invoke(this.p.code.store(name));
-    if (next)
-      res.otherwise(this.node(next));
-    return res;
-  }
-
-  update(name, value, next) {
-    const res = this.p.invoke(this.p.code.update(name, value));
-    if (next)
-      res.otherwise(this.node(next));
-    return res;
-  }
-
-  resetHeaderState(next) {
-    return this.update('header_state', HEADER_STATE.GENERAL, next);
-  }
-
-  emptySpan(span, next) {
-    return span.start(span.end(this.node(next)));
-  }
-
-  setFlag(flag, next) {
-    return this.p.invoke(this.p.code.or('flags', flag), this.node(next));
-  }
-
-  testFlags(flag, map, next) {
-    const res = this.p.invoke(this.p.code.test('flags', flag), map);
-    if (next)
-      res.otherwise(this.node(next));
-    return res;
-  }
-
-  setHeaderFlags(next) {
-    const HS = HEADER_STATE;
-    const F = FLAGS;
-
-    return this.load('header_state', {
-      [HS.CONNECTION_KEEP_ALIVE]: this.setFlag(F.CONNECTION_KEEP_ALIVE, next),
-      [HS.CONNECTION_CLOSE]: this.setFlag(F.CONNECTION_CLOSE, next),
-      [HS.CONNECTION_UPGRADE]: this.setFlag(F.CONNECTION_UPGRADE, next),
-      [HS.TRANSFER_ENCODING_CHUNKED]: this.setFlag(F.CHUNKED, next)
-    }, this.node(next));
-  }
-
-  mulAdd(field, targets, options = {}) {
-    const p = this.p;
-    options = Object.assign({ base: 10, signed: false }, options);
-
-    return p.invoke(p.code.mulAdd(field, options), {
-      1: this.node(targets.overflow)
-    }, this.node(targets.success));
-  }
-
-  isEqual(field, value, map) {
-    const p = this.p;
-    return p.invoke(p.code.isEqual(field, value), {
-      0: this.node(map.notEqual)
-    }, this.node(map.equal));
-  }
-
-  build() {
-    const p = this.p;
+  public build(): IHTTPResult {
+    const p = this.llparse;
 
     p.property('i8', 'type');
     p.property('i8', 'method');
@@ -205,26 +177,26 @@ class HTTP {
     this.buildHeaders();
 
     return {
-      entry: this.node('start')
+      entry: this.node('start'),
     };
   }
 
-  buildLine() {
-    const p = this.p;
+  private buildLine(): void {
+    const p = this.llparse;
     const span = this.span;
-    const n = name => this.node(name);
+    const n = (name: string): Match => this.node<Match>(name);
 
     const url = this.url.build();
 
     n('start')
       .otherwise(this.load('type', {
         [TYPE.REQUEST]: n('start_req'),
-        [TYPE.RESPONSE]: n('start_res')
+        [TYPE.RESPONSE]: n('start_res'),
       }, n('start_req_or_res')));
 
     n('start_req_or_res')
       .match([ '\r', '\n' ], n('start_req_or_res'))
-      .select(constants.METHODS, this.store('method',
+      .select(METHOD_MAP, this.store('method',
         this.update('type', TYPE.REQUEST, 'req_spaces_before_url')))
       .match('HTTP/', this.update('type', TYPE.RESPONSE, 'res_http_major'))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Invalid word encountered'));
@@ -237,7 +209,7 @@ class HTTP {
       .skipTo(n('start_res'));
 
     n('res_http_major')
-      .select(constants.MAJOR, this.store('http_major', 'res_http_dot'))
+      .select(MAJOR, this.store('http_major', 'res_http_dot'))
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Invalid major version'));
 
     n('res_http_dot')
@@ -245,7 +217,7 @@ class HTTP {
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected dot'));
 
     n('res_http_minor')
-      .select(constants.MINOR, this.store('http_minor', 'res_http_end'))
+      .select(MINOR, this.store('http_minor', 'res_http_end'))
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Invalid minor version'));
 
     n('res_http_end')
@@ -253,10 +225,10 @@ class HTTP {
       .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid response status'));
 
     n('res_status_code')
-      .select(constants.NUM_MAP, this.mulAdd('status_code', {
+      .select(NUM_MAP, this.mulAdd('status_code', {
+        overflow: p.error(ERROR.INVALID_STATUS, 'Response overflow'),
         success: 'res_status_code',
-        overflow: p.error(ERROR.INVALID_STATUS, 'Response overflow')
-      }, { max: 999 }))
+      }, { base: 10, signed: false, max: 999 }))
       .otherwise(n('res_status_code_otherwise'));
 
     n('res_status_code_otherwise')
@@ -274,7 +246,7 @@ class HTTP {
       .peek('\n', span.status.end().skipTo(n('header_field_start')))
       .skipTo(n('res_status'));
 
-    if (this.isStrict) {
+    if (this.mode === 'strict') {
       n('res_line_almost_done')
         .match('\n', n('header_field_start'))
         .otherwise(p.error(ERROR.STRICT, 'Expected LF after CR'));
@@ -287,14 +259,14 @@ class HTTP {
 
     n('start_req')
       .match([ '\r', '\n' ], n('start_req'))
-      .select(constants.METHODS, this.store('method', 'req_spaces_before_url'))
+      .select(METHOD_MAP, this.store('method', 'req_spaces_before_url'))
       .otherwise(p.error(ERROR.INVALID_METHOD, 'Invalid method encountered'));
 
     n('req_spaces_before_url')
       .match(' ', n('req_spaces_before_url'))
-      .otherwise(this.isEqual('method', constants.METHODS.CONNECT, {
+      .otherwise(this.isEqual('method', METHODS.CONNECT, {
         equal: url.entry.connect,
-        notEqual: url.entry.normal
+        notEqual: url.entry.normal,
       }));
 
     url.exit.toHTTP
@@ -303,7 +275,7 @@ class HTTP {
     url.exit.toHTTP09
       .otherwise(
         this.update('http_major', 0,
-          this.update('http_minor', 9, 'header_field_start'))
+          this.update('http_minor', 9, 'header_field_start')),
       );
 
     n('req_http_start')
@@ -312,7 +284,7 @@ class HTTP {
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
 
     n('req_http_major')
-      .select(constants.MAJOR, this.store('http_major', 'req_http_dot'))
+      .select(MAJOR, this.store('http_major', 'req_http_dot'))
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Invalid major version'));
 
     n('req_http_dot')
@@ -320,7 +292,7 @@ class HTTP {
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected dot'));
 
     n('req_http_minor')
-      .select(constants.MINOR, this.store('http_minor', 'req_http_end'))
+      .select(MINOR, this.store('http_minor', 'req_http_end'))
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Invalid minor version'));
 
     n('req_http_end')
@@ -328,15 +300,15 @@ class HTTP {
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected CRLF after version'));
   }
 
-  buildHeaders() {
+  private buildHeaders(): void {
     this.buildHeaderField();
     this.buildHeaderValue();
   }
 
-  buildHeaderField() {
-    const p = this.p;
+  private buildHeaderField(): void {
+    const p = this.llparse;
     const span = this.span;
-    const n = name => this.node(name);
+    const n = (name: string): Match => this.node<Match>(name);
 
     n('header_field_start')
       .match('\r', n('headers_almost_done'))
@@ -369,35 +341,11 @@ class HTTP {
       .otherwise(p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header token'));
   }
 
-  pause(msg, next) {
-    const res = this.p.pause(ERROR.PAUSED, msg);
-    if (next)
-      res.otherwise(this.node(next));
-    return res;
-  }
-
-  invokePausable(name, errorCode, next) {
-    let cb;
-    if (name === 'on_message_complete')
-      cb = this.callback.onMessageComplete;
-    else if (name === 'on_chunk_header')
-      cb = this.callback.onChunkHeader;
-    else if (name === 'on_chunk_complete')
-      cb = this.callback.onChunkComplete;
-    else
-      throw new Error('Unknown callback: ' + name);
-
-    return this.p.invoke(cb, {
-      0: this.node(next),
-      [ERROR.PAUSED]: this.pause(`${name} pause`, next)
-    }, this.p.error(errorCode, name + ' callback error'));
-  }
-
-  buildHeaderValue() {
-    const p = this.p;
+  private buildHeaderValue(): void {
+    const p = this.llparse;
     const span = this.span;
     const callback = this.callback;
-    const n = name => this.node(name);
+    const n = (name: string): Match => this.node<Match>(name);
 
     const fallback = this.resetHeaderState('header_value');
 
@@ -407,7 +355,7 @@ class HTTP {
       .match('\n', n('header_value_discard_lws'))
       .otherwise(span.headerValue.start(n('header_value_start')));
 
-    if (this.isStrict) {
+    if (this.mode === 'strict') {
       n('header_value_discard_ws_almost_done')
         .match('\n', n('header_value_discard_lws'))
         .otherwise(p.error(ERROR.STRICT, 'Expected LF after CR'));
@@ -426,7 +374,7 @@ class HTTP {
         [HEADER_STATE.UPGRADE]: this.setFlag(FLAGS.UPGRADE, fallback),
         [HEADER_STATE.TRANSFER_ENCODING]: n('header_value_te_chunked'),
         [HEADER_STATE.CONTENT_LENGTH]: n('header_value_content_length_once'),
-        [HEADER_STATE.CONNECTION]: n('header_value_connection')
+        [HEADER_STATE.CONNECTION]: n('header_value_connection'),
       }, 'header_value'));
 
     n('header_value_te_chunked')
@@ -434,12 +382,12 @@ class HTTP {
       .match(
         'chunked',
         this.update('header_state', HEADER_STATE.TRANSFER_ENCODING_CHUNKED,
-          'header_value_discard_rws')
+          'header_value_discard_rws'),
       )
       .peek([ ' ', '\r', '\n' ], n('header_value_discard_rws'))
       .otherwise(fallback);
 
-    const invalidContentLength = (reason) => {
+    const invalidContentLength = (reason: string): Node => {
       // End span for easier testing
       // TODO(indutny): minimize code size
       return span.headerValue.end()
@@ -448,13 +396,13 @@ class HTTP {
 
     n('header_value_content_length_once')
       .otherwise(this.testFlags(FLAGS.CONTENT_LENGTH, {
-        0: n('header_value_content_length')
+        0: n('header_value_content_length'),
       }, p.error(ERROR.UNEXPECTED_CONTENT_LENGTH, 'Duplicate Content-Length')));
 
     n('header_value_content_length')
-      .select(constants.NUM_MAP, this.mulAdd('content_length', {
+      .select(NUM_MAP, this.mulAdd('content_length', {
+        overflow: invalidContentLength('Content-Length overflow'),
         success: 'header_value_content_length',
-        overflow: invalidContentLength('Content-Length overflow')
       }))
       .peek([ ' ', '\r', '\n' ],
         this.setFlag(FLAGS.CONTENT_LENGTH, 'header_value_discard_rws'))
@@ -467,17 +415,17 @@ class HTTP {
       .match(
         'close',
         this.update('header_state', HEADER_STATE.CONNECTION_CLOSE,
-          'header_value_connection_ws')
+          'header_value_connection_ws'),
       )
       .match(
         'upgrade',
         this.update('header_state', HEADER_STATE.CONNECTION_UPGRADE,
-          'header_value_connection_ws')
+          'header_value_connection_ws'),
       )
       .match(
         'keep-alive',
         this.update('header_state', HEADER_STATE.CONNECTION_KEEP_ALIVE,
-          'header_value_connection_ws')
+          'header_value_connection_ws'),
       )
       .otherwise(n('header_value_connection_token'));
 
@@ -489,7 +437,7 @@ class HTTP {
 
     n('header_value_connection_token')
       .match(',', n('header_value_connection'))
-      .match(constants.CONNECTION_TOKEN_CHARS,
+      .match(CONNECTION_TOKEN_CHARS,
         n('header_value_connection_token'))
       .otherwise(n('header_value_otherwise'));
 
@@ -500,7 +448,7 @@ class HTTP {
 
     // Split for performance reasons
     n('header_value')
-      .match(constants.HEADER_CHARS, n('header_value'))
+      .match(HEADER_CHARS, n('header_value'))
       .otherwise(n('header_value_otherwise'));
 
     n('header_value_otherwise')
@@ -521,10 +469,10 @@ class HTTP {
 
     const checkTrailing = this.testFlags(FLAGS.TRAILING, {
       1: this.invokePausable('on_chunk_complete',
-        ERROR.CB_CHUNK_COMPLETE, 'message_done')
+        ERROR.CB_CHUNK_COMPLETE, 'message_done'),
     });
 
-    if (this.isStrict) {
+    if (this.mode === 'strict') {
       n('headers_almost_done')
         .match('\n', checkTrailing)
         .otherwise(p.error(ERROR.STRICT, 'Expected LF after headers'));
@@ -538,7 +486,7 @@ class HTTP {
     const ENCODING_CONFLICT = FLAGS.CHUNKED | FLAGS.CONTENT_LENGTH;
     const checkEncConflict = this.testFlags(ENCODING_CONFLICT, {
       1: p.error(ERROR.UNEXPECTED_CONTENT_LENGTH,
-        'Content-Length can\'t be present with chunked encoding')
+        'Content-Length can\'t be present with chunked encoding'),
     });
 
     checkTrailing.otherwise(checkEncConflict);
@@ -561,7 +509,7 @@ class HTTP {
         this.setFlag(FLAGS.SKIPBODY, 'headers_done')),
       2: this.update('upgrade', 1, 'headers_done'),
       [ERROR.PAUSED]: this.pause('paused by on_headers_complete',
-        'headers_done')
+        'headers_done'),
     }, p.error(ERROR.CB_HEADERS_COMPLETE, 'User callback error'));
 
     checkEncConflict.otherwise(beforeHeadersComplete);
@@ -574,7 +522,7 @@ class HTTP {
         ERROR.CB_MESSAGE_COMPLETE, pauseAfterConnect),
       2: n('chunk_size_start'),
       3: n('body_identity'),
-      4: n('body_identity_eof')
+      4: n('body_identity_eof'),
     });
 
     n('headers_done')
@@ -603,10 +551,10 @@ class HTTP {
       .otherwise(this.update('content_length', 0, 'chunk_size'));
 
     n('chunk_size')
-      .select(constants.HEX_MAP, this.mulAdd('content_length', {
+      .select(HEX_MAP, this.mulAdd('content_length', {
+        overflow: p.error(ERROR.INVALID_CHUNK_SIZE, 'Chunk size overflow'),
         success: 'chunk_size',
-        overflow: p.error(ERROR.INVALID_CHUNK_SIZE, 'Chunk size overflow')
-      }, { base: 0x10 }))
+      }, { signed: false, base: 0x10 }))
       .otherwise(n('chunk_size_otherwise'));
 
     n('chunk_size_otherwise')
@@ -620,7 +568,7 @@ class HTTP {
       .match('\r', n('chunk_size_almost_done'))
       .skipTo(n('chunk_parameters'));
 
-    if (this.isStrict) {
+    if (this.mode === 'strict') {
       n('chunk_size_almost_done')
         .match('\n', n('chunk_size_almost_done_lf'))
         .otherwise(p.error(ERROR.STRICT, 'Expected LF after chunk size'));
@@ -631,7 +579,7 @@ class HTTP {
 
     const toChunk = this.isEqual('content_length', 0, {
       equal: this.setFlag(FLAGS.TRAILING, 'header_field_start'),
-      notEqual: 'chunk_data'
+      notEqual: 'chunk_data',
     });
 
     n('chunk_size_almost_done_lf')
@@ -643,7 +591,7 @@ class HTTP {
         .otherwise(p.consume('content_length').otherwise(
           span.body.end(n('chunk_data_almost_done')))));
 
-    if (this.isStrict) {
+    if (this.mode === 'strict') {
       n('chunk_data_almost_done')
         .match('\r\n', n('chunk_complete'))
         .otherwise(p.error(ERROR.STRICT, 'Expected CRLF after chunk'));
@@ -666,7 +614,7 @@ class HTTP {
     // Check if we'd like to keep-alive
     n('cleanup')
       .otherwise(p.invoke(callback.afterMessageComplete, {
-        1: n('restart')
+        1: n('restart'),
       }, n('closed')));
 
     n('closed')
@@ -677,5 +625,125 @@ class HTTP {
     n('restart')
       .otherwise(n('start'));
   }
+
+  private node<T extends Node>(name: string | T): T {
+    if (name instanceof Node) {
+      return name;
+    }
+
+    assert(this.nodes.has(name), `Unknown node with name "${name}"`);
+    return this.nodes.get(name)! as any;
+  }
+
+  private load(field: string, map: { [key: number]: Node },
+               next?: string | Node): Node {
+    const p = this.llparse;
+
+    const res = p.invoke(p.code.load(field), map);
+    if (next !== undefined) {
+      res.otherwise(this.node(next));
+    }
+    return res;
+  }
+
+  private store(field: string, next?: string | Node): Node {
+    const p = this.llparse;
+
+    const res = p.invoke(p.code.store(field));
+    if (next !== undefined) {
+      res.otherwise(this.node(next));
+    }
+    return res;
+  }
+
+  private update(field: string, value: number, next?: string | Node): Node {
+    const p = this.llparse;
+
+    const res = p.invoke(p.code.update(field, value));
+    if (next !== undefined) {
+      res.otherwise(this.node(next));
+    }
+    return res;
+  }
+
+  private resetHeaderState(next: string | Node): Node {
+    return this.update('header_state', HEADER_STATE.GENERAL, next);
+  }
+
+  private emptySpan(span: Span, next: string | Node): Node {
+    return span.start(span.end(this.node(next)));
+  }
+
+  private setFlag(flag: FLAGS, next: string | Node): Node {
+    const p = this.llparse;
+    return p.invoke(p.code.or('flags', flag), this.node(next));
+  }
+
+  private testFlags(flag: FLAGS, map: { [key: number]: Node },
+                    next?: string | Node): Node {
+    const p = this.llparse;
+    const res = p.invoke(p.code.test('flags', flag), map);
+    if (next !== undefined) {
+      res.otherwise(this.node(next));
+    }
+    return res;
+  }
+
+  private setHeaderFlags(next: string | Node): Node {
+    const HS = HEADER_STATE;
+    const F = FLAGS;
+
+    return this.load('header_state', {
+      [HS.CONNECTION_KEEP_ALIVE]: this.setFlag(F.CONNECTION_KEEP_ALIVE, next),
+      [HS.CONNECTION_CLOSE]: this.setFlag(F.CONNECTION_CLOSE, next),
+      [HS.CONNECTION_UPGRADE]: this.setFlag(F.CONNECTION_UPGRADE, next),
+      [HS.TRANSFER_ENCODING_CHUNKED]: this.setFlag(F.CHUNKED, next),
+    }, this.node(next));
+  }
+
+  private mulAdd(field: string, targets: IMulTargets,
+                 options: IMulOptions = { base: 10, signed: false }): Node {
+    const p = this.llparse;
+
+    return p.invoke(p.code.mulAdd(field, options), {
+      1: this.node(targets.overflow),
+    }, this.node(targets.success));
+  }
+
+  private isEqual(field: string, value: number, map: IIsEqualTargets) {
+    const p = this.llparse;
+    return p.invoke(p.code.isEqual(field, value), {
+      0: this.node(map.notEqual),
+    }, this.node(map.equal));
+  }
+
+  private pause(msg: string, next?: string | Node) {
+    const p = this.llparse;
+    const res = p.pause(ERROR.PAUSED, msg);
+    if (next !== undefined) {
+      res.otherwise(this.node(next));
+    }
+    return res;
+  }
+
+  // TODO(indutny): use type for `name`
+  private invokePausable(name: string, errorCode: ERROR, next: string | Node)
+    : Node {
+    let cb;
+    if (name === 'on_message_complete') {
+      cb = this.callback.onMessageComplete;
+    } else if (name === 'on_chunk_header') {
+      cb = this.callback.onChunkHeader;
+    } else if (name === 'on_chunk_complete') {
+      cb = this.callback.onChunkComplete;
+    } else {
+      throw new Error('Unknown callback: ' + name);
+    }
+
+    const p = this.llparse;
+    return p.invoke(cb, {
+      0: this.node(next),
+      [ERROR.PAUSED]: this.pause(`${name} pause`, next),
+    }, p.error(errorCode, name + ' callback error'));
+  }
 }
-module.exports = HTTP;

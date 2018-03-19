@@ -1,6 +1,6 @@
 #include "fixture.h"
 
-int http_parser__on_url(llparse_state_t* s, const char* p, const char* endp) {
+int http_parser__on_url(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
 
@@ -10,7 +10,7 @@ int http_parser__on_url(llparse_state_t* s, const char* p, const char* endp) {
 
 #ifdef HTTP_PARSER__TEST_HTTP
 
-int http_parser__on_status(llparse_state_t* s, const char* p,
+int http_parser__on_status(llparse_t* s, const char* p,
                            const char* endp) {
   if (llparse__in_bench)
     return 0;
@@ -18,7 +18,7 @@ int http_parser__on_status(llparse_state_t* s, const char* p,
 }
 
 
-int http_parser__on_header_field(llparse_state_t* s, const char* p,
+int http_parser__on_header_field(llparse_t* s, const char* p,
                                  const char* endp) {
   if (llparse__in_bench)
     return 0;
@@ -26,7 +26,7 @@ int http_parser__on_header_field(llparse_state_t* s, const char* p,
 }
 
 
-int http_parser__on_header_value(llparse_state_t* s, const char* p,
+int http_parser__on_header_value(llparse_t* s, const char* p,
                                  const char* endp) {
   if (llparse__in_bench)
     return 0;
@@ -34,7 +34,7 @@ int http_parser__on_header_value(llparse_state_t* s, const char* p,
 }
 
 
-int http_parser__on_headers_complete(llparse_state_t* s, const char* p,
+int http_parser__on_headers_complete(llparse_t* s, const char* p,
                                      const char* endp) {
   if (llparse__in_bench)
     return 0;
@@ -55,7 +55,7 @@ int http_parser__on_headers_complete(llparse_state_t* s, const char* p,
 }
 
 
-int http_parser__on_message_complete(llparse_state_t* s, const char* p,
+int http_parser__on_message_complete(llparse_t* s, const char* p,
                                      const char* endp) {
   if (llparse__in_bench)
     return 0;
@@ -64,14 +64,14 @@ int http_parser__on_message_complete(llparse_state_t* s, const char* p,
 }
 
 
-int http_parser__on_body(llparse_state_t* s, const char* p, const char* endp) {
+int http_parser__on_body(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
   return llparse__print_span("body", p, endp);
 }
 
 
-int http_parser__on_chunk_header(llparse_state_t* s, const char* p,
+int http_parser__on_chunk_header(llparse_t* s, const char* p,
                                  const char* endp) {
   if (llparse__in_bench)
     return 0;
@@ -80,7 +80,7 @@ int http_parser__on_chunk_header(llparse_state_t* s, const char* p,
 }
 
 
-int http_parser__on_chunk_complete(llparse_state_t* s, const char* p,
+int http_parser__on_chunk_complete(llparse_t* s, const char* p,
                                    const char* endp) {
   if (llparse__in_bench)
     return 0;

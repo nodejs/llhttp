@@ -2,7 +2,7 @@
 #ifndef HTTP_PARSER__TEST
 # include "http_parser.h"
 #else
-# define http_parser_t llparse_state_t
+# define http_parser_t llparse_t
 #endif  /* */
 
 /* TODO(indutny): this was public before, what should we do? */

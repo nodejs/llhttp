@@ -1,39 +1,53 @@
-'use strict';
+import { LLParse, node as apiNode } from 'llparse';
 
-const llhttp = require('../llhttp');
-const constants = llhttp.constants;
-const ERROR = constants.ERROR;
+import Match = apiNode.Match;
+import Node = apiNode.Node;
 
-class URL {
-  constructor(p, isStrict = false) {
-    this.p = p;
-    this.isStrict = isStrict;
+import {
+  ALPHA,
+  CharList,
+  ERROR,
+  HTTPMode,
+  STRICT_URL_CHAR,
+  URL_CHAR,
+  USERINFO_CHARS,
+} from './constants';
+
+export interface IURLResult {
+  readonly entry: {
+    readonly normal: Node;
+    readonly connect: Node;
+  };
+  readonly exit: {
+    readonly toHTTP: Node;
+    readonly toHTTP09: Node;
+  };
+}
+
+export class URL {
+  private readonly errorInvalid: Node;
+  private readonly errorStrictInvalid: Node;
+  private readonly URL_CHAR: CharList;
+
+  constructor(private readonly llparse: LLParse,
+              private readonly mode: HTTPMode = 'loose') {
+    const p = this.llparse;
 
     this.errorInvalid = p.error(ERROR.INVALID_URL, 'Invalid characters in url');
     this.errorStrictInvalid =
-      p.error(ERROR.INVALID_URL, 'Invalid characters in url (strict)');
+      p.error(ERROR.INVALID_URL, 'Invalid characters in url (strict mode)');
 
-    this.URL_CHAR = this.isStrict ? constants.STRICT_URL_CHAR :
-      constants.URL_CHAR;
+    this.URL_CHAR = mode === 'strict' ? STRICT_URL_CHAR : URL_CHAR;
   }
 
-  node(name) {
-    const res = this.p.node('url_' + name);
-
-    if (this.isStrict)
-      res.match([ '\t', '\f' ], this.errorStrictInvalid);
-
-    return res;
-  }
-
-  build() {
-    const p = this.p;
+  public build(): IURLResult {
+    const p = this.llparse;
 
     const span = p.span(p.code.span('http_parser__on_url'));
 
     const entry = {
+      connect: this.node('entry_connect'),
       normal: this.node('entry_normal'),
-      connect: this.node('entry_connect')
     };
 
     const start = this.node('start');
@@ -54,27 +68,28 @@ class URL {
 
     start
       .match([ '/', '*' ], path)
-      .match(constants.ALPHA, schema)
+      .match(ALPHA, schema)
       .otherwise(p.error(ERROR.INVALID_URL, 'Unexpected start char in url'));
 
     schema
-      .match(constants.ALPHA, schema)
+      .match(ALPHA, schema)
       .match('://', server)
       .otherwise(p.error(ERROR.INVALID_URL, 'Unexpected char in url schema'));
 
     [
       server,
-      serverWithAt
+      serverWithAt,
     ].forEach((node) => {
       node
         .match('/', path)
         .match('?', query)
-        .match(constants.USERINFO_CHARS, server)
+        .match(USERINFO_CHARS, server)
         .match([ '[', ']' ], server)
         .otherwise(p.error(ERROR.INVALID_URL, 'Unexpected char in url server'));
 
-      if (node !== serverWithAt)
+      if (node !== serverWithAt) {
         node.match('@', serverWithAt);
+      }
     });
 
     serverWithAt
@@ -126,7 +141,7 @@ class URL {
 
     [
       server, serverWithAt, queryOrFragment, queryStart, query,
-      fragment
+      fragment,
     ].forEach((node) => {
       node.peek(' ', span.end(skipToHTTP));
 
@@ -138,9 +153,18 @@ class URL {
       entry,
       exit: {
         toHTTP,
-        toHTTP09
-      }
+        toHTTP09,
+      },
     };
   }
+
+  private node(name: string): Match {
+    const res = this.llparse.node('url_' + name);
+
+    if (this.mode === 'strict') {
+      res.match([ '\t', '\f' ], this.errorStrictInvalid);
+    }
+
+    return res;
+  }
 }
-module.exports = URL;
