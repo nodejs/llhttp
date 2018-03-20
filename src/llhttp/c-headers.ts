@@ -9,6 +9,11 @@ export class CHeaders {
 
     res += '#ifndef LLHTTP_PARSER_C_HEADERS_\n';
     res += '#define LLHTTP_PARSER_C_HEADERS_\n';
+
+    res += '#ifdef __cplusplus\n';
+    res += 'extern "C" {\n';
+    res += '#endif\n';
+
     res += '\n';
 
     res += this.buildEnum('http_errno', 'HPE', enumToMap(constants.ERROR));
@@ -21,6 +26,10 @@ export class CHeaders {
     res += this.buildEnum('http_method', 'HTTP', enumToMap(constants.METHODS));
 
     res += '\n';
+
+    res += '#ifdef __cplusplus\n';
+    res += '}  /* extern "C" */\n';
+    res += '#endif\n';
     res += '#endif  /* LLHTTP_PARSER_C_HEADERS_ */\n';
 
     return res;
