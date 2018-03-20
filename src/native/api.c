@@ -8,8 +8,8 @@ void http_parser_set_type(http_parser_t* parser, enum http_parser_type type) {
 
 
 void http_parser_set_settings(http_parser_t* parser,
-                              http_parser_settings_t* settings) {
-  parser->settings = settings;
+                              const http_parser_settings_t* settings) {
+  parser->settings = (void*) settings;
 }
 
 
