@@ -99,6 +99,7 @@ interface ICallbackMap {
   readonly onChunkComplete: code.Code;
   readonly onChunkHeader: code.Code;
   readonly onHeadersComplete: code.Code;
+  readonly onMessageBegin: code.Code;
   readonly onMessageComplete: code.Code;
 }
 
@@ -147,6 +148,7 @@ export class HTTP {
     this.callback = {
       // User callbacks
       onHeadersComplete: p.code.match('http_parser__on_headers_complete'),
+      onMessageBegin: p.code.match('http_parser__on_message_begin'),
       onMessageComplete: p.code.match('http_parser__on_message_complete'),
       onChunkHeader: p.code.match('http_parser__on_chunk_header'),
       onChunkComplete: p.code.match('http_parser__on_chunk_complete'),
@@ -193,14 +195,17 @@ export class HTTP {
 
     const url = this.url.build();
 
+    const switchType = this.load('type', {
+      [TYPE.REQUEST]: n('start_req'),
+      [TYPE.RESPONSE]: n('start_res'),
+    }, n('start_req_or_res'));
+
     n('start')
-      .otherwise(this.load('type', {
-        [TYPE.REQUEST]: n('start_req'),
-        [TYPE.RESPONSE]: n('start_res'),
-      }, n('start_req_or_res')));
+      .match([ '\r', '\n' ], n('start'))
+      .otherwise(this.invokePausable('on_message_begin',
+        ERROR.CB_MESSAGE_BEGIN, switchType));
 
     n('start_req_or_res')
-      .match([ '\r', '\n' ], n('start_req_or_res'))
       .peek('H', n('req_or_res_method'))
       .otherwise(this.update('type', TYPE.REQUEST, 'start_req'));
 
@@ -213,7 +218,6 @@ export class HTTP {
     // Response
 
     n('start_res')
-      .match([ '\r', '\n' ], n('start_res'))
       .match('HTTP/', n('res_http_major'))
       .skipTo(n('start_res'));
 
@@ -267,7 +271,6 @@ export class HTTP {
     // Request
 
     n('start_req')
-      .match([ '\r', '\n' ], n('start_req'))
       .select(METHOD_MAP, this.store('method', 'req_spaces_before_url'))
       .otherwise(p.error(ERROR.INVALID_METHOD, 'Invalid method encountered'));
 
@@ -739,7 +742,9 @@ export class HTTP {
   private invokePausable(name: string, errorCode: ERROR, next: string | Node)
     : Node {
     let cb;
-    if (name === 'on_message_complete') {
+    if (name === 'on_message_begin') {
+      cb = this.callback.onMessageBegin;
+    } else if (name === 'on_message_complete') {
       cb = this.callback.onMessageComplete;
     } else if (name === 'on_chunk_header') {
       cb = this.callback.onChunkHeader;

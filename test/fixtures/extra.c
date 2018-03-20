@@ -55,6 +55,15 @@ int http_parser__on_headers_complete(llparse_t* s, const char* p,
 }
 
 
+int http_parser__on_message_begin(llparse_t* s, const char* p,
+                                  const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  llparse__print(p, endp, "message begin");
+  return 0;
+}
+
+
 int http_parser__on_message_complete(llparse_t* s, const char* p,
                                      const char* endp) {
   if (llparse__in_bench)

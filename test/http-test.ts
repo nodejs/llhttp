@@ -31,6 +31,7 @@ describe('http_parser/http', () => {
         '\r\n';
 
       const expected = [
+        'off=0 message begin',
         'off=8 len=4 span[url]="/url"',
         'off=23 len=7 span[header_field]="Header1"',
         'off=32 len=6 span[header_value]="Value1"',
@@ -50,6 +51,7 @@ describe('http_parser/http', () => {
         '\r\n';
 
       const expected = [
+        'off=0 message begin',
         'off=5 len=4 span[url]="/url"',
         `off=${req.length} headers complete method=2 v=1/1 ` +
           'flags=0 content_length=0',
@@ -68,6 +70,7 @@ describe('http_parser/http', () => {
         '\r\n';
 
       const expected = [
+        'off=0 message begin',
         'off=13 len=2 span[status]="OK"',
         'off=17 len=7 span[header_field]="Header1"',
         'off=26 len=6 span[header_value]="Value1"',
@@ -92,6 +95,7 @@ describe('http_parser/http', () => {
           'abc';
 
         const expected = [
+          'off=0 message begin',
           'off=4 len=4 span[url]="/url"',
           'off=19 len=14 span[header_field]="Content-Length"',
           'off=35 len=3 span[header_value]="003"',
@@ -110,6 +114,7 @@ describe('http_parser/http', () => {
           '\r\n';
 
         const expected = [
+          'off=0 message begin',
           'off=4 len=4 span[url]="/url"',
           'off=19 len=14 span[header_field]="Content-Length"',
           'off=35 len=21 span[header_value]="100000000000000000000"',
@@ -127,6 +132,7 @@ describe('http_parser/http', () => {
           '\r\n';
 
         const expected = [
+          'off=0 message begin',
           'off=4 len=4 span[url]="/url"',
           'off=19 len=14 span[header_field]="Content-Length"',
           'off=35 len=1 span[header_value]="1"',
@@ -146,6 +152,7 @@ describe('http_parser/http', () => {
           '\r\n';
 
         const expected = [
+          'off=0 message begin',
           'off=4 len=4 span[url]="/url"',
           'off=19 len=17 span[header_field]="Transfer-Encoding"',
           'off=38 len=7 span[header_value]="chunked"',
@@ -163,6 +170,7 @@ describe('http_parser/http', () => {
           '\r\n';
 
         const expected = [
+          'off=0 message begin',
           'off=4 len=4 span[url]="/url"',
           'off=19 len=17 span[header_field]="Transfer-Encoding"',
           'off=38 len=7 span[header_value]="pigeons"',
@@ -183,6 +191,7 @@ describe('http_parser/http', () => {
           '\r\n';
 
         const expected = [
+          'off=0 message begin',
           'off=4 len=4 span[url]="/url"',
           'off=19 len=10 span[header_field]="Connection"',
           'off=31 len=10 span[header_value]="keep-alive"',
@@ -201,6 +210,7 @@ describe('http_parser/http', () => {
           '\r\n';
 
         const expected = [
+          'off=0 message begin',
           'off=4 len=4 span[url]="/url"',
           'off=19 len=10 span[header_field]="Connection"',
           'off=31 len=5 span[header_value]="close"',
@@ -220,6 +230,7 @@ describe('http_parser/http', () => {
           '\r\n';
 
         const expected = [
+          'off=0 message begin',
           'off=4 len=4 span[url]="/url"',
           'off=19 len=10 span[header_field]="Connection"',
           'off=31 len=7 span[header_value]="upgrade"',
@@ -241,6 +252,7 @@ describe('http_parser/http', () => {
           '\r\n';
 
         const expected = [
+          'off=0 message begin',
           'off=4 len=4 span[url]="/url"',
           'off=19 len=10 span[header_field]="Connection"',
           'off=31 len=40 span[header_value]="close, token, upgrade, token, ' +
@@ -262,6 +274,7 @@ describe('http_parser/http', () => {
         '\r\n';
 
       const expected = [
+        'off=0 message begin',
         'off=4 len=4 span[url]="/url"',
         'off=19 len=14 span[header_field]="Content-Length"',
         'off=35 len=1 span[header_value]="1"',
@@ -280,20 +293,23 @@ describe('http_parser/http', () => {
           'PUT /url HTTP/1.1\r\n' +
           'Connection: keep-alive\r\n' +
           '\r\n' +
+          '\r\n' +
           'PUT /url HTTP/1.1\r\n' +
           'Connection: keep-alive\r\n' +
           '\r\n';
 
         const expected = [
+          'off=0 message begin',
           'off=4 len=4 span[url]="/url"',
           'off=19 len=10 span[header_field]="Connection"',
           'off=31 len=10 span[header_value]="keep-alive"',
           'off=45 headers complete method=4 v=1/1 flags=1 content_length=0',
           'off=45 message complete',
-          'off=49 len=4 span[url]="/url"',
-          'off=64 len=10 span[header_field]="Connection"',
-          'off=76 len=10 span[header_value]="keep-alive"',
-          'off=90 headers complete method=4 v=1/1 flags=1 content_length=0',
+          'off=47 message begin',
+          'off=51 len=4 span[url]="/url"',
+          'off=66 len=10 span[header_field]="Connection"',
+          'off=78 len=10 span[header_value]="keep-alive"',
+          'off=92 headers complete method=4 v=1/1 flags=1 content_length=0',
           `off=${req.length} message complete`,
         ];
 
@@ -308,6 +324,7 @@ describe('http_parser/http', () => {
           '\r\n';
 
         const expected = [
+          'off=0 message begin',
           'off=4 len=4 span[url]="/url"',
           'off=21 headers complete method=4 v=1/0 flags=0 content_length=0',
           'off=21 message complete',
@@ -330,6 +347,7 @@ describe('http_parser/http', () => {
           '\r\n';
 
         const expected = [
+          'off=0 message begin',
           'off=4 len=4 span[url]="/url"',
           'off=19 len=17 span[header_field]="Transfer-Encoding"',
           'off=38 len=7 span[header_value]="chunked"',
