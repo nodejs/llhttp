@@ -6,7 +6,7 @@ import Node = apiNode.Node;
 
 import {
   CharList,
-  CONNECTION_TOKEN_CHARS, ERROR, FLAGS, HEADER_CHARS, HEADER_STATE, HEX_MAP,
+  CONNECTION_TOKEN_CHARS, ERROR, FLAGS, H_METHOD_MAP, HEADER_CHARS, HEADER_STATE, HEX_MAP,
   HTTPMode,
   MAJOR, METHOD_MAP, METHODS, MINOR, NUM_MAP, SPECIAL_HEADERS, STRICT_TOKEN,
   TOKEN, TYPE,
@@ -20,6 +20,8 @@ const NODES: ReadonlyArray<string> = [
   'start_req',
   'start_res',
   'start_req_or_res',
+
+  'req_or_res_method',
 
   'res_http_major',
   'res_http_dot',
@@ -199,7 +201,11 @@ export class HTTP {
 
     n('start_req_or_res')
       .match([ '\r', '\n' ], n('start_req_or_res'))
-      .select(METHOD_MAP, this.store('method',
+      .peek('H', n('req_or_res_method'))
+      .otherwise(this.update('type', TYPE.REQUEST, 'start_req'));
+
+    n('req_or_res_method')
+      .select(H_METHOD_MAP, this.store('method',
         this.update('type', TYPE.REQUEST, 'req_spaces_before_url')))
       .match('HTTP/', this.update('type', TYPE.RESPONSE, 'res_http_major'))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Invalid word encountered'));

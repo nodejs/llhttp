@@ -44,6 +44,21 @@ describe('http_parser/http', () => {
       await http.check(req, expected);
     });
 
+    it('should parse request with method starting on H', async () => {
+      const req =
+        'HEAD /url HTTP/1.1\r\n' +
+        '\r\n';
+
+      const expected = [
+        'off=5 len=4 span[url]="/url"',
+        `off=${req.length} headers complete method=2 v=1/1 ` +
+          'flags=0 content_length=0',
+        `off=${req.length} message complete`,
+      ];
+
+      await http.check(req, expected);
+    });
+
     it('should parse simple response', async () => {
       const req =
         'HTTP/1.1 200 OK\r\n' +
