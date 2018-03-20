@@ -1,5 +1,6 @@
 // NOTE: run `npm test` to build `./test/tmp/http-req-loose`
 
+import * as assert from 'assert';
 import { spawnSync } from 'child_process';
 
 const isURL = !process.argv[2] || process.argv[2] === 'url';
@@ -34,6 +35,18 @@ requests.set('nodejs/http-parser',
   'Connection: keep-alive\r\n' +
   'Transfer-Encoding: chunked\r\n' +
   'Cache-Control: max-age=0\r\n\r\nb\r\nhello world\r\n0\r\n\r\n');
+
+if (process.argv[2] === 'loop') {
+  const reqName = process.argv[3];
+  assert(requests.has(reqName), `Unknown request name: "${reqName}"`);
+
+  const request = requests.get(reqName)!;
+  spawnSync('./test/tmp/http-req-loose', [
+    'loop',
+    request
+  ], { stdio: 'inherit' });
+  return;
+}
 
 if (isURL) {
   console.log('url loose');
