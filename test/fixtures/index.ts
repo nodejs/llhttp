@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import { LLParse } from 'llparse';
+import { Dot } from 'llparse-dot';
 import {
   Fixture, FixtureResult, IFixtureBuildOptions,
 } from 'llparse-test-fixture';
@@ -32,5 +33,8 @@ const fixtures = new Fixture({
 
 export function build(llparse: LLParse, node: any, outFile: string,
                       options?: IFixtureBuildOptions): FixtureResult {
+  const dot = new Dot();
+  fs.writeFileSync(path.join(BUILD_DIR, outFile + '.dot'),
+    dot.build(node));
   return fixtures.build(llparse.build(node), outFile, options);
 }
