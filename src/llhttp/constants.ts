@@ -180,7 +180,7 @@ for (let i = 32; i < 255; i++) {
 
 // ',' = \x44
 export const CONNECTION_TOKEN_CHARS: CharList =
-  HEADER_CHARS.filter((c) => c !== 44);
+  HEADER_CHARS.filter((c: string | number) => c !== 44);
 
 export const MAJOR = NUM_MAP;
 export const MINOR = MAJOR;

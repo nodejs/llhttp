@@ -1,10 +1,10 @@
-import * as constants from './constants';
+import * as constants from './llhttp/constants';
 
 import HTTPMode = constants.HTTPMode;
 
 export { constants };
 export { HTTPMode };
 
-export { HTTP } from './http';
-export { URL } from './url';
-export { CHeaders } from './c-headers';
+export { HTTP } from './llhttp/http';
+export { URL } from './llhttp/url';
+export { CHeaders } from './llhttp/c-headers';

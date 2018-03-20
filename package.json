@@ -10,10 +10,11 @@
   ],
   "scripts": {
     "bench": "ts-node bench/",
-    "build": "tsc",
+    "build": "ts-node bin/build.ts",
+    "build-ts": "tsc",
     "clean": "rm -rf lib",
-    "prepare": "npm run clean && npm run build",
-    "lint": "tslint -c tslint.json src/*.ts src/**/*.ts src/**/**/*.ts test/*.ts test/**/*.ts",
+    "prepare": "npm run clean && npm run build-ts",
+    "lint": "tslint -c tslint.json src/*.ts src/**/*.ts test/*.ts test/**/*.ts build/*.ts",
     "mocha": "mocha --timeout=10000 -r ts-node/register/type-check --reporter spec test/*-test.ts",
     "test": "npm run mocha && npm run lint"
   },
@@ -44,6 +45,6 @@
     "typescript": "^2.7.2"
   },
   "dependencies": {
-    "llparse": "^4.0.0"
+    "llparse": "^4.1.0"
   }
 }

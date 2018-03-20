@@ -173,15 +173,8 @@ export class HTTP {
     p.property('i16', 'status_code');
     p.property('i64', 'content_length');
 
-    // Callbacks (to be used in C wrapper)
-    p.property('ptr', 'on_body');
-    p.property('ptr', 'on_header_field');
-    p.property('ptr', 'on_header_value');
-    p.property('ptr', 'on_status');
-    p.property('ptr', 'on_headers_complete');
-    p.property('ptr', 'on_message_complete');
-    p.property('ptr', 'on_chunk_header');
-    p.property('ptr', 'on_chunk_complete');
+    // Shared settings (to be used in C wrapper)
+    p.property('ptr', 'settings');
 
     this.buildLine();
     this.buildHeaders();
