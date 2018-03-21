@@ -25,13 +25,14 @@ struct http_parser_settings_s {
   http_cb      on_chunk_complete;
 };
 
-int http_message_needs_eof(const http_parser_t* parser);
-int http_should_keep_alive(const http_parser_t* parser);
-
 void http_parser_set_type(http_parser_t* parser, enum http_parser_type type);
 void http_parser_set_settings(http_parser_t* parser,
                               const http_parser_settings_t* settings);
 void http_parser_settings_init(http_parser_settings_t* settings);
+
+int http_parser_message_needs_eof(const http_parser_t* parser);
+int http_parser_should_keep_alive(const http_parser_t* parser);
+int http_parser_finish(http_parser_t* parser);
 
 #ifdef __cplusplus
 }  /* extern "C" */

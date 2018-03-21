@@ -6,7 +6,8 @@ import Node = apiNode.Node;
 
 import {
   CharList,
-  CONNECTION_TOKEN_CHARS, ERROR, FLAGS, H_METHOD_MAP, HEADER_CHARS, HEADER_STATE, HEX_MAP,
+  CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, H_METHOD_MAP, HEADER_CHARS,
+  HEADER_STATE, HEX_MAP,
   HTTPMode,
   MAJOR, METHOD_MAP, METHODS, MINOR, NUM_MAP, SPECIAL_HEADERS, STRICT_TOKEN,
   TOKEN, TYPE,
@@ -167,6 +168,7 @@ export class HTTP {
   public build(): IHTTPResult {
     const p = this.llparse;
 
+    p.property('i64', 'content_length');
     p.property('i8', 'type');
     p.property('i8', 'method');
     p.property('i8', 'http_major');
@@ -175,7 +177,11 @@ export class HTTP {
     p.property('i8', 'flags');
     p.property('i8', 'upgrade');
     p.property('i16', 'status_code');
-    p.property('i64', 'content_length');
+    p.property('i8', 'finish');
+
+    // Verify defaults
+    assert.strictEqual(FINISH.SAFE, 0);
+    assert.strictEqual(TYPE.BOTH, 0);
 
     // Shared settings (to be used in C wrapper)
     p.property('ptr', 'settings');
@@ -202,8 +208,9 @@ export class HTTP {
 
     n('start')
       .match([ '\r', '\n' ], n('start'))
-      .otherwise(this.invokePausable('on_message_begin',
-        ERROR.CB_MESSAGE_BEGIN, switchType));
+      .otherwise(this.update('finish', FINISH.UNSAFE,
+        this.invokePausable('on_message_begin',
+          ERROR.CB_MESSAGE_BEGIN, switchType)));
 
     n('start_req_or_res')
       .peek('H', n('req_or_res_method'))
@@ -219,7 +226,7 @@ export class HTTP {
 
     n('start_res')
       .match('HTTP/', n('res_http_major'))
-      .skipTo(n('start_res'));
+      .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
 
     n('res_http_major')
       .select(MAJOR, this.store('http_major', 'res_http_dot'))
@@ -271,7 +278,8 @@ export class HTTP {
     // Request
 
     n('start_req')
-      .select(METHOD_MAP, this.store('method', 'req_spaces_before_url'))
+      .select(METHOD_MAP,
+        this.store('method', 'req_spaces_before_url'))
       .otherwise(p.error(ERROR.INVALID_METHOD, 'Invalid method encountered'));
 
     n('req_spaces_before_url')
@@ -553,7 +561,8 @@ export class HTTP {
           span.body.end(n('message_done')))));
 
     n('body_identity_eof')
-      .otherwise(span.body.start(n('eof')));
+      .otherwise(span.body.start(
+        this.update('finish', FINISH.SAFE_WITH_CB, 'eof')));
 
     // Just read everything until EOF
     n('eof')

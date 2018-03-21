@@ -19,6 +19,7 @@ export enum ERROR {
   INVALID_CONTENT_LENGTH,
   INVALID_CHUNK_SIZE,
   INVALID_STATUS,
+  INVALID_EOF_STATE,
 
   CB_MESSAGE_BEGIN,
   CB_HEADERS_COMPLETE,
@@ -99,6 +100,12 @@ Object.keys(METHOD_MAP).forEach((key) => {
     H_METHOD_MAP[key] = METHOD_MAP[key];
   }
 });
+
+export enum FINISH {
+  SAFE = 0,
+  SAFE_WITH_CB,
+  UNSAFE,
+}
 
 // Internal
 

@@ -72,12 +72,17 @@ int http_parser__after_headers_complete(http_parser_t* parser, const char* p,
 
 int http_parser__after_message_complete(http_parser_t* parser, const char* p,
                                         const char* endp) {
+  int should_keep_alive;
+
+  should_keep_alive = http_should_keep_alive(parser);
   parser->flags = 0;
-  return http_should_keep_alive(parser);
+  parser->finish = HTTP_FINISH_SAFE;
+
+  return should_keep_alive;
 }
 
 
-int http_message_needs_eof(const http_parser_t* parser) {
+int http_parser_message_needs_eof(const http_parser_t* parser) {
   if (parser->type == HTTP_REQUEST) {
     return 0;
   }
@@ -86,7 +91,7 @@ int http_message_needs_eof(const http_parser_t* parser) {
   if (parser->status_code / 100 == 1 || /* 1xx e.g. Continue */
       parser->status_code == 204 ||     /* No Content */
       parser->status_code == 304 ||     /* Not Modified */
-      parser->flags & F_SKIPBODY) {     /* response to a HEAD request */
+      (parser->flags & F_SKIPBODY)) {     /* response to a HEAD request */
     return 0;
   }
 
@@ -98,7 +103,7 @@ int http_message_needs_eof(const http_parser_t* parser) {
 }
 
 
-int http_should_keep_alive(const http_parser_t* parser) {
+int http_parser_should_keep_alive(const http_parser_t* parser) {
   if (parser->http_major > 0 && parser->http_minor > 0) {
     /* HTTP/1.1 */
     if (parser->flags & F_CONNECTION_CLOSE) {
@@ -111,5 +116,5 @@ int http_should_keep_alive(const http_parser_t* parser) {
     }
   }
 
-  return !http_message_needs_eof(parser);
+  return !http_parser_message_needs_eof(parser);
 }

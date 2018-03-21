@@ -36,5 +36,9 @@ export function build(llparse: LLParse, node: any, outFile: string,
   const dot = new Dot();
   fs.writeFileSync(path.join(BUILD_DIR, outFile + '.dot'),
     dot.build(node));
-  return fixtures.build(llparse.build(node), outFile, options);
+
+  const artifacts = llparse.build(node, {
+    debug: process.env.LLPARSE_DEBUG ? 'llparse__debug' : undefined,
+  });
+  return fixtures.build(artifacts, outFile, options);
 }

@@ -23,6 +23,9 @@ export class CHeaders {
     res += this.buildEnum('http_parser_type', 'HTTP',
       enumToMap(constants.TYPE));
     res += '\n';
+    res += this.buildEnum('http_finish', 'HTTP_FINISH',
+      enumToMap(constants.FINISH));
+    res += '\n';
 
     const methodMap = enumToMap(constants.METHODS);
     res += this.buildEnum('http_method', 'HTTP', methodMap);

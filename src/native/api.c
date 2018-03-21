@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <string.h>
 
 #include "http_parser.h"
@@ -15,6 +16,28 @@ void http_parser_set_settings(http_parser_t* parser,
 
 void http_parser_settings_init(http_parser_settings_t* settings) {
   memset(settings, 0, sizeof(*settings));
+}
+
+
+int http_parser_finish(http_parser_t* parser) {
+  int ret;
+
+  switch (parser->finish) {
+    case HTTP_FINISH_SAFE_WITH_CB:
+      ret = ((http_parser_settings_t*) parser->settings)
+        ->on_message_complete(parser);
+      if (ret != 0) {
+        return ret;
+      }
+
+    /* FALLTHROUGH */
+    case HTTP_FINISH_SAFE:
+      return 0;
+    case HTTP_FINISH_UNSAFE:
+      return HPE_INVALID_EOF_STATE;
+    default:
+      abort();
+  }
 }
 
 

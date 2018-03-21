@@ -86,6 +86,26 @@ describe('http_parser/http', () => {
       await http.check(req, expected);
     });
 
+    it('should parse emit proper error on invalid response', async () => {
+      const req =
+        'HTTP/1.1 200 OK\r\nContent-Length: 0\r\n' +
+        '\r\n' +
+        'HTTPER/1.1 200 OK\r\n\r\n';
+
+      const expected = [
+        'off=0 message begin',
+        'off=13 len=2 span[status]="OK"',
+        'off=17 len=14 span[header_field]="Content-Length"',
+        'off=33 len=1 span[header_value]="0"',
+        'off=38 headers complete status=200 v=1/1 flags=20 content_length=0',
+        'off=38 message complete',
+        'off=38 message begin',
+        'off=42 error code=8 reason="Expected HTTP/"',
+      ];
+
+      await http.check(req, expected);
+    });
+
     describe('content-length', () => {
       it('should parse content-length', async () => {
         const req =
