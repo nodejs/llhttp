@@ -129,6 +129,7 @@ export const NUM_MAP = {
 export const HEX_MAP = {
   0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
   5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
+  A: 0XA, B: 0XB, C: 0XC, D: 0XD, E: 0XE, F: 0XF,
   a: 0xa, b: 0xb, c: 0xc, d: 0xd, e: 0xe, f: 0xf,
 };
 

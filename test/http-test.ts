@@ -106,6 +106,20 @@ describe('http_parser/http', () => {
       await http.check(req, expected);
     });
 
+    it('should not emit spurious body on response', async () => {
+      const req =
+        'HTTP/1.1 200 OK\r\n\r\n';
+
+      const expected = [
+        'off=0 message begin',
+        'off=13 len=2 span[status]="OK"',
+        `off=${req.length} headers complete status=200 v=1/1 flags=0 ` +
+          'content_length=0',
+      ];
+
+      await http.check(req, expected);
+    });
+
     describe('content-length', () => {
       it('should parse content-length', async () => {
         const req =
@@ -379,13 +393,13 @@ describe('http_parser/http', () => {
     });
 
     describe('chunked encoding', () => {
-      it('should parse chunks', async () => {
+      it('should parse chunks with lowercase size', async () => {
         const req =
           'PUT /url HTTP/1.1\r\n' +
           'Transfer-Encoding: chunked\r\n' +
           '\r\n' +
-          '3\r\n' +
-          'abc\r\n' +
+          'a\r\n' +
+          '0123456789\r\n' +
           '0\r\n' +
           '\r\n';
 
@@ -395,10 +409,37 @@ describe('http_parser/http', () => {
           'off=19 len=17 span[header_field]="Transfer-Encoding"',
           'off=38 len=7 span[header_value]="chunked"',
           'off=49 headers complete method=4 v=1/1 flags=8 content_length=0',
-          'off=52 chunk header len=3',
-          'off=52 len=3 span[body]="abc"',
-          'off=57 chunk complete',
-          'off=60 chunk header len=0',
+          'off=52 chunk header len=10',
+          'off=52 len=10 span[body]="0123456789"',
+          'off=64 chunk complete',
+          'off=67 chunk header len=0',
+          `off=${req.length} chunk complete`,
+          `off=${req.length} message complete`,
+        ];
+
+        await http.check(req, expected);
+      });
+
+      it('should parse chunks with uppercase size', async () => {
+        const req =
+          'PUT /url HTTP/1.1\r\n' +
+          'Transfer-Encoding: chunked\r\n' +
+          '\r\n' +
+          'A\r\n' +
+          '0123456789\r\n' +
+          '0\r\n' +
+          '\r\n';
+
+        const expected = [
+          'off=0 message begin',
+          'off=4 len=4 span[url]="/url"',
+          'off=19 len=17 span[header_field]="Transfer-Encoding"',
+          'off=38 len=7 span[header_value]="chunked"',
+          'off=49 headers complete method=4 v=1/1 flags=8 content_length=0',
+          'off=52 chunk header len=10',
+          'off=52 len=10 span[body]="0123456789"',
+          'off=64 chunk complete',
+          'off=67 chunk header len=0',
           `off=${req.length} chunk complete`,
           `off=${req.length} message complete`,
         ];
