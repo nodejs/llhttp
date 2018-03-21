@@ -341,7 +341,7 @@ export class HTTP {
       .transform(p.transform.toLowerUnsafe())
       // Match headers that need special treatment
       .select(SPECIAL_HEADERS, this.store('header_state', 'header_field_colon'))
-      .otherwise(n('header_field_general'));
+      .otherwise(this.resetHeaderState('header_field_general'));
 
     n('header_field_colon')
       .match(' ', n('header_field_colon'))

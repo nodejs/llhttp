@@ -6,7 +6,7 @@
     "moduleResolution": "node",
     "outDir": "./lib",
     "declaration": true,
-    "pretty": false,
+    "pretty": true,
     "sourceMap": true
   },
   "include": [

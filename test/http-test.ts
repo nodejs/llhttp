@@ -127,6 +127,29 @@ describe('http_parser/http', () => {
         await http.check(req, expected);
       });
 
+      it('should parse content-length with follow-up header', async () => {
+        const req =
+          'PUT /url HTTP/1.1\r\n' +
+          'Content-Length: 003\r\n' +
+          'Ohai: world\r\n' +
+          '\r\n' +
+          'abc';
+
+        const expected = [
+          'off=0 message begin',
+          'off=4 len=4 span[url]="/url"',
+          'off=19 len=14 span[header_field]="Content-Length"',
+          'off=35 len=3 span[header_value]="003"',
+          'off=40 len=4 span[header_field]="Ohai"',
+          'off=46 len=5 span[header_value]="world"',
+          'off=55 headers complete method=4 v=1/1 flags=20 content_length=3',
+          'off=55 len=3 span[body]="abc"',
+          `off=${req.length} message complete`,
+        ];
+
+        await http.check(req, expected);
+      });
+
       it('should handle content-length overflow', async () => {
         const req =
           'PUT /url HTTP/1.1\r\n' +
