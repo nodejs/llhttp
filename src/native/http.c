@@ -6,8 +6,8 @@
 #endif  /* */
 
 /* TODO(indutny): this was public before, what should we do? */
-int http_message_needs_eof(const http_parser_t* parser);
-int http_should_keep_alive(const http_parser_t* parser);
+int http_parser_message_needs_eof(const http_parser_t* parser);
+int http_parser_should_keep_alive(const http_parser_t* parser);
 
 int http_parser__before_headers_complete(http_parser_t* parser, const char* p,
                                          const char* endp) {
@@ -52,7 +52,7 @@ int http_parser__after_headers_complete(http_parser_t* parser, const char* p,
     return 2;
   } else {
     if (!(parser->flags & F_CONTENT_LENGTH)) {
-      if (!http_message_needs_eof(parser)) {
+      if (!http_parser_message_needs_eof(parser)) {
         /* Assume content-length 0 - read the next */
         return 0;
       } else {
@@ -74,7 +74,7 @@ int http_parser__after_message_complete(http_parser_t* parser, const char* p,
                                         const char* endp) {
   int should_keep_alive;
 
-  should_keep_alive = http_should_keep_alive(parser);
+  should_keep_alive = http_parser_should_keep_alive(parser);
   parser->flags = 0;
   parser->finish = HTTP_FINISH_SAFE;
 
