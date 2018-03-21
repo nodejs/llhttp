@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "http_parser.h"
@@ -127,4 +128,17 @@ int http_parser__on_chunk_complete(http_parser_t* s, const char* p,
   int err;
   CALLBACK_MAYBE(s, on_chunk_complete, s);
   return err;
+}
+
+
+/* Private */
+
+
+void http_parser__debug(http_parser_t* s, const char* p, const char* endp,
+                        const char* msg) {
+  if (p == endp) {
+    fprintf(stderr, "p=%p type=%d next=null debug=%s\n", s, s->type, msg);
+  } else {
+    fprintf(stderr, "p=%p type=%d next=%02x   debug=%s\n", s, s->type, *p, msg);
+  }
 }

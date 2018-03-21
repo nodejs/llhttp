@@ -31,6 +31,7 @@ const llparse = new LLParse('http_parser');
 const instance = new llhttp.HTTP(llparse, mode);
 
 const artifacts = llparse.build(instance.build().entry, {
+  debug: process.env.LLPARSE_DEBUG ? 'http_parser__debug' : undefined,
   headerGuard: 'INCLUDE_HTTP_PARSER_ITSELF_H_',
 });
 
