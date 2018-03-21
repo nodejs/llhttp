@@ -1,7 +1,7 @@
 CLANG ?= clang
 CFLAGS ?=
 
-CFLAGS += -Os -g3
+CFLAGS += -Os -g3 -Wall -Wextra -Wno-unused-parameter
 INCLUDES += -Ibuild/
 
 all: build/libhttp_parser.a
