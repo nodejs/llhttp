@@ -50,6 +50,16 @@ int http_parser_finish(http_parser_t* parser) {
 }
 
 
+const char* http_parser_errno_name(enum http_parser_errno err) {
+#define HTTP_ERRNO_GEN(CODE, NAME, _) case HPE_##NAME: return "HPE_" #NAME;
+  switch (err) {
+    HTTP_ERRNO_MAP(HTTP_ERRNO_GEN)
+    default: abort();
+  }
+#undef HTTP_ERRNO_GEN
+}
+
+
 /* Callbacks */
 
 

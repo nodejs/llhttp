@@ -16,26 +16,27 @@ export class CHeaders {
 
     res += '\n';
 
-    res += this.buildEnum('http_errno', 'HPE', enumToMap(constants.ERROR));
+    const errorMap = enumToMap(constants.ERROR);
+    const methodMap = enumToMap(constants.METHODS);
+
+    res += this.buildEnum('http_parser_errno', 'HPE', errorMap);
     res += '\n';
-    res += this.buildEnum('http_flags', 'F', enumToMap(constants.FLAGS), 'hex');
+    res += this.buildEnum('http_parser_flags', 'F', enumToMap(constants.FLAGS),
+      'hex');
     res += '\n';
     res += this.buildEnum('http_parser_type', 'HTTP',
       enumToMap(constants.TYPE));
     res += '\n';
-    res += this.buildEnum('http_finish', 'HTTP_FINISH',
+    res += this.buildEnum('http_parser_finish', 'HTTP_FINISH',
       enumToMap(constants.FINISH));
     res += '\n';
-
-    const methodMap = enumToMap(constants.METHODS);
-    res += this.buildEnum('http_method', 'HTTP', methodMap);
+    res += this.buildEnum('http_parser_method', 'HTTP', methodMap);
 
     res += '\n';
 
-    res += '#define HTTP_METHOD_MAP(XX) \\\n';
-    Object.keys(methodMap).forEach((method) => {
-      res += `  XX(${methodMap[method]!}, ${method}, ${method}) \\\n`;
-    });
+    res += this.buildMap('HTTP_ERRNO', errorMap);
+    res += '\n';
+    res += this.buildMap('HTTP_METHOD', methodMap);
     res += '\n';
 
     res += '\n';
@@ -69,6 +70,18 @@ export class CHeaders {
       }
     });
     res += '\n};\n';
+
+    return res;
+  }
+
+  private buildMap(name: string, map: IEnumMap): string {
+    let res = '';
+
+    res += `#define ${name}_MAP(XX) \\\n`;
+    Object.keys(map).forEach((key) => {
+      res += `  XX(${map[key]!}, ${key}, ${key}) \\\n`;
+    });
+    res += '\n';
 
     return res;
   }
