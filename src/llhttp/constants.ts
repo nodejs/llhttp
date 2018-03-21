@@ -76,7 +76,7 @@ export enum METHODS {
   CHECKOUT = 22,
   MERGE = 23,
   /* upnp */
-  MSEARCH = 24,
+  'M-SEARCH' = 24,
   NOTIFY = 25,
   SUBSCRIBE = 26,
   UNSUBSCRIBE = 27,

@@ -64,7 +64,7 @@ export class CHeaders {
         value = `0x${value.toString(16)}`;
       }
 
-      res += `  ${prefix}_${key} = ${value}`;
+      res += `  ${prefix}_${key.replace(/-/g, '')} = ${value}`;
       if (!isLast) {
         res += ',\n';
       }
@@ -79,7 +79,7 @@ export class CHeaders {
 
     res += `#define ${name}_MAP(XX) \\\n`;
     Object.keys(map).forEach((key) => {
-      res += `  XX(${map[key]!}, ${key}, ${key}) \\\n`;
+      res += `  XX(${map[key]!}, ${key.replace(/-/g, '')}, ${key}) \\\n`;
     });
     res += '\n';
 
