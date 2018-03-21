@@ -43,6 +43,7 @@ int http_parser_finish(http_parser_t* parser) {
     case HTTP_FINISH_SAFE:
       return 0;
     case HTTP_FINISH_UNSAFE:
+      parser->reason = "Invalid EOF state";
       return HPE_INVALID_EOF_STATE;
     default:
       abort();
