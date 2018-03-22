@@ -400,31 +400,51 @@ describe('http_parser/http', () => {
         await http.check(req, expected);
       });
 
-      //
-      // Strict mode tests below
-      //
+      if (mode === 'strict') {
+        it('should not restart request when keep-alive is off', async () => {
+          const req =
+            'PUT /url HTTP/1.0\r\n' +
+            '\r\n' +
+            'PUT /url HTTP/1.1\r\n' +
+            '\r\n';
 
-      if (mode !== 'strict') {
-        return;
+          const expected = [
+            'off=0 message begin',
+            'off=4 len=4 span[url]="/url"',
+            'off=21 headers complete method=4 v=1/0 flags=0 content_length=0',
+            'off=21 message complete',
+            'off=22 error code=5 reason="Data after `Connection: close`"',
+          ];
+
+          await http.check(req, expected);
+        });
+      } else {
+        it('should still reset flags when keep-alive is off', async () => {
+          const req =
+            'PUT /url HTTP/1.0\r\n' +
+            'Content-Length: 0\r\n' +
+            '\r\n' +
+            'PUT /url HTTP/1.1\r\n' +
+            'Transfer-Encoding: chunked\r\n' +
+            '\r\n';
+
+          const expected = [
+            'off=0 message begin',
+            'off=4 len=4 span[url]="/url"',
+            'off=19 len=14 span[header_field]="Content-Length"',
+            'off=35 len=1 span[header_value]="0"',
+            'off=40 headers complete method=4 v=1/0 flags=20 content_length=0',
+            'off=40 message complete',
+            'off=40 message begin',
+            'off=44 len=4 span[url]="/url"',
+            'off=59 len=17 span[header_field]="Transfer-Encoding"',
+            'off=78 len=7 span[header_value]="chunked"',
+            'off=89 headers complete method=4 v=1/1 flags=8 content_length=0',
+          ];
+
+          await http.check(req, expected);
+        });
       }
-
-      it('should not restart request when keep-alive is off', async () => {
-        const req =
-          'PUT /url HTTP/1.0\r\n' +
-          '\r\n' +
-          'PUT /url HTTP/1.1\r\n' +
-          '\r\n';
-
-        const expected = [
-          'off=0 message begin',
-          'off=4 len=4 span[url]="/url"',
-          'off=21 headers complete method=4 v=1/0 flags=0 content_length=0',
-          'off=21 message complete',
-          'off=22 error code=5 reason="Data after `Connection: close`"',
-        ];
-
-        await http.check(req, expected);
-      });
     });
 
     describe('chunked encoding', () => {

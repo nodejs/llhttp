@@ -644,12 +644,11 @@ export class HTTP {
     // Check if we'd like to keep-alive
     if (this.mode === 'strict') {
       n('cleanup')
-        .otherwise(p.invoke(callback.afterMessageComplete, {
-          1: n('restart'),
-        }, n('closed')));
+        .otherwise(p.invoke(callback.afterMessageComplete, this.mode === 'strict' ?
+          { 1: n('restart') } : {}, n('closed')));
     } else {
       n('cleanup')
-        .otherwise(n('restart'));
+        .otherwise(p.invoke(callback.afterMessageComplete, n('restart')));
     }
 
     n('closed')
