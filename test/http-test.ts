@@ -24,25 +24,6 @@ describe('http_parser/http', () => {
     });
 
     describe('connection', () => {
-      it('should parse `connection: keep-alive`', async () => {
-        const req =
-          'PUT /url HTTP/1.1\r\n' +
-          'Connection: keep-alive\r\n' +
-          '\r\n';
-
-        const expected = [
-          'off=0 message begin',
-          'off=4 len=4 span[url]="/url"',
-          'off=19 len=10 span[header_field]="Connection"',
-          'off=31 len=10 span[header_value]="keep-alive"',
-          `off=${req.length} headers complete method=4 v=1/1 ` +
-            'flags=1 content_length=0',
-          `off=${req.length} message complete`,
-        ];
-
-        await http.check(req, expected);
-      });
-
       it('should parse `connection: close`', async () => {
         const req =
           'PUT /url HTTP/1.1\r\n' +

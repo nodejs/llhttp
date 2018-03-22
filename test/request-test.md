@@ -22,7 +22,7 @@ off=60 headers complete method=6 v=1/1 flags=0 content_length=0
 off=60 message complete
 ```
 
-## Request with method starting on H
+## Request with method starting with `H`
 
 There's a optimization in `start_req_or_res` that passes execution to
 `start_req` when the first character is not `H` (because response must start
@@ -43,9 +43,9 @@ off=22 headers complete method=2 v=1/1 flags=0 content_length=0
 off=22 message complete
 ```
 
-## Content-Length
+## `Content-Length` header
 
-### Parsing Content-Length with zeroes
+### `Content-Length` with zeroes
 
 <!-- meta={"type": "request"} -->
 ```http
@@ -65,7 +65,7 @@ off=42 len=3 span[body]="abc"
 off=45 message complete
 ```
 
-### Content-Length with follow-up headers
+### `Content-Length` with follow-up headers
 
 The way the parser works is that special headers (like `Content-Length`) first
 set `header_state` to appropriate value, and then apply custom parsing using
@@ -96,7 +96,7 @@ off=55 len=3 span[body]="abc"
 off=58 message complete
 ```
 
-### Content-Length overflow
+### `Content-Length` overflow
 
 <!-- meta={"type": "request"} -->
 ```http
@@ -113,7 +113,7 @@ off=35 len=21 span[header_value]="100000000000000000000"
 off=56 error code=11 reason="Content-Length overflow"
 ```
 
-### Disallow duplicate Content-Length
+### Disallow duplicate `Content-Length`
 
 <!-- meta={"type": "request"} -->
 ```http
@@ -132,7 +132,7 @@ off=38 len=14 span[header_field]="Content-Length"
 off=54 error code=4 reason="Duplicate Content-Length"
 ```
 
-## Transfer-Encoding
+## `Transfer-Encoding` header
 
 ### Parse `chunked` and set flag
 
@@ -171,4 +171,25 @@ off=19 len=17 span[header_field]="Transfer-Encoding"
 off=38 len=7 span[header_value]="pigeons"
 off=49 headers complete method=4 v=1/1 flags=0 content_length=0
 off=49 message complete
+```
+
+## `Connection` header
+
+### `keep-alive` should set flag
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Connection: keep-alive
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=19 len=10 span[header_field]="Connection"
+off=31 len=10 span[header_value]="keep-alive"
+off=45 headers complete method=4 v=1/1 flags=1 content_length=0
+off=45 message complete
 ```
