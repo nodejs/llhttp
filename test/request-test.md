@@ -2,7 +2,6 @@
 
 ## Simple request
 
-Input:
 ```http
 OPTIONS /url HTTP/1.1\r\n
 Header1: Value1\r\n
@@ -10,7 +9,6 @@ Header2:\t Value2\r\n
 \r\n
 ```
 
-Expected:
 ```log
 off=0 message begin
 off=8 len=4 span[url]="/url"
@@ -29,13 +27,11 @@ There's a optimization in `start_req_or_res` that passes execution to
 with `HTTP/`). However, there're still methods like `HEAD` that should get
 to `start_req`. Verify that it still works after optimization.
 
-Input:
 ```http
 HEAD /url HTTP/1.1\r\n
 \r\n
 ```
 
-Expected:
 ```log
 off=0 message begin
 off=5 len=4 span[url]="/url"
