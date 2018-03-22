@@ -400,6 +400,14 @@ describe('http_parser/http', () => {
         await http.check(req, expected);
       });
 
+      //
+      // Strict mode tests below
+      //
+
+      if (mode !== 'strict') {
+        return;
+      }
+
       it('should not restart request when keep-alive is off', async () => {
         const req =
           'PUT /url HTTP/1.0\r\n' +

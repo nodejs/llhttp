@@ -642,10 +642,15 @@ export class HTTP {
         ERROR.CB_MESSAGE_COMPLETE, upgradeAfterDone));
 
     // Check if we'd like to keep-alive
-    n('cleanup')
-      .otherwise(p.invoke(callback.afterMessageComplete, {
-        1: n('restart'),
-      }, n('closed')));
+    if (this.mode === 'strict') {
+      n('cleanup')
+        .otherwise(p.invoke(callback.afterMessageComplete, {
+          1: n('restart'),
+        }, n('closed')));
+    } else {
+      n('cleanup')
+        .otherwise(n('restart'));
+    }
 
     n('closed')
       .match([ '\r', '\n' ], n('closed'))
