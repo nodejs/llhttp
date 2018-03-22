@@ -535,7 +535,8 @@ export class HTTP {
     checkEncConflict.otherwise(beforeHeadersComplete);
     beforeHeadersComplete.otherwise(onHeadersComplete);
 
-    const pauseAfterConnect = this.pause('pause on CONNECT');
+    const pauseAfterConnect = p.pause(ERROR.PAUSED_UPGRADE,
+      'pause on CONNECT/Upgrade');
 
     const afterHeadersComplete = p.invoke(callback.afterHeadersComplete, {
       1: this.invokePausable('on_message_complete',

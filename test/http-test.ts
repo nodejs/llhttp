@@ -296,7 +296,7 @@ describe('http_parser/http', () => {
           `off=${req.length} headers complete method=4 v=1/1 ` +
             'flags=14 content_length=0',
           `off=${req.length} message complete`,
-          `off=${req.length} pause`,
+          `off=${req.length} error code=21 reason="pause on CONNECT/Upgrade"`,
         ];
 
         await http.check(req, expected);

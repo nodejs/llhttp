@@ -34,6 +34,8 @@ void http_parser_settings_init(http_parser_settings_t* settings);
 int http_parser_message_needs_eof(const http_parser_t* parser);
 int http_parser_should_keep_alive(const http_parser_t* parser);
 int http_parser_finish(http_parser_t* parser);
+void http_parser_resume(http_parser_t* parser);
+void http_parser_resume_after_upgrade(http_parser_t* parser);
 
 const char* http_parser_errno_name(enum http_parser_errno err);
 

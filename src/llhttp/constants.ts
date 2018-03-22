@@ -28,6 +28,7 @@ export enum ERROR {
   CB_CHUNK_COMPLETE,
 
   PAUSED,
+  PAUSED_UPGRADE,
 }
 
 export enum TYPE {
