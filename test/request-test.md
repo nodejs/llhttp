@@ -45,7 +45,7 @@ off=22 message complete
 
 ## Content-Length
 
-### Parsing content-length with zeroes
+### Parsing Content-Length with zeroes
 
 <!-- meta={"type": "request"} -->
 ```http
@@ -63,4 +63,112 @@ off=35 len=3 span[header_value]="003"
 off=42 headers complete method=4 v=1/1 flags=20 content_length=3
 off=42 len=3 span[body]="abc"
 off=45 message complete
+```
+
+### Content-Length with follow-up headers
+
+The way the parser works is that special headers (like `Content-Length`) first
+set `header_state` to appropriate value, and then apply custom parsing using
+that value. For `Content-Length`, in particular, the `header_state` is used for
+setting the flag too.
+
+Make sure that `header_state` is reset to `0`, so that the flag won't be
+attempted to set twice (and error).
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Content-Length: 003
+Ohai: world
+
+abc
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=19 len=14 span[header_field]="Content-Length"
+off=35 len=3 span[header_value]="003"
+off=40 len=4 span[header_field]="Ohai"
+off=46 len=5 span[header_value]="world"
+off=55 headers complete method=4 v=1/1 flags=20 content_length=3
+off=55 len=3 span[body]="abc"
+off=58 message complete
+```
+
+### Content-Length overflow
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Content-Length: 1000000000000000000000
+
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=19 len=14 span[header_field]="Content-Length"
+off=35 len=21 span[header_value]="100000000000000000000"
+off=56 error code=11 reason="Content-Length overflow"
+```
+
+### Disallow duplicate Content-Length
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Content-Length: 1
+Content-Length: 2
+
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=19 len=14 span[header_field]="Content-Length"
+off=35 len=1 span[header_value]="1"
+off=38 len=14 span[header_field]="Content-Length"
+off=54 error code=4 reason="Duplicate Content-Length"
+```
+
+## Transfer-Encoding
+
+### Parse `chunked` and set flag
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Transfer-Encoding: chunked
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=19 len=17 span[header_field]="Transfer-Encoding"
+off=38 len=7 span[header_value]="chunked"
+off=49 headers complete method=4 v=1/1 flags=8 content_length=0
+```
+
+### Ignore `pigeons`
+
+`flags` should not be changed.
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Transfer-Encoding: pigeons
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=19 len=17 span[header_field]="Transfer-Encoding"
+off=38 len=7 span[header_value]="pigeons"
+off=49 headers complete method=4 v=1/1 flags=0 content_length=0
+off=49 message complete
 ```
