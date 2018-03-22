@@ -60,7 +60,9 @@ function run(name: string, httpMode: llhttp.HTTPMode,
     });
   }
 
-  groups.forEach((group) => runGroup(group));
+  describe(`mode=${httpMode}`, () => {
+    groups.forEach((group) => runGroup(group));
+  });
 }
 
 run('request-test', 'loose', 'request');
