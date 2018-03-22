@@ -1,34 +1,62 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
 import { LLParse } from 'llparse';
-import { Group, MDGator, Test } from 'mdgator';
+import { Group, MDGator, Metadata, Test } from 'mdgator';
 import * as path from 'path';
 
 import * as llhttp from '../src/llhttp';
-import { build, FixtureResult, TestMode} from './fixtures';
+import { build, FixtureResult, TestType } from './fixtures';
 
-function run(name: string, httpMode: llhttp.HTTPMode,
-             mode: TestMode = 'none'): void {
+interface IFixtureMap {
+  [key: string]: { [key: string]: FixtureResult };
+}
+
+function buildMode(mode: llhttp.HTTPMode, ty: TestType): FixtureResult {
+  // Build binary
+  const p = new LLParse();
+  const instance = new llhttp.HTTP(p, mode);
+
+  const result = instance.build();
+
+  return build(p, result.entry, `http-req-${mode}-${ty}`, {
+    extra: [
+      '-DHTTP_PARSER__TEST_HTTP',
+      path.join(__dirname, '..', 'src', 'native', 'http.c'),
+    ],
+  }, ty);
+}
+
+const http: IFixtureMap = {
+  loose: {
+    none: buildMode('loose', 'none'),
+    request: buildMode('loose', 'request'),
+    response: buildMode('loose', 'response'),
+  },
+  strict: {
+    none: buildMode('strict', 'none'),
+    request: buildMode('strict', 'request'),
+    response: buildMode('strict', 'response'),
+  },
+};
+
+function run(name: string): void {
   const md = new MDGator();
 
   const raw = fs.readFileSync(path.join(__dirname, name + '.md')).toString();
   const groups = md.parse(raw);
 
-  // Build binary
-  const p = new LLParse();
-  const instance = new llhttp.HTTP(p, httpMode);
-
-  const result = instance.build();
-
-  const http = build(p, result.entry, `http-req-${httpMode}-${mode}`, {
-    extra: [
-      '-DHTTP_PARSER__TEST_HTTP',
-      path.join(__dirname, '..', 'src', 'native', 'http.c'),
-    ],
-  }, mode);
+  function runSingleTest(mode: llhttp.HTTPMode, ty: TestType, input: string,
+                         expected: ReadonlyArray<string>): void {
+    it(`should pass in mode="${mode}" and for type="${ty}"`, async () => {
+      await http[mode][ty].check(input, expected);
+    });
+  }
 
   function runTest(test: Test) {
-    it(test.name + ` at ${name}.md:${test.line + 1}`, async () => {
+    describe(test.name + ` at ${name}.md:${test.line + 1}`, () => {
+      let modes: llhttp.HTTPMode[] = [ 'strict', 'loose' ];
+      let types: TestType[] = [ 'none' ];
+
       assert(test.values.has('http'), 'Missing `http` code in md file');
       assert(test.values.has('log'), 'Missing `log` code in md file');
 
@@ -37,18 +65,50 @@ function run(name: string, httpMode: llhttp.HTTPMode,
       assert.strictEqual(test.values.get('log')!.length, 1,
         'Expected just one output');
 
+      assert(test.meta.has('http'), 'Missing required metadata');
+      const meta: Metadata = test.meta.get('http')![0]!;
+
+      assert(meta.hasOwnProperty('type'), 'Missing required `type` metadata');
+      if (meta.type === 'request') {
+        types.push('request');
+      } else if (meta.type === 'response') {
+        types.push('response');
+      } else if (meta.type === 'request-only') {
+        types = [ 'request' ];
+      } else if (meta.type === 'response-only') {
+        types = [ 'response' ];
+      } else {
+        throw new Error(`Invalid value of \`type\` metadata: "${meta.type}"`);
+      }
+
+      if (meta.mode === 'strict') {
+        modes = [ 'strict' ];
+      } else if (meta.mode === 'loose') {
+        modes = [ 'loose' ];
+      } else {
+        assert(!meta.hasOwnProperty('mode'),
+          `Invalid value of \`mode\` metadata: "${meta.mode}"`);
+      }
+
       let req: string = test.values.get('http')![0];
       const expected: string = test.values.get('log')![0];
 
-      // Remove all newlines
-      req = req.replace(/[\r\n]+/g, '');
+      // Remove trailing newline
+      req = req.replace(/\n$/, '');
 
-      // Replace CRLF and tabs
+      // Normalize all newlines
+      req = req.replace(/\r\n|\r|\n/g, '\r\n');
+
+      // Replace escaped CRLF and tabs
       req = req.replace(/\\r/g, '\r');
       req = req.replace(/\\n/g, '\n');
       req = req.replace(/\\t/g, '\t');
 
-      await http.check(req, expected.split(/\n/g).slice(0, -1));
+      modes.forEach((mode) => {
+        types.forEach((ty) => {
+          runSingleTest(mode, ty, req, expected.split(/\n/g).slice(0, -1));
+        });
+      });
     });
   }
 
@@ -60,10 +120,8 @@ function run(name: string, httpMode: llhttp.HTTPMode,
     });
   }
 
-  describe(`mode=${httpMode}`, () => {
-    groups.forEach((group) => runGroup(group));
-  });
+  groups.forEach((group) => runGroup(group));
 }
 
-run('request-test', 'loose', 'request');
-run('request-test', 'strict', 'request');
+run('request-test');
+run('response-test');

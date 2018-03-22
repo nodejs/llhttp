@@ -8,7 +8,7 @@ import * as path from 'path';
 
 import * as llhttp from '../../src/llhttp';
 
-export type TestMode = 'request' | 'response' | 'none';
+export type TestType = 'request' | 'response' | 'none';
 
 export { FixtureResult };
 
@@ -35,7 +35,7 @@ const fixtures = new Fixture({
 
 export function build(llparse: LLParse, node: any, outFile: string,
                       options: IFixtureBuildOptions = {},
-                      mode: TestMode = 'none'): FixtureResult {
+                      ty: TestType = 'none'): FixtureResult {
   const dot = new Dot();
   fs.writeFileSync(path.join(BUILD_DIR, outFile + '.dot'),
     dot.build(node));
@@ -45,8 +45,8 @@ export function build(llparse: LLParse, node: any, outFile: string,
   });
 
   const extra = options.extra === undefined ? [] : options.extra.slice();
-  if (mode !== 'none') {
-    extra.push(`-DLLPARSE__TEST_INIT=http_parser__test_init_${mode}`);
+  if (ty !== 'none') {
+    extra.push(`-DLLPARSE__TEST_INIT=http_parser__test_init_${ty}`);
   }
 
   return fixtures.build(artifacts, outFile, Object.assign(options, {

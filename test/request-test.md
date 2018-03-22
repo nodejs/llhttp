@@ -2,11 +2,13 @@
 
 ## Simple request
 
+<!-- meta={"type": "request"} -->
 ```http
-OPTIONS /url HTTP/1.1\r\n
-Header1: Value1\r\n
-Header2:\t Value2\r\n
-\r\n
+OPTIONS /url HTTP/1.1
+Header1: Value1
+Header2:\t Value2
+
+
 ```
 
 ```log
@@ -27,9 +29,11 @@ There's a optimization in `start_req_or_res` that passes execution to
 with `HTTP/`). However, there're still methods like `HEAD` that should get
 to `start_req`. Verify that it still works after optimization.
 
+<!-- meta={"type": "request"} -->
 ```http
-HEAD /url HTTP/1.1\r\n
-\r\n
+HEAD /url HTTP/1.1
+
+
 ```
 
 ```log
@@ -37,4 +41,26 @@ off=0 message begin
 off=5 len=4 span[url]="/url"
 off=22 headers complete method=2 v=1/1 flags=0 content_length=0
 off=22 message complete
+```
+
+## Content-Length
+
+### Parsing content-length with zeroes
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Content-Length: 003
+
+abc
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=19 len=14 span[header_field]="Content-Length"
+off=35 len=3 span[header_value]="003"
+off=42 headers complete method=4 v=1/1 flags=20 content_length=3
+off=42 len=3 span[body]="abc"
+off=45 message complete
 ```
