@@ -171,8 +171,10 @@ int http_parser__on_chunk_complete(http_parser_t* s, const char* p,
 void http_parser__debug(http_parser_t* s, const char* p, const char* endp,
                         const char* msg) {
   if (p == endp) {
-    fprintf(stderr, "p=%p type=%d next=null debug=%s\n", s, s->type, msg);
+    fprintf(stderr, "p=%p type=%d flags=%02x next=null debug=%s\n", s, s->type,
+            s->flags, msg);
   } else {
-    fprintf(stderr, "p=%p type=%d next=%02x   debug=%s\n", s, s->type, *p, msg);
+    fprintf(stderr, "p=%p type=%d flags=%02x next=%02x   debug=%s\n", s,
+        s->type, s->flags, *p, msg);
   }
 }
