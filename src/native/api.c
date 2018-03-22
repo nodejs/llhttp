@@ -57,13 +57,8 @@ int http_parser_finish(http_parser_t* parser) {
 
 
 void http_parser_resume(http_parser_t* parser) {
-  if (parser->error == 0) {
-    return;
-  }
-
   if (parser->error != HPE_PAUSED) {
-    fprintf(stderr, "Can\'t resume non-paused parser\n");
-    abort();
+    return;
   }
 
   parser->error = 0;
@@ -71,13 +66,8 @@ void http_parser_resume(http_parser_t* parser) {
 
 
 void http_parser_resume_after_upgrade(http_parser_t* parser) {
-  if (parser->error == 0) {
-    return;
-  }
-
   if (parser->error != HPE_PAUSED_UPGRADE) {
-    fprintf(stderr, "Can\'t resume non-paused parser (CONNECT/Upgrade)\n");
-    abort();
+    return;
   }
 
   parser->error = 0;
