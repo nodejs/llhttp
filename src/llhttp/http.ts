@@ -535,12 +535,12 @@ export class HTTP {
     checkEncConflict.otherwise(beforeHeadersComplete);
     beforeHeadersComplete.otherwise(onHeadersComplete);
 
-    const pauseAfterConnect = p.pause(ERROR.PAUSED_UPGRADE,
+    const upgradePause = p.pause(ERROR.PAUSED_UPGRADE,
       'pause on CONNECT/Upgrade');
 
     const afterHeadersComplete = p.invoke(callback.afterHeadersComplete, {
       1: this.invokePausable('on_message_complete',
-        ERROR.CB_MESSAGE_COMPLETE, pauseAfterConnect),
+        ERROR.CB_MESSAGE_COMPLETE, upgradePause),
       2: n('chunk_size_start'),
       3: n('body_identity'),
       4: n('body_identity_eof'),
@@ -549,7 +549,7 @@ export class HTTP {
     n('headers_done')
       .otherwise(afterHeadersComplete);
 
-    pauseAfterConnect
+    upgradePause
       .otherwise(n('cleanup'));
 
     afterHeadersComplete
@@ -629,9 +629,17 @@ export class HTTP {
       .otherwise(this.invokePausable('on_chunk_complete',
         ERROR.CB_CHUNK_COMPLETE, 'chunk_size_start'));
 
+    const upgradeAfterDone = this.isEqual('upgrade', 1, {
+      // Exit, the rest of the message is in a different protocol.
+      equal: upgradePause,
+
+      // Restart
+      notEqual: 'cleanup',
+    });
+
     n('message_done')
       .otherwise(this.invokePausable('on_message_complete',
-        ERROR.CB_MESSAGE_COMPLETE, 'cleanup'));
+        ERROR.CB_MESSAGE_COMPLETE, upgradeAfterDone));
 
     // Check if we'd like to keep-alive
     n('cleanup')

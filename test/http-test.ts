@@ -302,6 +302,33 @@ describe('http_parser/http', () => {
         await http.check(req, expected);
       });
 
+      it('should pause on upgrade with body', async () => {
+        const req =
+          'PUT /url HTTP/1.1\r\n' +
+          'Connection: upgrade\r\n' +
+          'Content-Length: 4\r\n' +
+          'Upgrade: ws\r\n' +
+          '\r\n' +
+          'abcdefgh';
+
+        const expected = [
+          'off=0 message begin',
+          'off=4 len=4 span[url]="/url"',
+          'off=19 len=10 span[header_field]="Connection"',
+          'off=31 len=7 span[header_value]="upgrade"',
+          'off=40 len=14 span[header_field]="Content-Length"',
+          'off=56 len=1 span[header_value]="4"',
+          'off=59 len=7 span[header_field]="Upgrade"',
+          'off=68 len=2 span[header_value]="ws"',
+          'off=74 headers complete method=4 v=1/1 flags=34 content_length=4',
+          'off=74 len=4 span[body]="abcd"',
+          'off=78 message complete',
+          'off=78 error code=21 reason="pause on CONNECT/Upgrade"',
+        ];
+
+        await http.check(req, expected);
+      });
+
       it('should parse `connection: tokens`', async () => {
         const req =
           'PUT /url HTTP/1.1\r\n' +
