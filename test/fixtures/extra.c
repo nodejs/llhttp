@@ -10,6 +10,16 @@ int http_parser__on_url(llparse_t* s, const char* p, const char* endp) {
 
 #ifdef HTTP_PARSER__TEST_HTTP
 
+void http_parser__test_init_request(llparse_t* s) {
+  s->type = HTTP_REQUEST;
+}
+
+
+void http_parser__test_init_response(llparse_t* s) {
+  s->type = HTTP_RESPONSE;
+}
+
+
 int http_parser__on_status(llparse_t* s, const char* p,
                            const char* endp) {
   if (llparse__in_bench)

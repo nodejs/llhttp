@@ -78,6 +78,7 @@ int http_parser__after_message_complete(http_parser_t* parser, const char* p,
   parser->flags = 0;
   parser->finish = HTTP_FINISH_SAFE;
 
+  /* NOTE: this is ignored in loose parsing mode */
   return should_keep_alive;
 }
 
