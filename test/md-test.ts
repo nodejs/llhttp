@@ -66,10 +66,12 @@ function run(name: string): void {
   const raw = fs.readFileSync(path.join(__dirname, name + '.md')).toString();
   const groups = md.parse(raw);
 
-  function runSingleTest(mode: llhttp.HTTPMode, ty: TestType, input: string,
-                         expected: ReadonlyArray<string>): void {
+  function runSingleTest(mode: llhttp.HTTPMode, ty: TestType, meta: any,
+                         input: string, expected: ReadonlyArray<string>): void {
     it(`should pass in mode="${mode}" and for type="${ty}"`, async () => {
-      await http[mode][ty].check(input, expected);
+      await http[mode][ty].check(input, expected, {
+        noScan: meta.noScan === true,
+      });
     });
   }
 
@@ -112,7 +114,7 @@ function run(name: string): void {
       }
 
       let req: string = test.values.get('http')![0];
-      const expected: string = test.values.get('log')![0];
+      let expected: string = test.values.get('log')![0];
 
       // Remove trailing newline
       req = req.replace(/\n$/, '');
@@ -125,9 +127,13 @@ function run(name: string): void {
       req = req.replace(/\\n/g, '\n');
       req = req.replace(/\\t/g, '\t');
 
+      // Replace escaped tabs in expected too
+      expected = expected.replace(/\\t/g, '\t');
+
       modes.forEach((mode) => {
         types.forEach((ty) => {
-          runSingleTest(mode, ty, req, expected.split(/\n/g).slice(0, -1));
+          runSingleTest(mode, ty, meta, req,
+            expected.split(/\n/g).slice(0, -1));
         });
       });
     });

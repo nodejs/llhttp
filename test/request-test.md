@@ -182,22 +182,6 @@ off=53 headers complete method=1 v=1/1 flags=0 content_length=0
 off=53 message complete
 ```
 
-### Quotes in URI
-
-<!-- meta={"type": "request"} -->
-```http
-GET /with_"lovely"_quotes?foo=\"bar\" HTTP/1.1
-
-
-```
-
-```log
-off=0 message begin
-off=4 len=33 span[url]="/with_"lovely"_quotes?foo=\"bar\""
-off=50 headers complete method=1 v=1/1 flags=0 content_length=0
-off=50 message complete
-```
-
 ### Apache bench GET
 
 The server receiving this request SHOULD NOT wait for EOF to know that
@@ -226,24 +210,6 @@ off=84 headers complete method=1 v=1/0 flags=0 content_length=0
 off=84 message complete
 ```
 
-### Query URL with question mark
-
-Some clients include `?` characters in query strings.
-
-<!-- meta={"type": "request"} -->
-```http
-GET /test.cgi?foo=bar?baz HTTP/1.1
-
-
-```
-
-```log
-off=0 message begin
-off=4 len=21 span[url]="/test.cgi?foo=bar?baz"
-off=38 headers complete method=1 v=1/1 flags=0 content_length=0
-off=38 message complete
-```
-
 ### Prefix newline
 
 Some clients, especially after a POST in a keep-alive connection,
@@ -262,6 +228,70 @@ off=6 len=5 span[url]="/test"
 off=24 headers complete method=1 v=1/1 flags=0 content_length=0
 off=24 message complete
 ```
+
+### No HTTP version
+
+<!-- meta={"type": "request"} -->
+```http
+GET /
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=1 span[url]="/"
+off=9 headers complete method=1 v=0/9 flags=0 content_length=0
+off=9 message complete
+```
+
+### Line folding in header value
+
+<!-- meta={"type": "request"} -->
+```http
+GET / HTTP/1.1
+Line1:   abc
+\tdef
+ ghi
+\t\tjkl
+  mno 
+\t \tqrs
+Line2: \t line2\t
+Line3:
+ line3
+Line4: 
+ 
+Connection:
+ close
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=1 span[url]="/"
+off=16 len=5 span[header_field]="Line1"
+off=25 len=3 span[header_value]="abc"
+off=30 len=4 span[header_value]="\tdef"
+off=36 len=4 span[header_value]=" ghi"
+off=42 len=5 span[header_value]="\t\tjkl"
+off=49 len=6 span[header_value]="  mno "
+off=57 len=6 span[header_value]="\t \tqrs"
+off=65 len=5 span[header_field]="Line2"
+off=74 len=6 span[header_value]="line2\t"
+off=82 len=5 span[header_field]="Line3"
+off=91 len=5 span[header_value]="line3"
+off=98 len=5 span[header_field]="Line4"
+off=110 len=0 span[header_value]=""
+off=110 len=10 span[header_field]="Connection"
+off=124 len=5 span[header_value]="close"
+off=133 headers complete method=1 v=1/1 flags=2 content_length=0
+off=133 message complete
+```
+
+---
+
+## Methods
 
 ### REPORT request
 
@@ -301,6 +331,203 @@ off=90 len=22 span[header_value]="basic aGVsbG86d29ybGQ="
 off=116 headers complete method=5 v=1/0 flags=0 content_length=0
 off=116 message complete
 off=116 error code=21 reason="Pause on CONNECT/Upgrade"
+```
+
+### CONNECT request with CAPS
+
+<!-- meta={"type": "request"} -->
+```http
+CONNECT HOME0.NETSCAPE.COM:443 HTTP/1.0
+User-agent: Mozilla/1.1N
+Proxy-authorization: basic aGVsbG86d29ybGQ=
+
+
+```
+
+```log
+off=0 message begin
+off=8 len=22 span[url]="HOME0.NETSCAPE.COM:443"
+off=41 len=10 span[header_field]="User-agent"
+off=53 len=12 span[header_value]="Mozilla/1.1N"
+off=67 len=19 span[header_field]="Proxy-authorization"
+off=88 len=22 span[header_value]="basic aGVsbG86d29ybGQ="
+off=114 headers complete method=5 v=1/0 flags=0 content_length=0
+off=114 message complete
+off=114 error code=21 reason="Pause on CONNECT/Upgrade"
+```
+
+### M-SEARCH request
+
+<!-- meta={"type": "request"} -->
+```http
+M-SEARCH * HTTP/1.1
+HOST: 239.255.255.250:1900
+MAN: "ssdp:discover"
+ST: "ssdp:all"
+
+
+```
+
+```log
+off=0 message begin
+off=9 len=1 span[url]="*"
+off=21 len=4 span[header_field]="HOST"
+off=27 len=20 span[header_value]="239.255.255.250:1900"
+off=49 len=3 span[header_field]="MAN"
+off=54 len=15 span[header_value]=""ssdp:discover""
+off=71 len=2 span[header_field]="ST"
+off=75 len=10 span[header_value]=""ssdp:all""
+off=89 headers complete method=24 v=1/1 flags=0 content_length=0
+off=89 message complete
+```
+
+### PATCH request
+
+<!-- meta={"type": "request"} -->
+```http
+PATCH /file.txt HTTP/1.1
+Host: www.example.com
+Content-Type: application/example
+If-Match: "e0023aa4e"
+Content-Length: 10
+
+cccccccccc
+```
+
+```log
+off=0 message begin
+off=6 len=9 span[url]="/file.txt"
+off=26 len=4 span[header_field]="Host"
+off=32 len=15 span[header_value]="www.example.com"
+off=49 len=12 span[header_field]="Content-Type"
+off=63 len=19 span[header_value]="application/example"
+off=84 len=8 span[header_field]="If-Match"
+off=94 len=11 span[header_value]=""e0023aa4e""
+off=107 len=14 span[header_field]="Content-Length"
+off=123 len=2 span[header_value]="10"
+off=129 headers complete method=28 v=1/1 flags=20 content_length=10
+off=129 len=10 span[body]="cccccccccc"
+off=139 message complete
+```
+
+---
+
+## URI
+
+### Quotes in URI
+
+<!-- meta={"type": "request"} -->
+```http
+GET /with_"lovely"_quotes?foo=\"bar\" HTTP/1.1
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=33 span[url]="/with_"lovely"_quotes?foo=\"bar\""
+off=50 headers complete method=1 v=1/1 flags=0 content_length=0
+off=50 message complete
+```
+
+### Query URL with question mark
+
+Some clients include `?` characters in query strings.
+
+<!-- meta={"type": "request"} -->
+```http
+GET /test.cgi?foo=bar?baz HTTP/1.1
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=21 span[url]="/test.cgi?foo=bar?baz"
+off=38 headers complete method=1 v=1/1 flags=0 content_length=0
+off=38 message complete
+```
+
+### Host terminated by a query string
+
+<!-- meta={"type": "request"} -->
+```http
+GET http://hypnotoad.org?hail=all HTTP/1.1\r\n
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=29 span[url]="http://hypnotoad.org?hail=all"
+off=46 headers complete method=1 v=1/1 flags=0 content_length=0
+off=46 message complete
+```
+
+### `host:port` terminated by a query string
+
+<!-- meta={"type": "request"} -->
+```http
+GET http://hypnotoad.org:1234?hail=all HTTP/1.1
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=34 span[url]="http://hypnotoad.org:1234?hail=all"
+off=51 headers complete method=1 v=1/1 flags=0 content_length=0
+off=51 message complete
+```
+
+### `host:port` terminated by a space
+
+<!-- meta={"type": "request"} -->
+```http
+GET http://hypnotoad.org:1234 HTTP/1.1
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=25 span[url]="http://hypnotoad.org:1234"
+off=42 headers complete method=1 v=1/1 flags=0 content_length=0
+off=42 message complete
+```
+
+### UTF-8 in URI path in loose mode
+
+<!-- meta={"type": "request", "mode": "loose", "noScan": true} -->
+```http
+GET /δ¶/δt/pope?q=1#narf HTTP/1.1
+Host: github.com
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=23 span[url]="/δ¶/δt/pope?q=1#narf"
+off=38 len=4 span[header_field]="Host"
+off=44 len=10 span[header_value]="github.com"
+off=58 headers complete method=1 v=1/1 flags=0 content_length=0
+off=58 message complete
+```
+
+### Disallow UTF-8 in URI path in strict mode
+
+<!-- meta={"type": "request", "mode": "strict", "noScan": true} -->
+```http
+GET /δ¶/δt/pope?q=1#narf HTTP/1.1
+Host: github.com
+
+
+```
+
+```log
+off=0 message begin
+off=5 error code=7 reason="Invalid char in url path"
 ```
 
 ---
