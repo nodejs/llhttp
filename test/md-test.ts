@@ -160,4 +160,7 @@ run('request/connection');
 run('request/content-length');
 run('request/transfer-encoding');
 
-run('response-test');
+run('response/sample');
+run('response/connection');
+run('response/content-length');
+run('response/transfer-encoding');

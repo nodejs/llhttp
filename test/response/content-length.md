@@ -1,0 +1,63 @@
+Content-Length header
+=====================
+
+## Response without `Content-Length`, but with body
+
+The client should wait for the server's EOF. That is, when
+`Content-Length` is not specified, and `Connection: close`, the end of body is
+specified by the EOF.
+
+_(Compare with APACHEBENCH_GET)_
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK
+Date: Tue, 04 Aug 2009 07:59:32 GMT
+Server: Apache
+X-Powered-By: Servlet/2.5 JSP/2.1
+Content-Type: text/xml; charset=utf-8
+Connection: close
+
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">\n\
+  <SOAP-ENV:Body>\n\
+    <SOAP-ENV:Fault>\n\
+       <faultcode>SOAP-ENV:Client</faultcode>\n\
+       <faultstring>Client Error</faultstring>\n\
+    </SOAP-ENV:Fault>\n\
+  </SOAP-ENV:Body>\n\
+</SOAP-ENV:Envelope>
+```
+
+```log
+off=0 message begin
+off=13 len=2 span[status]="OK"
+off=17 len=4 span[header_field]="Date"
+off=23 len=29 span[header_value]="Tue, 04 Aug 2009 07:59:32 GMT"
+off=54 len=6 span[header_field]="Server"
+off=62 len=6 span[header_value]="Apache"
+off=70 len=12 span[header_field]="X-Powered-By"
+off=84 len=19 span[header_value]="Servlet/2.5 JSP/2.1"
+off=105 len=12 span[header_field]="Content-Type"
+off=119 len=23 span[header_value]="text/xml; charset=utf-8"
+off=144 len=10 span[header_field]="Connection"
+off=156 len=5 span[header_value]="close"
+off=165 headers complete status=200 v=1/1 flags=2 content_length=0
+off=165 len=42 span[body]="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+off=207 len=1 span[body]=lf
+off=208 len=80 span[body]="<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+off=288 len=1 span[body]=lf
+off=289 len=17 span[body]="  <SOAP-ENV:Body>"
+off=306 len=1 span[body]=lf
+off=307 len=20 span[body]="    <SOAP-ENV:Fault>"
+off=327 len=1 span[body]=lf
+off=328 len=45 span[body]="       <faultcode>SOAP-ENV:Client</faultcode>"
+off=373 len=1 span[body]=lf
+off=374 len=46 span[body]="       <faultstring>Client Error</faultstring>"
+off=420 len=1 span[body]=lf
+off=421 len=21 span[body]="    </SOAP-ENV:Fault>"
+off=442 len=1 span[body]=lf
+off=443 len=18 span[body]="  </SOAP-ENV:Body>"
+off=461 len=1 span[body]=lf
+off=462 len=20 span[body]="</SOAP-ENV:Envelope>"
+```
