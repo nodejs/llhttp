@@ -31,7 +31,7 @@ const httpNode = {
 function buildMode(mode: llhttp.HTTPMode, ty: TestType): FixtureResult {
   const node = httpNode[mode];
 
-  return build(node.llparse, node.entry, `http-req-${mode}-${ty}`, {
+  return build(node.llparse, node.entry, `http-${mode}-${ty}`, {
     extra: [
       '-DHTTP_PARSER__TEST_HTTP',
       path.join(__dirname, '..', 'src', 'native', 'http.c'),

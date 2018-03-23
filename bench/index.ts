@@ -1,4 +1,4 @@
-// NOTE: run `npm test` to build `./test/tmp/http-req-loose`
+// NOTE: run `npm test` to build `./test/tmp/http-loose-request`
 
 import * as assert from 'assert';
 import { spawnSync } from 'child_process';
@@ -41,7 +41,7 @@ if (process.argv[2] === 'loop') {
   assert(requests.has(reqName), `Unknown request name: "${reqName}"`);
 
   const request = requests.get(reqName)!;
-  spawnSync('./test/tmp/http-req-loose', [
+  spawnSync('./test/tmp/http-loose-request', [
     'loop',
     request
   ], { stdio: 'inherit' });
@@ -68,14 +68,14 @@ if (isHTTP) {
   requests.forEach((request, name) => {
     console.log('http loose: "%s"', name);
 
-    spawnSync('./test/tmp/http-req-loose', [
+    spawnSync('./test/tmp/http-loose-request', [
       'bench',
       request
     ], { stdio: 'inherit' });
 
     console.log('http strict: "%s"', name);
 
-    spawnSync('./test/tmp/http-req-strict', [
+    spawnSync('./test/tmp/http-strict-request', [
       'bench',
       request
     ], { stdio: 'inherit' });
