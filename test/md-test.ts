@@ -24,18 +24,47 @@ const httpNode = {
   strict: buildNode('strict'),
 };
 
+function buildURL(mode: llhttp.HTTPMode) {
+  const p = new LLParse();
+  const instance = new llhttp.URL(p, mode);
+
+  const node = instance.build();
+
+  // Loop
+  node.exit.toHTTP.otherwise(node.entry.normal);
+  node.exit.toHTTP09.otherwise(node.entry.normal);
+
+  return { llparse: p, entry: node.entry.normal };
+}
+
+const urlNode = {
+  loose: buildURL('loose'),
+  strict: buildURL('strict'),
+};
+
 //
 // Build binaries using cached nodes/llparse
 //
 
 function buildMode(mode: llhttp.HTTPMode, ty: TestType): FixtureResult {
-  const node = httpNode[mode];
-
-  return build(node.llparse, node.entry, `http-${mode}-${ty}`, {
-    extra: [
+  let node;
+  let prefix: string;
+  let extra: ReadonlyArray<string>;
+  if (ty === 'url') {
+    node = urlNode[mode];
+    prefix = 'url';
+    extra = [];
+  } else {
+    node = httpNode[mode];
+    prefix = 'http';
+    extra = [
       '-DHTTP_PARSER__TEST_HTTP',
       path.join(__dirname, '..', 'src', 'native', 'http.c'),
-    ],
+    ];
+  }
+
+  return build(node.llparse, node.entry, `${prefix}-${mode}-${ty}`, {
+    extra,
   }, ty);
 }
 
@@ -48,11 +77,13 @@ const http: IFixtureMap = {
     none: buildMode('loose', 'none'),
     request: buildMode('loose', 'request'),
     response: buildMode('loose', 'response'),
+    url: buildMode('loose', 'url'),
   },
   strict: {
     none: buildMode('strict', 'none'),
     request: buildMode('strict', 'request'),
     response: buildMode('strict', 'response'),
+    url: buildMode('strict', 'url'),
   },
 };
 
@@ -81,29 +112,43 @@ function run(name: string): void {
       let modes: llhttp.HTTPMode[] = [ 'strict', 'loose' ];
       let types: TestType[] = [ 'none' ];
 
-      assert(test.values.has('http'), 'Missing `http` code in md file');
+      const isURL = test.values.has('url');
+      const inputKey = isURL ? 'url' : 'http';
+
+      assert(test.values.has(inputKey),
+        `Missing "${inputKey}" code in md file`);
+      assert.strictEqual(test.values.get(inputKey)!.length, 1,
+        `Expected just one "${inputKey}" input`);
+
+      let meta: Metadata;
+      if (test.meta.has(inputKey)) {
+        meta = test.meta.get(inputKey)![0]!;
+      } else {
+        assert(isURL, 'Missing required http metadata');
+        meta = {};
+      }
+
+      if (isURL) {
+        types = [ 'url' ];
+      } else {
+        assert(meta.hasOwnProperty('type'), 'Missing required `type` metadata');
+        if (meta.type === 'request') {
+          types.push('request');
+        } else if (meta.type === 'response') {
+          types.push('response');
+        } else if (meta.type === 'request-only') {
+          types = [ 'request' ];
+        } else if (meta.type === 'response-only') {
+          types = [ 'response' ];
+        } else {
+          throw new Error(`Invalid value of \`type\` metadata: "${meta.type}"`);
+        }
+      }
+
       assert(test.values.has('log'), 'Missing `log` code in md file');
 
-      assert.strictEqual(test.values.get('http')!.length, 1,
-        'Expected just one request');
       assert.strictEqual(test.values.get('log')!.length, 1,
         'Expected just one output');
-
-      assert(test.meta.has('http'), 'Missing required metadata');
-      const meta: Metadata = test.meta.get('http')![0]!;
-
-      assert(meta.hasOwnProperty('type'), 'Missing required `type` metadata');
-      if (meta.type === 'request') {
-        types.push('request');
-      } else if (meta.type === 'response') {
-        types.push('response');
-      } else if (meta.type === 'request-only') {
-        types = [ 'request' ];
-      } else if (meta.type === 'response-only') {
-        types = [ 'response' ];
-      } else {
-        throw new Error(`Invalid value of \`type\` metadata: "${meta.type}"`);
-      }
 
       if (meta.mode === 'strict') {
         modes = [ 'strict' ];
@@ -114,22 +159,22 @@ function run(name: string): void {
           `Invalid value of \`mode\` metadata: "${meta.mode}"`);
       }
 
-      let req: string = test.values.get('http')![0];
+      let input: string = test.values.get(inputKey)![0];
       let expected: string = test.values.get('log')![0];
 
       // Remove trailing newline
-      req = req.replace(/\n$/, '');
+      input = input.replace(/\n$/, '');
 
       // Remove escaped newlines
-      req = req.replace(/\\(\r\n|\r|\n)/g, '');
+      input = input.replace(/\\(\r\n|\r|\n)/g, '');
 
       // Normalize all newlines
-      req = req.replace(/\r\n|\r|\n/g, '\r\n');
+      input = input.replace(/\r\n|\r|\n/g, '\r\n');
 
       // Replace escaped CRLF and tabs
-      req = req.replace(/\\r/g, '\r');
-      req = req.replace(/\\n/g, '\n');
-      req = req.replace(/\\t/g, '\t');
+      input = input.replace(/\\r/g, '\r');
+      input = input.replace(/\\n/g, '\n');
+      input = input.replace(/\\t/g, '\t');
 
       // Replace escaped tabs in expected too
       expected = expected.replace(/\\t/g, '\t');
@@ -147,7 +192,7 @@ function run(name: string): void {
 
       modes.forEach((mode) => {
         types.forEach((ty) => {
-          runSingleTest(mode, ty, meta, req, fullExpected);
+          runSingleTest(mode, ty, meta, input, fullExpected);
         });
       });
     });
@@ -175,3 +220,5 @@ run('response/sample');
 run('response/connection');
 run('response/content-length');
 run('response/transfer-encoding');
+
+run('url');
