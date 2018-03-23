@@ -251,8 +251,7 @@ will send an extra CRLF before the next request.
 
 <!-- meta={"type": "request"} -->
 ```http
-
-GET /test HTTP/1.1
+\r\nGET /test HTTP/1.1
 
 
 ```
