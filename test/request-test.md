@@ -45,6 +45,90 @@ off=22 headers complete method=2 v=1/1 flags=0 content_length=0
 off=22 message complete
 ```
 
+### curl GET
+
+<!-- meta={"type": "request"} -->
+```http
+GET /test HTTP/1.1
+User-Agent: curl/7.18.0 (i486-pc-linux-gnu) libcurl/7.18.0 OpenSSL/0.9.8g zlib/1.2.3.3 libidn/1.1
+Host: 0.0.0.0=5000
+Accept: */*
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=5 span[url]="/test"
+off=20 len=10 span[header_field]="User-Agent"
+off=32 len=85 span[header_value]="curl/7.18.0 (i486-pc-linux-gnu) libcurl/7.18.0 OpenSSL/0.9.8g zlib/1.2.3.3 libidn/1.1"
+off=119 len=4 span[header_field]="Host"
+off=125 len=12 span[header_value]="0.0.0.0=5000"
+off=139 len=6 span[header_field]="Accept"
+off=147 len=3 span[header_value]="*/*"
+off=154 headers complete method=1 v=1/1 flags=0 content_length=0
+off=154 message complete
+```
+
+### Firefox GET
+
+<!-- meta={"type": "request"} -->
+```http
+GET /favicon.ico HTTP/1.1
+Host: 0.0.0.0=5000
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9) Gecko/2008061015 Firefox/3.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: gzip,deflate
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+Keep-Alive: 300
+Connection: keep-alive
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=12 span[url]="/favicon.ico"
+off=27 len=4 span[header_field]="Host"
+off=33 len=12 span[header_value]="0.0.0.0=5000"
+off=47 len=10 span[header_field]="User-Agent"
+off=59 len=76 span[header_value]="Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9) Gecko/2008061015 Firefox/3.0"
+off=137 len=6 span[header_field]="Accept"
+off=145 len=63 span[header_value]="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+off=210 len=15 span[header_field]="Accept-Language"
+off=227 len=14 span[header_value]="en-us,en;q=0.5"
+off=243 len=15 span[header_field]="Accept-Encoding"
+off=260 len=12 span[header_value]="gzip,deflate"
+off=274 len=14 span[header_field]="Accept-Charset"
+off=290 len=30 span[header_value]="ISO-8859-1,utf-8;q=0.7,*;q=0.7"
+off=322 len=10 span[header_field]="Keep-Alive"
+off=334 len=3 span[header_value]="300"
+off=339 len=10 span[header_field]="Connection"
+off=351 len=10 span[header_value]="keep-alive"
+off=365 headers complete method=1 v=1/1 flags=1 content_length=0
+off=365 message complete
+```
+
+### DUMBPACK
+
+<!-- meta={"type": "request"} -->
+```http
+GET /dumbfuck HTTP/1.1
+aaaaaaaaaaaaa:++++++++++
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=9 span[url]="/dumbfuck"
+off=24 len=13 span[header_field]="aaaaaaaaaaaaa"
+off=38 len=10 span[header_value]="++++++++++"
+off=52 headers complete method=1 v=1/1 flags=0 content_length=0
+off=52 message complete
+```
+
 ---
 
 ## `Content-Length` header

@@ -46,7 +46,7 @@
     "typescript": "^2.7.2"
   },
   "dependencies": {
-    "llparse": "^5.0.0",
+    "llparse": "^5.1.0",
     "semver": "^5.5.0"
   }
 }

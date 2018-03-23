@@ -7,23 +7,40 @@ import * as path from 'path';
 import * as llhttp from '../src/llhttp';
 import { build, FixtureResult, TestType } from './fixtures';
 
-interface IFixtureMap {
-  [key: string]: { [key: string]: FixtureResult };
-}
+//
+// Cache nodes/llparse instances ahead of time
+// (different types of tests will re-use them)
+//
 
-function buildMode(mode: llhttp.HTTPMode, ty: TestType): FixtureResult {
-  // Build binary
+function buildNode(mode: llhttp.HTTPMode) {
   const p = new LLParse();
   const instance = new llhttp.HTTP(p, mode);
 
-  const result = instance.build();
+  return { llparse: p, entry: instance.build().entry };
+}
 
-  return build(p, result.entry, `http-req-${mode}-${ty}`, {
+const httpNode = {
+  loose: buildNode('loose'),
+  strict: buildNode('strict'),
+};
+
+//
+// Build binaries using cached nodes/llparse
+//
+
+function buildMode(mode: llhttp.HTTPMode, ty: TestType): FixtureResult {
+  const node = httpNode[mode];
+
+  return build(node.llparse, node.entry, `http-req-${mode}-${ty}`, {
     extra: [
       '-DHTTP_PARSER__TEST_HTTP',
       path.join(__dirname, '..', 'src', 'native', 'http.c'),
     ],
   }, ty);
+}
+
+interface IFixtureMap {
+  [key: string]: { [key: string]: FixtureResult };
 }
 
 const http: IFixtureMap = {
@@ -38,6 +55,10 @@ const http: IFixtureMap = {
     response: buildMode('strict', 'response'),
   },
 };
+
+//
+// Run test suite
+//
 
 function run(name: string): void {
   const md = new MDGator();

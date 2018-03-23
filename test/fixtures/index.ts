@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { LLParse } from 'llparse';
+import { ICompilerResult, LLParse } from 'llparse';
 import { Dot } from 'llparse-dot';
 import {
   Fixture, FixtureResult, IFixtureBuildOptions,
@@ -33,6 +33,8 @@ const fixtures = new Fixture({
   ],
 });
 
+const cache: Map<any, ICompilerResult> = new Map();
+
 export function build(llparse: LLParse, node: any, outFile: string,
                       options: IFixtureBuildOptions = {},
                       ty: TestType = 'none'): FixtureResult {
@@ -40,9 +42,15 @@ export function build(llparse: LLParse, node: any, outFile: string,
   fs.writeFileSync(path.join(BUILD_DIR, outFile + '.dot'),
     dot.build(node));
 
-  const artifacts = llparse.build(node, {
-    debug: process.env.LLPARSE_DEBUG ? 'llparse__debug' : undefined,
-  });
+  let artifacts: ICompilerResult;
+  if (cache.has(node)) {
+    artifacts = cache.get(node)!;
+  } else {
+    artifacts = llparse.build(node, {
+      debug: process.env.LLPARSE_DEBUG ? 'llparse__debug' : undefined,
+    });
+    cache.set(node, artifacts);
+  }
 
   const extra = options.extra === undefined ? [] : options.extra.slice();
   if (ty !== 'none') {
