@@ -1,6 +1,8 @@
 # LLHTTP requests
 
-## Simple request
+## Sample requests
+
+### Simple request
 
 <!-- meta={"type": "request"} -->
 ```http
@@ -22,9 +24,7 @@ off=60 headers complete method=6 v=1/1 flags=0 content_length=0
 off=60 message complete
 ```
 
----
-
-## Request with method starting with `H`
+### Request with method starting with `H`
 
 There's a optimization in `start_req_or_res` that passes execution to
 `start_req` when the first character is not `H` (because response must start
