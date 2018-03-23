@@ -182,6 +182,88 @@ off=53 headers complete method=1 v=1/1 flags=0 content_length=0
 off=53 message complete
 ```
 
+### Quotes in URI
+
+<!-- meta={"type": "request"} -->
+```http
+GET /with_"lovely"_quotes?foo=\"bar\" HTTP/1.1
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=33 span[url]="/with_"lovely"_quotes?foo=\"bar\""
+off=50 headers complete method=1 v=1/1 flags=0 content_length=0
+off=50 message complete
+```
+
+### Apache bench GET
+
+The server receiving this request SHOULD NOT wait for EOF to know that
+`Content-Length == 0`.
+
+<!-- meta={"type": "request"} -->
+```http
+GET /test HTTP/1.0
+Host: 0.0.0.0:5000
+User-Agent: ApacheBench/2.3
+Accept: */*
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=5 span[url]="/test"
+off=20 len=4 span[header_field]="Host"
+off=26 len=12 span[header_value]="0.0.0.0:5000"
+off=40 len=10 span[header_field]="User-Agent"
+off=52 len=15 span[header_value]="ApacheBench/2.3"
+off=69 len=6 span[header_field]="Accept"
+off=77 len=3 span[header_value]="*/*"
+off=84 headers complete method=1 v=1/0 flags=0 content_length=0
+off=84 message complete
+```
+
+### Query URL with question mark
+
+Some clients include `?` characters in query strings.
+
+<!-- meta={"type": "request"} -->
+```http
+GET /test.cgi?foo=bar?baz HTTP/1.1
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=21 span[url]="/test.cgi?foo=bar?baz"
+off=38 headers complete method=1 v=1/1 flags=0 content_length=0
+off=38 message complete
+```
+
+### Prefix newline
+
+Some clients, especially after a POST in a keep-alive connection,
+will send an extra CRLF before the next request.
+
+<!-- meta={"type": "request"} -->
+```http
+
+GET /test HTTP/1.1
+
+
+```
+
+```log
+off=2 message begin
+off=6 len=5 span[url]="/test"
+off=24 headers complete method=1 v=1/1 flags=0 content_length=0
+off=24 message complete
+```
+
 ---
 
 ## `Content-Length` header
@@ -500,6 +582,75 @@ off=92 chunk complete
 off=97 chunk header len=0
 off=99 chunk complete
 off=99 message complete
+```
+
+### Trailing headers
+
+<!-- meta={"type": "request"} -->
+```http
+POST /chunked_w_trailing_headers HTTP/1.1
+Transfer-Encoding: chunked
+
+5
+hello
+6
+ world
+0
+Vary: *
+Content-Type: text/plain
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=27 span[url]="/chunked_w_trailing_headers"
+off=43 len=17 span[header_field]="Transfer-Encoding"
+off=62 len=7 span[header_value]="chunked"
+off=73 headers complete method=3 v=1/1 flags=8 content_length=0
+off=76 chunk header len=5
+off=76 len=5 span[body]="hello"
+off=83 chunk complete
+off=86 chunk header len=6
+off=86 len=6 span[body]=" world"
+off=94 chunk complete
+off=97 chunk header len=0
+off=97 len=4 span[header_field]="Vary"
+off=103 len=1 span[header_value]="*"
+off=106 len=12 span[header_field]="Content-Type"
+off=120 len=10 span[header_value]="text/plain"
+off=134 chunk complete
+off=134 message complete
+```
+
+### Parameters after chunk length
+
+<!-- meta={"type": "request"} -->
+```http
+POST /chunked_w_unicorns_after_length HTTP/1.1
+Transfer-Encoding: chunked
+
+5; ilovew3;somuchlove=aretheseparametersfor
+hello
+6; blahblah; blah
+ world
+0
+
+```
+
+```log
+off=0 message begin
+off=5 len=32 span[url]="/chunked_w_unicorns_after_length"
+off=48 len=17 span[header_field]="Transfer-Encoding"
+off=67 len=7 span[header_value]="chunked"
+off=78 headers complete method=3 v=1/1 flags=8 content_length=0
+off=123 chunk header len=5
+off=123 len=5 span[body]="hello"
+off=130 chunk complete
+off=149 chunk header len=6
+off=149 len=6 span[body]=" world"
+off=157 chunk complete
+off=160 chunk header len=0
 ```
 
 ---
