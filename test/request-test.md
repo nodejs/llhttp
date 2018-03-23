@@ -114,7 +114,7 @@ off=365 message complete
 
 <!-- meta={"type": "request"} -->
 ```http
-GET /dumbfuck HTTP/1.1
+GET /dumbpack HTTP/1.1
 aaaaaaaaaaaaa:++++++++++
 
 
@@ -122,7 +122,7 @@ aaaaaaaaaaaaa:++++++++++
 
 ```log
 off=0 message begin
-off=4 len=9 span[url]="/dumbfuck"
+off=4 len=9 span[url]="/dumbpack"
 off=24 len=13 span[header_field]="aaaaaaaaaaaaa"
 off=38 len=10 span[header_value]="++++++++++"
 off=52 headers complete method=1 v=1/1 flags=0 content_length=0
