@@ -2,6 +2,8 @@
 
 ## Sample requests
 
+Lots of sample requests, most ported from [http_parser][0] test suite.
+
 ### Simple request
 
 <!-- meta={"type": "request"} -->
@@ -129,6 +131,57 @@ off=52 headers complete method=1 v=1/1 flags=0 content_length=0
 off=52 message complete
 ```
 
+### Fragment in URI
+
+<!-- meta={"type": "request"} -->
+```http
+GET /forums/1/topics/2375?page=1#posts-17408 HTTP/1.1
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=40 span[url]="/forums/1/topics/2375?page=1#posts-17408"
+off=57 headers complete method=1 v=1/1 flags=0 content_length=0
+off=57 message complete
+```
+
+### No headers and no body
+
+<!-- meta={"type": "request"} -->
+```http
+GET /get_no_headers_no_body/world HTTP/1.1
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=29 span[url]="/get_no_headers_no_body/world"
+off=46 headers complete method=1 v=1/1 flags=0 content_length=0
+off=46 message complete
+```
+
+### One header and no body
+
+<!-- meta={"type": "request"} -->
+```http
+GET /get_one_header_no_body HTTP/1.1
+Accept: */*
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=23 span[url]="/get_one_header_no_body"
+off=38 len=6 span[header_field]="Accept"
+off=46 len=3 span[header_value]="*/*"
+off=53 headers complete method=1 v=1/1 flags=0 content_length=0
+off=53 message complete
+```
+
 ---
 
 ## `Content-Length` header
@@ -241,6 +294,26 @@ off=57 len=7 span[header_value]="chunked"
 off=68 error code=4 reason="Content-Length can't be present with chunked encoding"
 ```
 
+### Funky `Content-Length` with body
+
+<!-- meta={"type": "request"} -->
+```http
+GET /get_funky_content_length_body_hello HTTP/1.0
+conTENT-Length: 5
+
+HELLO
+```
+
+```log
+off=0 message begin
+off=4 len=36 span[url]="/get_funky_content_length_body_hello"
+off=51 len=14 span[header_field]="conTENT-Length"
+off=67 len=1 span[header_value]="5"
+off=72 headers complete method=1 v=1/0 flags=20 content_length=5
+off=72 len=5 span[body]="HELLO"
+off=77 message complete
+```
+
 ---
 
 ## `Transfer-Encoding` header
@@ -340,6 +413,93 @@ off=19 len=17 span[header_field]="Transfer-Encoding"
 off=38 len=7 span[header_value]="pigeons"
 off=49 headers complete method=4 v=1/1 flags=0 content_length=0
 off=49 message complete
+```
+
+### POST with `Transfer-Encoding: identity`
+
+<!-- meta={"type": "request"} -->
+```http
+POST /post_identity_body_world?q=search#hey HTTP/1.1
+Accept: */*
+Transfer-Encoding: identity
+Content-Length: 5
+
+World
+```
+
+```log
+off=0 message begin
+off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=54 len=6 span[header_field]="Accept"
+off=62 len=3 span[header_value]="*/*"
+off=67 len=17 span[header_field]="Transfer-Encoding"
+off=86 len=8 span[header_value]="identity"
+off=96 len=14 span[header_field]="Content-Length"
+off=112 len=1 span[header_value]="5"
+off=117 headers complete method=3 v=1/1 flags=20 content_length=5
+off=117 len=5 span[body]="World"
+off=122 message complete
+```
+
+### POST with `Transfer-Encoding: chunked`
+
+<!-- meta={"type": "request"} -->
+```http
+POST /post_chunked_all_your_base HTTP/1.1
+Transfer-Encoding: chunked
+
+1e
+all your base are belong to us
+0
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=27 span[url]="/post_chunked_all_your_base"
+off=43 len=17 span[header_field]="Transfer-Encoding"
+off=62 len=7 span[header_value]="chunked"
+off=73 headers complete method=3 v=1/1 flags=8 content_length=0
+off=77 chunk header len=30
+off=77 len=30 span[body]="all your base are belong to us"
+off=109 chunk complete
+off=112 chunk header len=0
+off=114 chunk complete
+off=114 message complete
+```
+
+### Two chunks and triple zero prefixed end chunk
+
+<!-- meta={"type": "request"} -->
+```http
+POST /two_chunks_mult_zero_end HTTP/1.1
+Transfer-Encoding: chunked
+
+5
+hello
+6
+ world
+000
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=25 span[url]="/two_chunks_mult_zero_end"
+off=41 len=17 span[header_field]="Transfer-Encoding"
+off=60 len=7 span[header_value]="chunked"
+off=71 headers complete method=3 v=1/1 flags=8 content_length=0
+off=74 chunk header len=5
+off=74 len=5 span[body]="hello"
+off=81 chunk complete
+off=84 chunk header len=6
+off=84 len=6 span[body]=" world"
+off=92 chunk complete
+off=97 chunk header len=0
+off=99 chunk complete
+off=99 message complete
 ```
 
 ---
@@ -535,3 +695,5 @@ off=78 error code=21 reason="Pause on CONNECT/Upgrade"
 ```
 
 ---
+
+[0]: https://github.com/nodejs/http-parser
