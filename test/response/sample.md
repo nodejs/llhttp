@@ -115,6 +115,59 @@ off=493 len=1 span[body]=lf
 off=494 len=14 span[body]="</BODY></HTML>"
 ```
 
+## amazon.com
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 301 MovedPermanently
+Date: Wed, 15 May 2013 17:06:33 GMT
+Server: Server
+x-amz-id-1: 0GPHKXSJQ826RK7GZEB2
+p3p: policyref="http://www.amazon.com/w3c/p3p.xml",CP="CAO DSP LAW CUR ADM IVAo IVDo CONo OTPo OUR DELi PUBi OTRi BUS PHY ONL UNI PUR FIN COM NAV INT DEM CNT STA HEA PRE LOC GOV OTC "
+x-amz-id-2: STN69VZxIFSz9YJLbz1GDbxpbjG6Qjmmq5E3DxRhOUw+Et0p4hr7c/Q8qNcx4oAD
+Location: http://www.amazon.com/Dan-Brown/e/B000AP9DSU/ref=s9_pop_gw_al1?_encoding=UTF8&refinementId=618073011&pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0SHYY5BZXN3KR20BNFAY&pf_rd_t=101&pf_rd_p=1263340922&pf_rd_i=507846
+Vary: Accept-Encoding,User-Agent
+Content-Type: text/html; charset=ISO-8859-1
+Transfer-Encoding: chunked
+
+1
+\n
+0
+
+
+```
+
+```log
+off=0 message begin
+off=13 len=16 span[status]="MovedPermanently"
+off=31 len=4 span[header_field]="Date"
+off=37 len=29 span[header_value]="Wed, 15 May 2013 17:06:33 GMT"
+off=68 len=6 span[header_field]="Server"
+off=76 len=6 span[header_value]="Server"
+off=84 len=10 span[header_field]="x-amz-id-1"
+off=96 len=20 span[header_value]="0GPHKXSJQ826RK7GZEB2"
+off=118 len=3 span[header_field]="p3p"
+off=123 len=178 span[header_value]="policyref="http://www.amazon.com/w3c/p3p.xml",CP="CAO DSP LAW CUR ADM IVAo IVDo CONo OTPo OUR DELi PUBi OTRi BUS PHY ONL UNI PUR FIN COM NAV INT DEM CNT STA HEA PRE LOC GOV OTC ""
+off=303 len=10 span[header_field]="x-amz-id-2"
+off=315 len=64 span[header_value]="STN69VZxIFSz9YJLbz1GDbxpbjG6Qjmmq5E3DxRhOUw+Et0p4hr7c/Q8qNcx4oAD"
+off=381 len=8 span[header_field]="Location"
+off=391 len=214 span[header_value]="http://www.amazon.com/Dan-Brown/e/B000AP9DSU/ref=s9_pop_gw_al1?_encoding=UTF8&refinementId=618073011&pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0SHYY5BZXN3KR20BNFAY&pf_rd_t=101&pf_rd_p=1263340922&pf_rd_i=507846"
+off=607 len=4 span[header_field]="Vary"
+off=613 len=26 span[header_value]="Accept-Encoding,User-Agent"
+off=641 len=12 span[header_field]="Content-Type"
+off=655 len=29 span[header_value]="text/html; charset=ISO-8859-1"
+off=686 len=17 span[header_field]="Transfer-Encoding"
+off=705 len=7 span[header_value]="chunked"
+off=716 headers complete status=301 v=1/1 flags=8 content_length=0
+off=719 chunk header len=1
+off=719 len=0 span[body]=""
+off=719 len=1 span[body]=lf
+off=722 chunk complete
+off=725 chunk header len=0
+off=727 chunk complete
+off=727 message complete
+```
+
 ## No headers and no body
 
 <!-- meta={"type": "response"} -->
@@ -142,6 +195,20 @@ HTTP/1.1 301
 ```log
 off=0 message begin
 off=16 headers complete status=301 v=1/1 flags=0 content_length=0
+```
+
+## Empty reason phrase after space
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 \r\n\
+
+
+```
+
+```log
+off=0 message begin
+off=17 headers complete status=200 v=1/1 flags=0 content_length=0
 ```
 
 ## No carriage ret
@@ -242,7 +309,7 @@ off=282 headers complete status=301 v=1/0 flags=21 content_length=0
 off=282 message complete
 ```
 
-## Spaces in header fields
+## Spaces in header value
 
 <!-- meta={"type": "response"} -->
 ```http
@@ -293,6 +360,72 @@ off=365 headers complete status=200 v=1/1 flags=a content_length=0
 off=368 chunk header len=0
 off=370 chunk complete
 off=370 message complete
+```
+
+## Spaces in header name in strict mode
+
+<!-- meta={"type": "response", "mode": "strict", "noScan": true} -->
+```http
+HTTP/1.1 200 OK
+Server: Microsoft-IIS/6.0
+X-Powered-By: ASP.NET
+en-US Content-Type: text/xml
+Content-Type: text/xml
+Content-Length: 16
+Date: Fri, 23 Jul 2010 18:45:38 GMT
+Connection: keep-alive
+
+<xml>hello</xml>
+```
+
+```log
+off=0 message begin
+off=13 len=2 span[status]="OK"
+off=17 len=6 span[header_field]="Server"
+off=25 len=17 span[header_value]="Microsoft-IIS/6.0"
+off=44 len=12 span[header_field]="X-Powered-By"
+off=58 len=7 span[header_value]="ASP.NET"
+off=72 error code=10 reason="Invalid header token"
+```
+
+## Spaces in header name in loose mode
+
+`en-US Content-Type` must be treated as a header name
+
+<!-- meta={"type": "response", "mode": "loose"} -->
+```http
+HTTP/1.1 200 OK
+Server: Microsoft-IIS/6.0
+X-Powered-By: ASP.NET
+en-US Content-Type: text/xml
+Content-Type: text/xml
+Content-Length: 16
+Date: Fri, 23 Jul 2010 18:45:38 GMT
+Connection: keep-alive
+
+<xml>hello</xml>
+```
+
+```log
+off=0 message begin
+off=13 len=2 span[status]="OK"
+off=17 len=6 span[header_field]="Server"
+off=25 len=17 span[header_value]="Microsoft-IIS/6.0"
+off=44 len=12 span[header_field]="X-Powered-By"
+off=58 len=7 span[header_value]="ASP.NET"
+off=67 len=18 span[header_field]="en-US Content-Type"
+off=87 len=8 span[header_value]="text/xml"
+off=97 len=12 span[header_field]="Content-Type"
+off=111 len=8 span[header_value]="text/xml"
+off=121 len=14 span[header_field]="Content-Length"
+off=137 len=2 span[header_value]="16"
+off=141 len=4 span[header_field]="Date"
+off=147 len=29 span[header_value]="Fri, 23 Jul 2010 18:45:38 GMT"
+off=178 len=10 span[header_field]="Connection"
+off=190 len=10 span[header_value]="keep-alive"
+off=204 headers complete status=200 v=1/1 flags=21 content_length=16
+off=204 len=16 span[body]="<xml>hello</xml>"
+off=220 message complete
 ```
 
 ## Non ASCII in status line

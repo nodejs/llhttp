@@ -61,3 +61,37 @@ off=443 len=18 span[body]="  </SOAP-ENV:Body>"
 off=461 len=1 span[body]=lf
 off=462 len=20 span[body]="</SOAP-ENV:Envelope>"
 ```
+
+## Content-Length-X
+
+The header that starts with `Content-Length*` should not be treated as
+`Content-Length`.
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK
+Content-Length-X: 0
+Transfer-Encoding: chunked
+
+2
+OK
+0
+
+
+```
+
+```log
+off=0 message begin
+off=13 len=2 span[status]="OK"
+off=17 len=16 span[header_field]="Content-Length-X"
+off=35 len=1 span[header_value]="0"
+off=38 len=17 span[header_field]="Transfer-Encoding"
+off=57 len=7 span[header_value]="chunked"
+off=68 headers complete status=200 v=1/1 flags=8 content_length=0
+off=71 chunk header len=2
+off=71 len=2 span[body]="OK"
+off=75 chunk complete
+off=78 chunk header len=0
+off=80 chunk complete
+off=80 message complete
+```

@@ -67,7 +67,8 @@ function run(name: string): void {
   const groups = md.parse(raw);
 
   function runSingleTest(mode: llhttp.HTTPMode, ty: TestType, meta: any,
-                         input: string, expected: ReadonlyArray<string>): void {
+                         input: string,
+                         expected: ReadonlyArray<string | RegExp>): void {
     it(`should pass in mode="${mode}" and for type="${ty}"`, async () => {
       await http[mode][ty].check(input, expected, {
         noScan: meta.noScan === true,
@@ -133,10 +134,20 @@ function run(name: string): void {
       // Replace escaped tabs in expected too
       expected = expected.replace(/\\t/g, '\t');
 
+      // Split
+      const expectedLines = expected.split(/\n/g).slice(0, -1);
+
+      const fullExpected = expectedLines.map((line) => {
+        if (line.startsWith('/')) {
+          return new RegExp(line.trim().slice(1, -1));
+        } else {
+          return line;
+        }
+      });
+
       modes.forEach((mode) => {
         types.forEach((ty) => {
-          runSingleTest(mode, ty, meta, req,
-            expected.split(/\n/g).slice(0, -1));
+          runSingleTest(mode, ty, meta, req, fullExpected);
         });
       });
     });
