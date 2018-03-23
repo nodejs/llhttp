@@ -382,9 +382,7 @@ off=78 message complete
 off=78 error code=21 reason="Pause on CONNECT/Upgrade"
 ```
 
-### Upgrade request sample
-
-_(Ported from [http_parser][0])_
+### Upgrade GET request
 
 <!-- meta={"type": "request"} -->
 ```http
@@ -422,4 +420,33 @@ off=224 message complete
 off=224 error code=21 reason="Pause on CONNECT/Upgrade"
 ```
 
-[0]: https://github.com/nodejs/http-parser
+### Upgrade POST request
+
+<!-- meta={"type": "request"} -->
+```http
+POST /demo HTTP/1.1
+Host: example.com
+Connection: Upgrade
+Upgrade: HTTP/2.0
+Content-Length: 15
+
+sweet post body\
+Hot diggity dogg
+```
+
+```log
+off=0 message begin
+off=5 len=5 span[url]="/demo"
+off=21 len=4 span[header_field]="Host"
+off=27 len=11 span[header_value]="example.com"
+off=40 len=10 span[header_field]="Connection"
+off=52 len=7 span[header_value]="Upgrade"
+off=61 len=7 span[header_field]="Upgrade"
+off=70 len=8 span[header_value]="HTTP/2.0"
+off=80 len=14 span[header_field]="Content-Length"
+off=96 len=2 span[header_value]="15"
+off=102 headers complete method=3 v=1/1 flags=34 content_length=15
+off=102 len=15 span[body]="sweet post body"
+off=117 message complete
+off=117 error code=21 reason="Pause on CONNECT/Upgrade"
+```
