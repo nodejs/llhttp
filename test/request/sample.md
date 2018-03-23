@@ -228,7 +228,7 @@ off=9 headers complete method=1 v=0/9 flags=0 content_length=0
 off=9 message complete
 ```
 
-## Line folding in header value
+## Line folding in header value with CRLF
 
 <!-- meta={"type": "request"} -->
 ```http
@@ -270,6 +270,49 @@ off=110 len=10 span[header_field]="Connection"
 off=124 len=5 span[header_value]="close"
 off=133 headers complete method=1 v=1/1 flags=2 content_length=0
 off=133 message complete
+```
+
+## Line folding in header value with LF
+
+<!-- meta={"type": "request"} -->
+```http
+GET / HTTP/1.1\n\
+Line1:   abc\n\
+\tdef\n\
+ ghi\n\
+\t\tjkl\n\
+  mno \n\
+\t \tqrs\n\
+Line2: \t line2\t\n\
+Line3:\n\
+ line3\n\
+Line4: \n\
+ \n\
+Connection:\n\
+ close\n\
+\n
+```
+
+```log
+off=0 message begin
+off=4 len=1 span[url]="/"
+off=15 len=5 span[header_field]="Line1"
+off=24 len=3 span[header_value]="abc"
+off=28 len=4 span[header_value]="\tdef"
+off=33 len=4 span[header_value]=" ghi"
+off=38 len=5 span[header_value]="\t\tjkl"
+off=44 len=6 span[header_value]="  mno "
+off=51 len=6 span[header_value]="\t \tqrs"
+off=58 len=5 span[header_field]="Line2"
+off=67 len=6 span[header_value]="line2\t"
+off=74 len=5 span[header_field]="Line3"
+off=82 len=5 span[header_value]="line3"
+off=88 len=5 span[header_field]="Line4"
+off=98 len=0 span[header_value]=""
+off=98 len=10 span[header_field]="Connection"
+off=111 len=5 span[header_value]="close"
+off=118 headers complete method=1 v=1/1 flags=2 content_length=0
+off=118 message complete
 ```
 
 [0]: https://github.com/nodejs/http-parser

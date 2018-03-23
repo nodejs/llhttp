@@ -155,3 +155,19 @@ off=115 headers complete method=5 v=1/0 flags=0 content_length=0
 off=115 message complete
 off=115 error code=21 reason="Pause on CONNECT/Upgrade"
 ```
+
+## `host:port` and basic auth
+
+<!-- meta={"type": "request"} -->
+```http
+GET http://a%12:b!&*$@hypnotoad.org:1234/toto HTTP/1.1
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=41 span[url]="http://a%12:b!&*$@hypnotoad.org:1234/toto"
+off=58 headers complete method=1 v=1/1 flags=0 content_length=0
+off=58 message complete
+```

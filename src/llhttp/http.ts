@@ -431,7 +431,8 @@ export class HTTP {
     n('header_value_connection')
       .transform(p.transform.toLowerUnsafe())
       // TODO(indutny): extra node for token back-edge?
-      .match(' ', n('header_value_connection'))
+      // Skip lws
+      .match([ ' ', '\t' ], n('header_value_connection'))
       .match(
         'close',
         this.update('header_state', HEADER_STATE.CONNECTION_CLOSE,
@@ -727,10 +728,14 @@ export class HTTP {
     const HS = HEADER_STATE;
     const F = FLAGS;
 
+    const toConnection =
+      this.update('header_state', HEADER_STATE.CONNECTION, next);
+
     return this.load('header_state', {
-      [HS.CONNECTION_KEEP_ALIVE]: this.setFlag(F.CONNECTION_KEEP_ALIVE, next),
-      [HS.CONNECTION_CLOSE]: this.setFlag(F.CONNECTION_CLOSE, next),
-      [HS.CONNECTION_UPGRADE]: this.setFlag(F.CONNECTION_UPGRADE, next),
+      [HS.CONNECTION_KEEP_ALIVE]:
+        this.setFlag(F.CONNECTION_KEEP_ALIVE, toConnection),
+      [HS.CONNECTION_CLOSE]: this.setFlag(F.CONNECTION_CLOSE, toConnection),
+      [HS.CONNECTION_UPGRADE]: this.setFlag(F.CONNECTION_UPGRADE, toConnection),
       [HS.TRANSFER_ENCODING_CHUNKED]: this.setFlag(F.CHUNKED, next),
     }, this.node(next));
   }

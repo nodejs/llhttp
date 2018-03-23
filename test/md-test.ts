@@ -119,6 +119,9 @@ function run(name: string): void {
       // Remove trailing newline
       req = req.replace(/\n$/, '');
 
+      // Remove escaped newlines
+      req = req.replace(/\\(\r\n|\r|\n)/g, '');
+
       // Normalize all newlines
       req = req.replace(/\r\n|\r|\n/g, '\r\n');
 

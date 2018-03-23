@@ -224,6 +224,8 @@ off=141 len=1 span[url]="/"
 
 ## Parsing multiple tokens
 
+### Sample
+
 <!-- meta={"type": "request"} -->
 ```http
 PUT /url HTTP/1.1
@@ -239,6 +241,93 @@ off=19 len=10 span[header_field]="Connection"
 off=31 len=40 span[header_value]="close, token, upgrade, token, keep-alive"
 off=75 headers complete method=4 v=1/1 flags=7 content_length=0
 off=75 message complete
+```
+
+### Multiple tokens with folding
+
+<!-- meta={"type": "request"} -->
+```http
+GET /demo HTTP/1.1
+Host: example.com
+Connection: Something,
+ Upgrade, ,Keep-Alive
+Sec-WebSocket-Key2: 12998 5 Y3 1  .P00
+Sec-WebSocket-Protocol: sample
+Upgrade: WebSocket
+Sec-WebSocket-Key1: 4 @1  46546xW%0l 1 5
+Origin: http://example.com
+
+Hot diggity dogg
+```
+
+```log
+off=0 message begin
+off=4 len=5 span[url]="/demo"
+off=20 len=4 span[header_field]="Host"
+off=26 len=11 span[header_value]="example.com"
+off=39 len=10 span[header_field]="Connection"
+off=51 len=10 span[header_value]="Something,"
+off=63 len=21 span[header_value]=" Upgrade, ,Keep-Alive"
+off=86 len=18 span[header_field]="Sec-WebSocket-Key2"
+off=106 len=18 span[header_value]="12998 5 Y3 1  .P00"
+off=126 len=22 span[header_field]="Sec-WebSocket-Protocol"
+off=150 len=6 span[header_value]="sample"
+off=158 len=7 span[header_field]="Upgrade"
+off=167 len=9 span[header_value]="WebSocket"
+off=178 len=18 span[header_field]="Sec-WebSocket-Key1"
+off=198 len=20 span[header_value]="4 @1  46546xW%0l 1 5"
+off=220 len=6 span[header_field]="Origin"
+off=228 len=18 span[header_value]="http://example.com"
+off=250 headers complete method=1 v=1/1 flags=15 content_length=0
+off=250 message complete
+off=250 error code=21 reason="Pause on CONNECT/Upgrade"
+```
+
+### Multiple tokens with folding and LWS
+
+<!-- meta={"type": "request"} -->
+```http
+GET /demo HTTP/1.1
+Connection: keep-alive, upgrade
+Upgrade: WebSocket
+
+Hot diggity dogg
+```
+
+```log
+off=0 message begin
+off=4 len=5 span[url]="/demo"
+off=20 len=10 span[header_field]="Connection"
+off=32 len=19 span[header_value]="keep-alive, upgrade"
+off=53 len=7 span[header_field]="Upgrade"
+off=62 len=9 span[header_value]="WebSocket"
+off=75 headers complete method=1 v=1/1 flags=15 content_length=0
+off=75 message complete
+off=75 error code=21 reason="Pause on CONNECT/Upgrade"
+```
+
+### Multiple tokens with folding, LWS, and CRLF
+
+<!-- meta={"type": "request"} -->
+```http
+GET /demo HTTP/1.1
+Connection: keep-alive, \r\n upgrade
+Upgrade: WebSocket
+
+Hot diggity dogg
+```
+
+```log
+off=0 message begin
+off=4 len=5 span[url]="/demo"
+off=20 len=10 span[header_field]="Connection"
+off=32 len=12 span[header_value]="keep-alive, "
+off=46 len=8 span[header_value]=" upgrade"
+off=56 len=7 span[header_field]="Upgrade"
+off=65 len=9 span[header_value]="WebSocket"
+off=78 headers complete method=1 v=1/1 flags=15 content_length=0
+off=78 message complete
+off=78 error code=21 reason="Pause on CONNECT/Upgrade"
 ```
 
 ## `upgrade`

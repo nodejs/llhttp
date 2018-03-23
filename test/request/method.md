@@ -136,3 +136,22 @@ off=32 len=15 span[header_value]="www.example.com"
 off=51 headers complete method=29 v=1/1 flags=0 content_length=0
 off=51 message complete
 ```
+
+### SEARCH request
+
+<!-- meta={"type": "request"} -->
+```http
+SEARCH / HTTP/1.1
+Host: www.example.com
+
+
+```
+
+```log
+off=0 message begin
+off=7 len=1 span[url]="/"
+off=19 len=4 span[header_field]="Host"
+off=25 len=15 span[header_value]="www.example.com"
+off=44 headers complete method=14 v=1/1 flags=0 content_length=0
+off=44 message complete
+```
