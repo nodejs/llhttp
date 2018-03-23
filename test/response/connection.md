@@ -222,3 +222,90 @@ off=118 chunk complete
 off=118 message complete
 off=118 error code=21 reason="Pause on CONNECT/Upgrade"
 ```
+
+## HTTP 200 response with Upgrade header
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK
+Connection: upgrade
+Upgrade: h2c
+
+body
+```
+
+```log
+off=0 message begin
+off=13 len=2 span[status]="OK"
+off=17 len=10 span[header_field]="Connection"
+off=29 len=7 span[header_value]="upgrade"
+off=38 len=7 span[header_field]="Upgrade"
+off=47 len=3 span[header_value]="h2c"
+off=54 headers complete status=200 v=1/1 flags=14 content_length=0
+off=54 len=4 span[body]="body"
+```
+
+## HTTP 200 response with Upgrade header and Content-Length
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK
+Connection: upgrade
+Upgrade: h2c
+Content-Length: 4
+
+body
+```
+
+```log
+off=0 message begin
+off=13 len=2 span[status]="OK"
+off=17 len=10 span[header_field]="Connection"
+off=29 len=7 span[header_value]="upgrade"
+off=38 len=7 span[header_field]="Upgrade"
+off=47 len=3 span[header_value]="h2c"
+off=52 len=14 span[header_field]="Content-Length"
+off=68 len=1 span[header_value]="4"
+off=73 headers complete status=200 v=1/1 flags=34 content_length=4
+off=73 len=4 span[body]="body"
+off=77 message complete
+```
+
+## HTTP 200 response with Upgrade header and Transfer-Encoding
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK
+Connection: upgrade
+Upgrade: h2c
+Transfer-Encoding: chunked
+
+2
+bo
+2
+dy
+0
+
+
+```
+
+```log
+off=0 message begin
+off=13 len=2 span[status]="OK"
+off=17 len=10 span[header_field]="Connection"
+off=29 len=7 span[header_value]="upgrade"
+off=38 len=7 span[header_field]="Upgrade"
+off=47 len=3 span[header_value]="h2c"
+off=52 len=17 span[header_field]="Transfer-Encoding"
+off=71 len=7 span[header_value]="chunked"
+off=82 headers complete status=200 v=1/1 flags=1c content_length=0
+off=85 chunk header len=2
+off=85 len=2 span[body]="bo"
+off=89 chunk complete
+off=92 chunk header len=2
+off=92 len=2 span[body]="dy"
+off=96 chunk complete
+off=99 chunk header len=0
+off=101 chunk complete
+off=101 message complete
+```
