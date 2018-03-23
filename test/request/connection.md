@@ -99,7 +99,40 @@ off=78 len=7 span[header_value]="chunked"
 off=89 headers complete method=4 v=1/1 flags=8 content_length=0
 ```
 
-## Setting flag on `close`
+### CRLF between requests, implicit `keep-alive`
+
+<!-- meta={"type": "request"} -->
+```http
+POST / HTTP/1.1
+Host: www.example.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 4
+
+q=42
+
+GET / HTTP/1.1
+```
+_Note the trailing CRLF above_
+
+```log
+off=0 message begin
+off=5 len=1 span[url]="/"
+off=17 len=4 span[header_field]="Host"
+off=23 len=15 span[header_value]="www.example.com"
+off=40 len=12 span[header_field]="Content-Type"
+off=54 len=33 span[header_value]="application/x-www-form-urlencoded"
+off=89 len=14 span[header_field]="Content-Length"
+off=105 len=1 span[header_value]="4"
+off=110 headers complete method=3 v=1/1 flags=20 content_length=4
+off=110 len=4 span[body]="q=42"
+off=114 message complete
+off=118 message begin
+off=122 len=1 span[url]="/"
+```
+
+## `close`
+
+### Setting flag on `close`
 
 <!-- meta={"type": "request"} -->
 ```http
@@ -116,6 +149,77 @@ off=19 len=10 span[header_field]="Connection"
 off=31 len=5 span[header_value]="close"
 off=40 headers complete method=4 v=1/1 flags=2 content_length=0
 off=40 message complete
+```
+
+### CRLF between requests, explicit `close` (strict mode)
+
+`close` means closed connection in strict mode.
+
+<!-- meta={"type": "request", "mode": "strict"} -->
+```http
+POST / HTTP/1.1
+Host: www.example.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 4
+Connection: close
+
+q=42
+
+GET / HTTP/1.1
+```
+_Note the trailing CRLF above_
+
+```log
+off=0 message begin
+off=5 len=1 span[url]="/"
+off=17 len=4 span[header_field]="Host"
+off=23 len=15 span[header_value]="www.example.com"
+off=40 len=12 span[header_field]="Content-Type"
+off=54 len=33 span[header_value]="application/x-www-form-urlencoded"
+off=89 len=14 span[header_field]="Content-Length"
+off=105 len=1 span[header_value]="4"
+off=108 len=10 span[header_field]="Connection"
+off=120 len=5 span[header_value]="close"
+off=129 headers complete method=3 v=1/1 flags=22 content_length=4
+off=129 len=4 span[body]="q=42"
+off=133 message complete
+off=138 error code=5 reason="Data after `Connection: close`"
+```
+
+### CRLF between requests, explicit `close` (loose mode)
+
+Loose mode is more lenient, and allows further requests.
+
+<!-- meta={"type": "request", "mode": "loose"} -->
+```http
+POST / HTTP/1.1
+Host: www.example.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 4
+Connection: close
+
+q=42
+
+GET / HTTP/1.1
+```
+_Note the trailing CRLF above_
+
+```log
+off=0 message begin
+off=5 len=1 span[url]="/"
+off=17 len=4 span[header_field]="Host"
+off=23 len=15 span[header_value]="www.example.com"
+off=40 len=12 span[header_field]="Content-Type"
+off=54 len=33 span[header_value]="application/x-www-form-urlencoded"
+off=89 len=14 span[header_field]="Content-Length"
+off=105 len=1 span[header_value]="4"
+off=108 len=10 span[header_field]="Connection"
+off=120 len=5 span[header_value]="close"
+off=129 headers complete method=3 v=1/1 flags=22 content_length=4
+off=129 len=4 span[body]="q=42"
+off=133 message complete
+off=137 message begin
+off=141 len=1 span[url]="/"
 ```
 
 ## Parsing multiple tokens

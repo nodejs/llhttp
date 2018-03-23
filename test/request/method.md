@@ -117,3 +117,22 @@ off=129 headers complete method=28 v=1/1 flags=20 content_length=10
 off=129 len=10 span[body]="cccccccccc"
 off=139 message complete
 ```
+
+### PURGE request
+
+<!-- meta={"type": "request"} -->
+```http
+PURGE /file.txt HTTP/1.1
+Host: www.example.com
+
+
+```
+
+```log
+off=0 message begin
+off=6 len=9 span[url]="/file.txt"
+off=26 len=4 span[header_field]="Host"
+off=32 len=15 span[header_value]="www.example.com"
+off=51 headers complete method=29 v=1/1 flags=0 content_length=0
+off=51 message complete
+```
