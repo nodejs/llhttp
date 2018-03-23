@@ -263,6 +263,46 @@ off=24 headers complete method=1 v=1/1 flags=0 content_length=0
 off=24 message complete
 ```
 
+### REPORT request
+
+<!-- meta={"type": "request"} -->
+```http
+REPORT /test HTTP/1.1
+
+
+```
+
+```log
+off=0 message begin
+off=7 len=5 span[url]="/test"
+off=25 headers complete method=20 v=1/1 flags=0 content_length=0
+off=25 message complete
+```
+
+### CONNECT request
+
+<!-- meta={"type": "request"} -->
+```http
+CONNECT 0-home0.netscape.com:443 HTTP/1.0
+User-agent: Mozilla/1.1N
+Proxy-authorization: basic aGVsbG86d29ybGQ=
+
+some data
+and yet even more data
+```
+
+```log
+off=0 message begin
+off=8 len=24 span[url]="0-home0.netscape.com:443"
+off=43 len=10 span[header_field]="User-agent"
+off=55 len=12 span[header_value]="Mozilla/1.1N"
+off=69 len=19 span[header_field]="Proxy-authorization"
+off=90 len=22 span[header_value]="basic aGVsbG86d29ybGQ="
+off=116 headers complete method=5 v=1/0 flags=0 content_length=0
+off=116 message complete
+off=116 error code=21 reason="Pause on CONNECT/Upgrade"
+```
+
 ---
 
 ## `Content-Length` header
@@ -844,6 +884,45 @@ off=78 message complete
 off=78 error code=21 reason="Pause on CONNECT/Upgrade"
 ```
 
+### Upgrade request sample
+
+_(Ported from [http_parser][0])_
+
+<!-- meta={"type": "request"} -->
+```http
+GET /demo HTTP/1.1
+Host: example.com
+Connection: Upgrade
+Sec-WebSocket-Key2: 12998 5 Y3 1  .P00
+Sec-WebSocket-Protocol: sample
+Upgrade: WebSocket
+Sec-WebSocket-Key1: 4 @1  46546xW%0l 1 5
+Origin: http://example.com
+
+Hot diggity dogg
+```
+
+```log
+off=0 message begin
+off=4 len=5 span[url]="/demo"
+off=20 len=4 span[header_field]="Host"
+off=26 len=11 span[header_value]="example.com"
+off=39 len=10 span[header_field]="Connection"
+off=51 len=7 span[header_value]="Upgrade"
+off=60 len=18 span[header_field]="Sec-WebSocket-Key2"
+off=80 len=18 span[header_value]="12998 5 Y3 1  .P00"
+off=100 len=22 span[header_field]="Sec-WebSocket-Protocol"
+off=124 len=6 span[header_value]="sample"
+off=132 len=7 span[header_field]="Upgrade"
+off=141 len=9 span[header_value]="WebSocket"
+off=152 len=18 span[header_field]="Sec-WebSocket-Key1"
+off=172 len=20 span[header_value]="4 @1  46546xW%0l 1 5"
+off=194 len=6 span[header_field]="Origin"
+off=202 len=18 span[header_value]="http://example.com"
+off=224 headers complete method=1 v=1/1 flags=14 content_length=0
+off=224 message complete
+off=224 error code=21 reason="Pause on CONNECT/Upgrade"
+```
 ---
 
 [0]: https://github.com/nodejs/http-parser
