@@ -150,5 +150,11 @@ function run(name: string): void {
   groups.forEach((group) => runGroup(group));
 }
 
-run('request-test');
+run('request/sample');
+run('request/method');
+run('request/uri');
+run('request/connection');
+run('request/content-length');
+run('request/transfer-encoding');
+
 run('response-test');
