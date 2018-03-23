@@ -500,7 +500,7 @@ off=42 message complete
 
 <!-- meta={"type": "request", "mode": "loose", "noScan": true} -->
 ```http
-GET /δ¶/δt/pope?q=1#narf HTTP/1.1
+GET /δ¶/δt/космос/pope?q=1#narf HTTP/1.1
 Host: github.com
 
 
@@ -508,11 +508,11 @@ Host: github.com
 
 ```log
 off=0 message begin
-off=4 len=23 span[url]="/δ¶/δt/pope?q=1#narf"
-off=38 len=4 span[header_field]="Host"
-off=44 len=10 span[header_value]="github.com"
-off=58 headers complete method=1 v=1/1 flags=0 content_length=0
-off=58 message complete
+off=4 len=36 span[url]="/δ¶/δt/космос/pope?q=1#narf"
+off=51 len=4 span[header_field]="Host"
+off=57 len=10 span[header_value]="github.com"
+off=71 headers complete method=1 v=1/1 flags=0 content_length=0
+off=71 message complete
 ```
 
 ### Disallow UTF-8 in URI path in strict mode

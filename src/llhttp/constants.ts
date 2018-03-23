@@ -155,15 +155,12 @@ export const STRICT_URL_CHAR: CharList = ([
 ] as CharList).concat(ALPHANUM);
 
 export const URL_CHAR: CharList = STRICT_URL_CHAR
-  .concat(([ '\t', '\f' ] as CharList)
-    .concat(STRICT_URL_CHAR)
-    .map((c: string | number) => {
-      if (typeof c === 'string') {
-        return c.charCodeAt(0) | 0x80;
-      } else {
-        return c | 0x80;
-      }
-    }));
+  .concat(([ '\t', '\f' ] as CharList));
+
+// All characters with 0x80 bit set to 1
+for (let i = 0x80; i <= 0xff; i++) {
+  URL_CHAR.push(i);
+}
 
 export const HEX: CharList = NUM.concat(
   [ 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F' ]);
