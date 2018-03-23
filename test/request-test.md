@@ -1,8 +1,8 @@
 LLHTTP requests
----------------
+===============
 
 Sample requests
-===============
+---------------
 
 Lots of sample requests, most ported from [http_parser][0] test suite.
 
@@ -294,7 +294,7 @@ off=133 message complete
 ---
 
 Methods
-=======
+-------
 
 ### REPORT request
 
@@ -537,7 +537,7 @@ off=5 error code=7 reason="Invalid char in url path"
 ---
 
 Content-Length header
-=====================
+---------------------
 
 ### `Content-Length` with zeroes
 
@@ -670,7 +670,7 @@ off=77 message complete
 ---
 
 Transfer-Encoding header
-========================
+------------------------
 
 ### `chunked`
 
@@ -928,7 +928,7 @@ off=122 message complete
 ---
 
 Connection header
-=================
+-----------------
 
 ### `keep-alive`
 
