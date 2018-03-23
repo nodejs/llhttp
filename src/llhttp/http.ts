@@ -476,7 +476,7 @@ export class HTTP {
       .peek('\n', span.headerValue.end(n('header_value_almost_done')))
       // TODO(indutny): do we need `lenient` option? (it is always off now)
       .otherwise(p.error(ERROR.INVALID_HEADER_TOKEN,
-        'invalid header value char'));
+        'Invalid header value char'));
 
     n('header_value_almost_done')
       .match('\n', n('header_value_lws'))
@@ -528,7 +528,7 @@ export class HTTP {
       1: this.update('upgrade', 1,
         this.setFlag(FLAGS.SKIPBODY, 'headers_done')),
       2: this.update('upgrade', 1, 'headers_done'),
-      [ERROR.PAUSED]: this.pause('paused by on_headers_complete',
+      [ERROR.PAUSED]: this.pause('Paused by on_headers_complete',
         'headers_done'),
     }, p.error(ERROR.CB_HEADERS_COMPLETE, 'User callback error'));
 
@@ -536,7 +536,7 @@ export class HTTP {
     beforeHeadersComplete.otherwise(onHeadersComplete);
 
     const upgradePause = p.pause(ERROR.PAUSED_UPGRADE,
-      'pause on CONNECT/Upgrade');
+      'Pause on CONNECT/Upgrade');
 
     const afterHeadersComplete = p.invoke(callback.afterHeadersComplete, {
       1: this.invokePausable('on_message_complete',
@@ -780,6 +780,6 @@ export class HTTP {
     return p.invoke(cb, {
       0: this.node(next),
       [ERROR.PAUSED]: this.pause(`${name} pause`, next),
-    }, p.error(errorCode, name + ' callback error'));
+    }, p.error(errorCode, `\`${name}\` callback error`));
   }
 }
