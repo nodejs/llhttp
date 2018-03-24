@@ -51,14 +51,14 @@ if (process.argv[2] === 'loop') {
 if (isURL) {
   console.log('url loose');
 
-  spawnSync('./test/tmp/url-loose', [
+  spawnSync('./test/tmp/url-loose-url', [
     'bench',
     'http://example.com/path/to/file?query=value#fragment'
   ], { stdio: 'inherit' });
 
   console.log('url strict');
 
-  spawnSync('./test/tmp/url-strict', [
+  spawnSync('./test/tmp/url-strict-url', [
     'bench',
     'http://example.com/path/to/file?query=value#fragment'
   ], { stdio: 'inherit' });

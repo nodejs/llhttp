@@ -171,13 +171,15 @@ function run(name: string): void {
       // Normalize all newlines
       input = input.replace(/\r\n|\r|\n/g, '\r\n');
 
-      // Replace escaped CRLF and tabs
+      // Replace escaped CRLF, tabs, form-feed
       input = input.replace(/\\r/g, '\r');
       input = input.replace(/\\n/g, '\n');
       input = input.replace(/\\t/g, '\t');
+      input = input.replace(/\\f/g, '\f');
 
-      // Replace escaped tabs in expected too
+      // Replace escaped tabs/form-feed in expected too
       expected = expected.replace(/\\t/g, '\t');
+      expected = expected.replace(/\\f/g, '\f');
 
       // Split
       const expectedLines = expected.split(/\n/g).slice(0, -1);
