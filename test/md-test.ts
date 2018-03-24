@@ -26,7 +26,7 @@ const httpNode = {
 
 function buildURL(mode: llhttp.HTTPMode) {
   const p = new LLParse();
-  const instance = new llhttp.URL(p, mode);
+  const instance = new llhttp.URL(p, mode, true);
 
   const node = instance.build();
 

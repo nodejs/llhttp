@@ -8,6 +8,42 @@ int http_parser__on_url(llparse_t* s, const char* p, const char* endp) {
 }
 
 
+int http_parser__on_url_schema(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  return llparse__print_span("url.schema", p, endp);
+}
+
+
+int http_parser__on_url_host(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  return llparse__print_span("url.host", p, endp);
+}
+
+
+int http_parser__on_url_path(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  return llparse__print_span("url.path", p, endp);
+}
+
+
+int http_parser__on_url_query(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  return llparse__print_span("url.query", p, endp);
+}
+
+
+int http_parser__on_url_fragment(llparse_t* s, const char* p,
+                                 const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  return llparse__print_span("url.fragment", p, endp);
+}
+
+
 #ifdef HTTP_PARSER__TEST_HTTP
 
 void http_parser__test_init_request(llparse_t* s) {
@@ -20,8 +56,7 @@ void http_parser__test_init_response(llparse_t* s) {
 }
 
 
-int http_parser__on_status(llparse_t* s, const char* p,
-                           const char* endp) {
+int http_parser__on_status(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
   return llparse__print_span("status", p, endp);

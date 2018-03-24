@@ -7,7 +7,11 @@ http://example.com/path?query=value#schema
 ```
 
 ```log
-off=0 len=42 span[url]="http://example.com/path?query=value#schema"
+off=0 len=4 span[url.schema]="http"
+off=7 len=11 span[url.host]="example.com"
+off=18 len=5 span[url.path]="/path"
+off=24 len=11 span[url.query]="query=value"
+off=36 len=6 span[url.fragment]="schema"
 ```
 
 ## Relative URL
@@ -17,7 +21,9 @@ off=0 len=42 span[url]="http://example.com/path?query=value#schema"
 ```
 
 ```log
-off=0 len=24 span[url]="/path?query=value#schema"
+off=0 len=5 span[url.path]="/path"
+off=6 len=11 span[url.query]="query=value"
+off=18 len=6 span[url.fragment]="schema"
 ```
 
 ## Failing on broken schema
@@ -28,5 +34,6 @@ schema:/path?query=value#schema
 ```
 
 ```log
+off=0 len=6 span[url.schema]="schema"
 off=8 error code=7 reason="Unexpected char in url schema"
 ```
