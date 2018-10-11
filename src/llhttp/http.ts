@@ -1,8 +1,8 @@
 import * as assert from 'assert';
-import { code, LLParse, node as apiNode, Span } from 'llparse';
+import { LLParse, source } from 'llparse';
 
-import Match = apiNode.Match;
-import Node = apiNode.Node;
+import Match = source.node.Match;
+import Node = source.node.Node;
 
 import {
   CharList,
@@ -87,21 +87,21 @@ const NODES: ReadonlyArray<string> = [
 ];
 
 interface ISpanMap {
-  readonly body: Span;
-  readonly headerField: Span;
-  readonly headerValue: Span;
-  readonly status: Span;
+  readonly body: source.Span;
+  readonly headerField: source.Span;
+  readonly headerValue: source.Span;
+  readonly status: source.Span;
 }
 
 interface ICallbackMap {
-  readonly afterHeadersComplete: code.Code;
-  readonly afterMessageComplete: code.Code;
-  readonly beforeHeadersComplete: code.Code;
-  readonly onChunkComplete: code.Code;
-  readonly onChunkHeader: code.Code;
-  readonly onHeadersComplete: code.Code;
-  readonly onMessageBegin: code.Code;
-  readonly onMessageComplete: code.Code;
+  readonly afterHeadersComplete: source.code.Code;
+  readonly afterMessageComplete: source.code.Code;
+  readonly beforeHeadersComplete: source.code.Code;
+  readonly onChunkComplete: source.code.Code;
+  readonly onChunkHeader: source.code.Code;
+  readonly onHeadersComplete: source.code.Code;
+  readonly onMessageBegin: source.code.Code;
+  readonly onMessageComplete: source.code.Code;
 }
 
 interface IMulTargets {
@@ -705,7 +705,7 @@ export class HTTP {
     return this.update('header_state', HEADER_STATE.GENERAL, next);
   }
 
-  private emptySpan(span: Span, next: string | Node): Node {
+  private emptySpan(span: source.Span, next: string | Node): Node {
     return span.start(span.end(this.node(next)));
   }
 

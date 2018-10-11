@@ -45,20 +45,34 @@ if (process.argv[2] === 'loop') {
     'loop',
     request
   ], { stdio: 'inherit' });
-  return;
+  process.exit(0);
 }
 
 if (isURL) {
-  console.log('url loose');
+  console.log('url loose (bitcode)');
 
   spawnSync('./test/tmp/url-loose-url', [
     'bench',
     'http://example.com/path/to/file?query=value#fragment'
   ], { stdio: 'inherit' });
 
-  console.log('url strict');
+  console.log('url strict (bitcode)');
 
   spawnSync('./test/tmp/url-strict-url', [
+    'bench',
+    'http://example.com/path/to/file?query=value#fragment'
+  ], { stdio: 'inherit' });
+
+  console.log('url loose (C)');
+
+  spawnSync('./test/tmp/url-loose-url-c', [
+    'bench',
+    'http://example.com/path/to/file?query=value#fragment'
+  ], { stdio: 'inherit' });
+
+  console.log('url strict (C)');
+
+  spawnSync('./test/tmp/url-strict-url-c', [
     'bench',
     'http://example.com/path/to/file?query=value#fragment'
   ], { stdio: 'inherit' });
@@ -66,16 +80,30 @@ if (isURL) {
 
 if (isHTTP) {
   requests.forEach((request, name) => {
-    console.log('http loose: "%s"', name);
+    console.log('http loose: "%s" (bitcode)', name);
 
     spawnSync('./test/tmp/http-loose-request', [
       'bench',
       request
     ], { stdio: 'inherit' });
 
-    console.log('http strict: "%s"', name);
+    console.log('http strict: "%s" (bitcode)', name);
 
     spawnSync('./test/tmp/http-strict-request', [
+      'bench',
+      request
+    ], { stdio: 'inherit' });
+
+    console.log('http loose: "%s" (C)', name);
+
+    spawnSync('./test/tmp/http-loose-request-c', [
+      'bench',
+      request
+    ], { stdio: 'inherit' });
+
+    console.log('http strict: "%s" (C)', name);
+
+    spawnSync('./test/tmp/http-strict-request-c', [
       'bench',
       request
     ], { stdio: 'inherit' });

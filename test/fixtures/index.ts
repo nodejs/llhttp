@@ -48,6 +48,7 @@ export function build(llparse: LLParse, node: any, outFile: string,
     artifacts = cache.get(node)!;
   } else {
     artifacts = llparse.build(node, {
+      c: { header: outFile },
       debug: process.env.LLPARSE_DEBUG ? 'llparse__debug' : undefined,
     });
     cache.set(node, artifacts);

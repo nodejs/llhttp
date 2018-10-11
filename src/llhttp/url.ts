@@ -1,7 +1,7 @@
-import { LLParse, node as apiNode, Span } from 'llparse';
+import { LLParse, source } from 'llparse';
 
-import Match = apiNode.Match;
-import Node = apiNode.Node;
+import Match = source.node.Match;
+import Node = source.node.Node;
 
 import {
   ALPHA,
@@ -26,10 +26,10 @@ export interface IURLResult {
   };
 }
 
-type SpanTable = Map<SpanName, Span>;
+type SpanTable = Map<SpanName, source.Span>;
 
 export class URL {
-  private readonly span: Span | undefined;
+  private readonly span: source.Span | undefined;
   private readonly spanTable: SpanTable = new Map();
   private readonly errorInvalid: Node;
   private readonly errorStrictInvalid: Node;
