@@ -4,25 +4,26 @@ import { LLParse } from 'llparse';
 import * as path from 'path';
 import * as semver from 'semver';
 
-import * as pkg from '../package';
 import * as llhttp from '../src/llhttp';
+
+const pkgFile = path.join(__dirname, '..', 'package.json');
+const pkg = JSON.parse(fs.readFileSync(pkgFile).toString());
 
 const BUILD_DIR = path.join(__dirname, '..', 'build');
 const BITCODE_DIR = path.join(BUILD_DIR, 'bitcode');
+const C_DIR = path.join(BUILD_DIR, 'c');
 const SRC_DIR = path.join(__dirname, '..', 'src');
 
 const BITCODE_FILE = path.join(BITCODE_DIR, 'http_parser.bc');
+const C_FILE = path.join(C_DIR, 'http_parser.c');
 const HEADER_FILE = path.join(BUILD_DIR, 'http_parser.h');
 
-try {
-  fs.mkdirSync(BUILD_DIR);
-} catch (e) {
-  // no-op
-}
-try {
-  fs.mkdirSync(BITCODE_DIR);
-} catch (e) {
-  // no-op
+for (const dir of [ BUILD_DIR, BITCODE_DIR, C_DIR ]) {
+  try {
+    fs.mkdirSync(dir);
+  } catch (e) {
+    // no-op
+  }
 }
 
 const mode = process.argv[2] === 'strict' ? 'strict' : 'loose';
@@ -42,7 +43,7 @@ headers += '#define INCLUDE_HTTP_PARSER_H_\n';
 
 headers += '\n';
 
-const version = semver.parse(pkg.version);
+const version = semver.parse(pkg.version)!;
 
 headers += `#define HTTP_PARSER_VERSION_MAJOR ${version.major}\n`;
 headers += `#define HTTP_PARSER_VERSION_MINOR ${version.minor}\n`;
@@ -65,4 +66,5 @@ headers += '\n';
 headers += '#endif  /* INCLUDE_HTTP_PARSER_H_ */\n';
 
 fs.writeFileSync(BITCODE_FILE, artifacts.bitcode);
+fs.writeFileSync(C_FILE, artifacts.c);
 fs.writeFileSync(HEADER_FILE, headers);
