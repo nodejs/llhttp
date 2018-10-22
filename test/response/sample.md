@@ -490,3 +490,28 @@ off=31 len=10 span[header_value]="text/plain"
 off=45 headers complete status=200 v=1/1 flags=0 content_length=0
 off=45 len=11 span[body]="hello world"
 ```
+
+## Response starting with CRLF
+
+<!-- meta={"type": "response"} -->
+```http
+\r\nHTTP/1.1 200 OK
+Header1: Value1
+Header2:\t Value2
+Content-Length: 0
+
+
+```
+
+```log
+off=2 message begin
+off=15 len=2 span[status]="OK"
+off=19 len=7 span[header_field]="Header1"
+off=28 len=6 span[header_value]="Value1"
+off=36 len=7 span[header_field]="Header2"
+off=46 len=6 span[header_value]="Value2"
+off=54 len=14 span[header_field]="Content-Length"
+off=70 len=1 span[header_value]="0"
+off=75 headers complete status=200 v=1/1 flags=20 content_length=0
+off=75 message complete
+```

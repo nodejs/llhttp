@@ -315,4 +315,23 @@ off=118 headers complete method=1 v=1/1 flags=2 content_length=0
 off=118 message complete
 ```
 
+## Request starting with CRLF
+
+<!-- meta={"type": "request"} -->
+```http
+\r\nGET /url HTTP/1.1
+Header1: Value1
+
+
+```
+
+```log
+off=2 message begin
+off=6 len=4 span[url]="/url"
+off=21 len=7 span[header_field]="Header1"
+off=30 len=6 span[header_value]="Value1"
+off=40 headers complete method=1 v=1/1 flags=0 content_length=0
+off=40 message complete
+```
+
 [0]: https://github.com/nodejs/http-parser
