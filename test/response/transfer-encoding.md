@@ -31,13 +31,11 @@ off=73 headers complete status=200 v=1/1 flags=8 content_length=0
 off=79 chunk header len=37
 off=79 len=35 span[body]="This is the data in the first chunk"
 off=114 len=1 span[body]=cr
-off=115 len=0 span[body]=""
 off=115 len=1 span[body]=lf
 off=118 chunk complete
 off=122 chunk header len=28
 off=122 len=26 span[body]="and this is the second one"
 off=148 len=1 span[body]=cr
-off=149 len=0 span[body]=""
 off=149 len=1 span[body]=lf
 off=152 chunk complete
 off=157 chunk header len=0

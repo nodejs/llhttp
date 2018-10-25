@@ -110,7 +110,6 @@ off=427 len=22 span[body]="The document has moved"
 off=449 len=1 span[body]=lf
 off=450 len=42 span[body]="<A HREF="http://www.google.com/">here</A>."
 off=492 len=1 span[body]=cr
-off=493 len=0 span[body]=""
 off=493 len=1 span[body]=lf
 off=494 len=14 span[body]="</BODY></HTML>"
 ```
@@ -160,7 +159,6 @@ off=686 len=17 span[header_field]="Transfer-Encoding"
 off=705 len=7 span[header_value]="chunked"
 off=716 headers complete status=301 v=1/1 flags=8 content_length=0
 off=719 chunk header len=1
-off=719 len=0 span[body]=""
 off=719 len=1 span[body]=lf
 off=722 chunk complete
 off=725 chunk header len=0
