@@ -18,6 +18,7 @@ type MaybeNode = string | Match | Node;
 
 const NODES: ReadonlyArray<string> = [
   'start',
+  'start_crlf',
   'start_req',
   'start_res',
   'start_req_or_res',
@@ -90,6 +91,7 @@ interface ISpanMap {
   readonly body: source.Span;
   readonly headerField: source.Span;
   readonly headerValue: source.Span;
+  readonly headerLimit: source.Span;
   readonly status: source.Span;
 }
 
@@ -141,6 +143,7 @@ export class HTTP {
     this.span = {
       body: p.span(p.code.span('http_parser__on_body')),
       headerField: p.span(p.code.span('http_parser__on_header_field')),
+      headerLimit: p.span(p.code.span('http_parser__on_header_limit')),
       headerValue: p.span(p.code.span('http_parser__on_header_value')),
       status: p.span(p.code.span('http_parser__on_status')),
     };
@@ -178,6 +181,7 @@ export class HTTP {
     p.property('i8', 'upgrade');
     p.property('i16', 'status_code');
     p.property('i8', 'finish');
+    p.property('i64', 'nread');
 
     // Verify defaults
     assert.strictEqual(FINISH.SAFE, 0);
@@ -207,7 +211,10 @@ export class HTTP {
     }, n('start_req_or_res'));
 
     n('start')
-      .match([ '\r', '\n' ], n('start'))
+      .otherwise(this.headerLimitStart('start_crlf'));
+
+    n('start_crlf')
+      .match([ '\r', '\n' ], n('start_crlf'))
       .otherwise(this.update('finish', FINISH.UNSAFE,
         this.invokePausable('on_message_begin',
           ERROR.CB_MESSAGE_BEGIN, switchType)));
@@ -490,7 +497,7 @@ export class HTTP {
 
     const checkTrailing = this.testFlags(FLAGS.TRAILING, {
       1: this.invokePausable('on_chunk_complete',
-        ERROR.CB_CHUNK_COMPLETE, 'message_done'),
+        ERROR.CB_CHUNK_COMPLETE, this.headerLimitEnd('message_done')),
     });
 
     if (this.mode === 'strict') {
@@ -509,8 +516,6 @@ export class HTTP {
       1: p.error(ERROR.UNEXPECTED_CONTENT_LENGTH,
         'Content-Length can\'t be present with chunked encoding'),
     });
-
-    checkTrailing.otherwise(checkEncConflict);
 
     // Set `upgrade` if needed
     const beforeHeadersComplete = p.invoke(callback.beforeHeadersComplete);
@@ -533,6 +538,7 @@ export class HTTP {
         'headers_done'),
     }, p.error(ERROR.CB_HEADERS_COMPLETE, 'User callback error'));
 
+    checkTrailing.otherwise(checkEncConflict);
     checkEncConflict.otherwise(beforeHeadersComplete);
     beforeHeadersComplete.otherwise(onHeadersComplete);
 
@@ -548,22 +554,20 @@ export class HTTP {
     });
 
     n('headers_done')
-      .otherwise(afterHeadersComplete);
+        .otherwise(this.headerLimitEnd(afterHeadersComplete));
 
-    upgradePause
-      .otherwise(n('cleanup'));
+    upgradePause.otherwise(n('cleanup'));
 
     afterHeadersComplete
       .otherwise(this.invokePausable('on_message_complete',
         ERROR.CB_MESSAGE_COMPLETE, 'cleanup'));
 
-    n('body_identity')
-      .otherwise(span.body.start()
-        .otherwise(p.consume('content_length').otherwise(
-          span.body.end(n('message_done')))));
+    const consumeBody = p.consume('content_length')
+        .otherwise(span.body.end(n('message_done')));
 
-    n('body_identity_eof')
-      .otherwise(span.body.start(
+    n('body_identity').otherwise(span.body.start(consumeBody));
+
+    n('body_identity_eof').otherwise(span.body.start(
         this.update('finish', FINISH.SAFE_WITH_CB, 'eof')));
 
     // Just read everything until EOF
@@ -571,7 +575,8 @@ export class HTTP {
       .skipTo(n('eof'));
 
     n('chunk_size_start')
-      .otherwise(this.update('content_length', 0, 'chunk_size'));
+      .otherwise(this.update('content_length', 0,
+          this.headerLimitStart('chunk_size')));
 
     n('chunk_size')
       .select(HEX_MAP, this.mulAdd('content_length', {
@@ -601,18 +606,19 @@ export class HTTP {
     }
 
     const toChunk = this.isEqual('content_length', 0, {
-      equal: this.setFlag(FLAGS.TRAILING, 'header_field_start'),
-      notEqual: 'chunk_data',
+      equal: this.setFlag(FLAGS.TRAILING,
+        this.headerLimitStart('header_field_start')),
+      notEqual: n('chunk_data'),
     });
 
     n('chunk_size_almost_done_lf')
       .otherwise(this.invokePausable('on_chunk_header',
-        ERROR.CB_CHUNK_HEADER, toChunk));
+        ERROR.CB_CHUNK_HEADER, this.headerLimitEnd(toChunk)));
 
-    n('chunk_data')
-      .otherwise(span.body.start()
-        .otherwise(p.consume('content_length').otherwise(
-          span.body.end(n('chunk_data_almost_done')))));
+    const consumeChunk = p.consume('content_length')
+        .otherwise(span.body.end(n('chunk_data_almost_done')));
+
+    n('chunk_data').otherwise(span.body.start(consumeChunk));
 
     if (this.mode === 'strict') {
       n('chunk_data_almost_done')
@@ -786,5 +792,18 @@ export class HTTP {
       0: this.node(next),
       [ERROR.PAUSED]: this.pause(`${name} pause`, next),
     }, p.error(errorCode, `\`${name}\` callback error`));
+  }
+
+  private headerLimitStart(next: string | Node): Node {
+    const span = this.span;
+
+    return span.headerLimit.start(this.node(next));
+  }
+
+  private headerLimitEnd(next: string | Node): Node {
+    const p = this.llparse;
+    const span = this.span;
+
+    return span.headerLimit.end(this.update('nread', 0, next));
   }
 }

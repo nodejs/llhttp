@@ -86,7 +86,6 @@ const char* http_parser_errno_name(enum http_parser_errno err) {
 
 /* Callbacks */
 
-
 int http_parser__on_message_begin(http_parser_t* s, const char* p,
                                   const char* endp) {
   int err;
