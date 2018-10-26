@@ -19,6 +19,11 @@ export class CHeaders {
     const errorMap = enumToMap(constants.ERROR);
     const methodMap = enumToMap(constants.METHODS);
 
+    res += '#ifndef HTTP_MAX_HEADER_SIZE\n';
+    res += `# define HTTP_MAX_HEADER_SIZE ${constants.MAX_HEADER_SIZE}\n`;
+    res += '#endif  /* HTTP_MAX_HEADER_SIZE */\n';
+    res += '\n';
+
     res += this.buildEnum('http_parser_errno', 'HPE', errorMap);
     res += '\n';
     res += this.buildEnum('http_parser_flags', 'F', enumToMap(constants.FLAGS),
