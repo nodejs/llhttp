@@ -14,7 +14,7 @@
     }                                                                         \
     err = settings->NAME(__VA_ARGS__);                                        \
     if (err != 0) {                                                           \
-      (PARSER)->reason = "`" ##NAME "` error";                                \
+      (PARSER)->reason = "`" #NAME "` error";                                \
     }                                                                         \
   } while (0)
 
