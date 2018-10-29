@@ -52,3 +52,21 @@ off=0 message begin
 off=4 len=18 span[url]="/music/sweet/music"
 off=27 error code=8 reason="Expected SOURCE method for ICE/x.x request"
 ```
+
+### Headers separated by CR
+
+<!-- meta={"type": "request"} -->
+```http
+GET / HTTP/1.1
+Foo: 1\rBar: 2
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=1 span[url]="/"
+off=16 len=3 span[header_field]="Foo"
+off=21 len=1 span[header_value]="1"
+off=23 error code=3 reason="Missing expected LF after header value"
+```
