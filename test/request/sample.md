@@ -334,4 +334,25 @@ off=40 headers complete method=1 v=1/1 flags=0 content_length=0
 off=40 message complete
 ```
 
+## Extended Characters
+
+See nodejs/test/parallel/test-http-headers-obstext.js
+
+<!-- meta={"type": "request", "noScan": true} -->
+```http
+GET / HTTP/1.1
+Test: Düsseldorf
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=1 span[url]="/"
+off=16 len=4 span[header_field]="Test"
+off=22 len=11 span[header_value]="Düsseldorf"
+off=37 headers complete method=1 v=1/1 flags=0 content_length=0
+off=37 message complete
+```
+
 [0]: https://github.com/nodejs/http-parser
