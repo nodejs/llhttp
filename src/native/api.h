@@ -4,6 +4,9 @@
 extern "C" {
 #endif
 
+/* Get an http_errno value from an http_parser */
+#define HTTP_PARSER_ERRNO(p) ((enum http_parser_errno) (p)->error)
+
 typedef int (*http_parser_data_cb)(http_parser_t*, const char *at,
                                    size_t length);
 typedef int (*http_parser_cb)(http_parser_t*);
