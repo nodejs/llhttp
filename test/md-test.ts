@@ -178,6 +178,10 @@ function run(name: string): void {
       input = input.replace(/\\t/g, '\t');
       input = input.replace(/\\f/g, '\f');
 
+      // Useful in token tests
+      input = input.replace(/\\01/g, '\u0001');
+      input = input.replace(/\\02/g, '\u0002');
+
       // Evaluate inline JavaScript
       input = input.replace(/\$\{(.+?)\}/g, (_, code) => {
         return vm.runInNewContext(code) + '';

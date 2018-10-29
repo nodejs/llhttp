@@ -70,3 +70,35 @@ off=16 len=3 span[header_field]="Foo"
 off=21 len=1 span[header_value]="1"
 off=23 error code=3 reason="Missing expected LF after header value"
 ```
+
+### Invalid header token #1
+
+<!-- meta={"type": "request", "noScan": true} -->
+```http
+GET / HTTP/1.1
+Fo@: Failure
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=1 span[url]="/"
+off=18 error code=10 reason="Invalid header token"
+```
+
+### Invalid header token #2
+
+<!-- meta={"type": "request", "noScan": true} -->
+```http
+GET / HTTP/1.1
+Foo\01\test: Bar
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=1 span[url]="/"
+off=19 error code=10 reason="Invalid header token"
+```
