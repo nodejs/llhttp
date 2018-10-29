@@ -13,6 +13,9 @@
       break;                                                                  \
     }                                                                         \
     err = settings->NAME(__VA_ARGS__);                                        \
+    if (err != 0) {                                                           \
+      (PARSER)->reason = "`" ##NAME "` error";                                \
+    }                                                                         \
   } while (0)
 
 void http_parser_set_type(http_parser_t* parser, enum http_parser_type type) {
