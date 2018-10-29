@@ -179,8 +179,9 @@ function run(name: string): void {
       input = input.replace(/\\f/g, '\f');
 
       // Useful in token tests
-      input = input.replace(/\\01/g, '\u0001');
-      input = input.replace(/\\02/g, '\u0002');
+      input = input.replace(/\\([0-7]{1,3})/g, (_, digits) => {
+        return String.fromCharCode(parseInt(digits, 8));
+      });
 
       // Evaluate inline JavaScript
       input = input.replace(/\$\{(.+?)\}/g, (_, code) => {

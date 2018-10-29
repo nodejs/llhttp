@@ -133,3 +133,43 @@ off=0 message begin
 off=4 len=1 span[url]="/"
 off=20 error code=10 reason="Invalid header token"
 ```
+
+### Corrupted Connection header
+
+<!-- meta={"type": "request", "noScan": true} -->
+```http
+GET / HTTP/1.1
+Host: www.example.com
+Connection\r\033\065\325eep-Alive
+Accept-Encoding: gzip
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=1 span[url]="/"
+off=16 len=4 span[header_field]="Host"
+off=22 len=15 span[header_value]="www.example.com"
+off=49 error code=10 reason="Invalid header token"
+```
+
+### Corrupted header name
+
+<!-- meta={"type": "request", "noScan": true} -->
+```http
+GET / HTTP/1.1
+Host: www.example.com
+X-Some-Header\r\033\065\325eep-Alive
+Accept-Encoding: gzip
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=1 span[url]="/"
+off=16 len=4 span[header_field]="Host"
+off=22 len=15 span[header_value]="www.example.com"
+off=52 error code=10 reason="Invalid header token"
+```
