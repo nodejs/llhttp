@@ -44,11 +44,11 @@ So far llhttp outperforms http_parser:
 
 |                 | input size |  bandwidth   |  reqs/sec  |   time  |
 |:----------------|-----------:|-------------:|-----------:|--------:|
-| **llhttp** _(bitcode)_ | 8192.00 mb | 1215.06 mb/s | 2450149.15 ops/sec | 6.74 s |
-| **llhttp** _(C)_ | 8192.00 mb | 1351.82 mb/s | 2725941.40 ops/sec | 6.06 s |
+| **llhttp** _(bitcode)_ | 8192.00 mb | 1131.75 mb/s | 2282171.24 ops/sec | 7.24 s |
+| **llhttp** _(C)_ | 8192.00 mb | 1497.88 mb/s | 3020458.87 ops/sec | 5.47 s |
 | **http_parser** | 8192.00 mb | 694.66 mb/s | 1406180.33 req/sec | 11.79 s |
 
-llhttp is faster by approximately **94%**.
+llhttp is faster by approximately **116%**.
 
 ## Maintenance
 
