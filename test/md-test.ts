@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { LLParse } from 'llparse';
 import { Group, MDGator, Metadata, Test } from 'mdgator';
 import * as path from 'path';
+import * as vm from 'vm';
 
 import * as llhttp from '../src/llhttp';
 import { build, FixtureResult, TestType } from './fixtures';
@@ -176,6 +177,11 @@ function run(name: string): void {
       input = input.replace(/\\n/g, '\n');
       input = input.replace(/\\t/g, '\t');
       input = input.replace(/\\f/g, '\f');
+
+      // Evaluate inline JavaScript
+      input = input.replace(/\$\{(.+?)\}/g, (_, code) => {
+        return vm.runInNewContext(code) + '';
+      });
 
       // Replace escaped tabs/form-feed in expected too
       expected = expected.replace(/\\t/g, '\t');
