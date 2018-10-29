@@ -217,10 +217,12 @@ run('request/uri');
 run('request/connection');
 run('request/content-length');
 run('request/transfer-encoding');
+run('request/invalid');
 
 run('response/sample');
 run('response/connection');
 run('response/content-length');
 run('response/transfer-encoding');
+run('response/invalid');
 
 run('url');

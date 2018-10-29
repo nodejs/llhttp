@@ -247,3 +247,22 @@ off=42 len=11 span[header_value]="example.com"
 off=57 headers complete method=33 v=1/1 flags=0 content_length=0
 off=57 message complete
 ```
+
+### SOURCE request with ICE
+
+<!-- meta={"type": "request"} -->
+```http
+SOURCE /music/sweet/music ICE/1.0
+Host: example.com
+
+
+```
+
+```log
+off=0 message begin
+off=7 len=18 span[url]="/music/sweet/music"
+off=35 len=4 span[header_field]="Host"
+off=41 len=11 span[header_value]="example.com"
+off=56 headers complete method=33 v=1/0 flags=0 content_length=0
+off=56 message complete
+```

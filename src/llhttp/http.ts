@@ -58,6 +58,7 @@ const NODES: ReadonlyArray<string> = [
   'header_value_te_chunked',
   'header_value_content_length_once',
   'header_value_content_length',
+  'header_value_content_length_ws',
   'header_value_connection',
   'header_value_connection_ws',
   'header_value_connection_token',
@@ -249,7 +250,8 @@ export class HTTP {
 
     n('res_http_end')
       .match(' ', this.update('status_code', 0, 'res_status_code'))
-      .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid response status'));
+      .otherwise(p.error(ERROR.INVALID_VERSION,
+          'Expected space after version'));
 
     n('res_status_code')
       .select(NUM_MAP, this.mulAdd('status_code', {
@@ -305,8 +307,15 @@ export class HTTP {
           this.update('http_minor', 9, 'header_field_start')),
       );
 
+    const isSource = this.isEqual('method', METHODS.SOURCE, {
+      equal: n('req_http_major'),
+      notEqual: p.error(ERROR.INVALID_CONSTANT,
+        'Expected SOURCE method for ICE/x.x request'),
+    });
+
     n('req_http_start')
       .match('HTTP/', n('req_http_major'))
+      .match('ICE/', isSource)
       .match(' ', n('req_http_start'))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
 
@@ -431,8 +440,12 @@ export class HTTP {
         overflow: invalidContentLength('Content-Length overflow'),
         success: 'header_value_content_length',
       }))
-      .peek([ ' ', '\r', '\n' ],
-        this.setFlag(FLAGS.CONTENT_LENGTH, 'header_value_discard_rws'))
+      .otherwise(n('header_value_content_length_ws'));
+
+    n('header_value_content_length_ws')
+      .match(' ', n('header_value_content_length_ws'))
+      .peek([ '\r', '\n' ],
+          this.setFlag(FLAGS.CONTENT_LENGTH, 'header_value_discard_rws'))
       .otherwise(invalidContentLength('Invalid character in Content-Length'));
 
     n('header_value_connection')
