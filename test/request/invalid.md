@@ -53,6 +53,22 @@ off=4 len=18 span[url]="/music/sweet/music"
 off=27 error code=8 reason="Expected SOURCE method for ICE/x.x request"
 ```
 
+### ICE protocol, but not really
+
+<!-- meta={"type": "request"} -->
+```http
+GET /music/sweet/music IHTTP/1.0
+Host: example.com
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=18 span[url]="/music/sweet/music"
+off=24 error code=8 reason="Expected HTTP/"
+```
+
 ### Headers separated by CR
 
 <!-- meta={"type": "request"} -->
