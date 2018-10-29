@@ -4,8 +4,6 @@ export type HTTPMode = 'loose' | 'strict';
 
 // C headers
 
-export const MAX_HEADER_SIZE = 8 * 1024;  // 8kb
-
 export enum ERROR {
   OK = 0,
   INTERNAL,
@@ -31,8 +29,6 @@ export enum ERROR {
 
   PAUSED,
   PAUSED_UPGRADE,
-
-  HEADER_OVERFLOW,
 }
 
 export enum TYPE {
