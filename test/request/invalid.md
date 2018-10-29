@@ -116,3 +116,20 @@ MKCOLA / HTTP/1.1
 off=0 message begin
 off=5 error code=6 reason="Expected space after method"
 ```
+
+### Illegal header field name line folding
+
+<!-- meta={"type": "request", "noScan": true} -->
+```http
+GET / HTTP/1.1
+name
+ : value
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=1 span[url]="/"
+off=20 error code=10 reason="Invalid header token"
+```
