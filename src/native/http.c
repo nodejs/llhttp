@@ -119,11 +119,3 @@ int http_parser_should_keep_alive(const http_parser_t* parser) {
 
   return !http_parser_message_needs_eof(parser);
 }
-
-
-int http_parser__on_header_limit(http_parser_t* parser, const char* p,
-                                 const char* endp) {
-  /* TODO(indutny): enforce the length check */
-  parser->nread += endp - p;
-  return 0;
-}
