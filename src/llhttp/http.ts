@@ -34,6 +34,7 @@ const NODES: ReadonlyArray<string> = [
   'res_status',
   'res_line_almost_done',
 
+  'req_first_space_before_url',
   'req_spaces_before_url',
   'req_http_start',
   'req_http_major',
@@ -219,7 +220,7 @@ export class HTTP {
 
     n('req_or_res_method')
       .select(H_METHOD_MAP, this.store('method',
-        this.update('type', TYPE.REQUEST, 'req_spaces_before_url')))
+        this.update('type', TYPE.REQUEST, 'req_first_space_before_url')))
       .match('HTTP/', this.update('type', TYPE.RESPONSE, 'res_http_major'))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Invalid word encountered'));
 
@@ -281,8 +282,12 @@ export class HTTP {
 
     n('start_req')
       .select(METHOD_MAP,
-        this.store('method', 'req_spaces_before_url'))
+        this.store('method', 'req_first_space_before_url'))
       .otherwise(p.error(ERROR.INVALID_METHOD, 'Invalid method encountered'));
+
+    n('req_first_space_before_url')
+      .match(' ', n('req_spaces_before_url'))
+      .otherwise(p.error(ERROR.INVALID_METHOD, 'Expected space after method'));
 
     n('req_spaces_before_url')
       .match(' ', n('req_spaces_before_url'))

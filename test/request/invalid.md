@@ -102,3 +102,17 @@ off=0 message begin
 off=4 len=1 span[url]="/"
 off=19 error code=10 reason="Invalid header token"
 ```
+
+### Invalid method
+
+<!-- meta={"type": "request"} -->
+```http
+MKCOLA / HTTP/1.1
+
+
+```
+
+```log
+off=0 message begin
+off=5 error code=6 reason="Expected space after method"
+```
