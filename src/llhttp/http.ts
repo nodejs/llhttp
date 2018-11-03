@@ -544,9 +544,9 @@ export class HTTP {
      */
     const onHeadersComplete = p.invoke(callback.onHeadersComplete, {
       0: n('headers_done'),
-      1: this.update('upgrade', 1,
+      1: this.setFlag(FLAGS.SKIPBODY, 'headers_done'),
+      2: this.update('upgrade', 1,
         this.setFlag(FLAGS.SKIPBODY, 'headers_done')),
-      2: this.update('upgrade', 1, 'headers_done'),
       [ERROR.PAUSED]: this.pause('Paused by on_headers_complete',
         'headers_done'),
     }, p.error(ERROR.CB_HEADERS_COMPLETE, 'User callback error'));

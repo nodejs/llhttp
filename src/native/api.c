@@ -12,9 +12,10 @@
       err = 0;                                                                \
       break;                                                                  \
     }                                                                         \
+    (PARSER)->reason = NULL;                                                  \
     err = settings->NAME(__VA_ARGS__);                                        \
-    if (err != 0) {                                                           \
-      (PARSER)->reason = "`" #NAME "` error";                                \
+    if (err != 0 && (PARSER)->reason == NULL) {                               \
+      (PARSER)->reason = "`" #NAME "` error";                                 \
     }                                                                         \
   } while (0)
 
