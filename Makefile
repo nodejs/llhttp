@@ -23,14 +23,14 @@ build/native/%.o: src/native/%.c build/http_parser.h src/native/api.h \
 		build/native
 	$(CLANG) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-build/http_parser.h: gen
-build/bitcode/http_parser.bc: gen
-build/c/http_parser.c: gen
+build/http_parser.h: generate
+build/bitcode/http_parser.bc: generate
+build/c/http_parser.c: generate
 
 build/native:
 	mkdir -p build/native
 
-gen:
-	./bin/build.ts
+generate:
+	./bin/generate.ts
 
-.PHONY: all gen clean
+.PHONY: all generate clean
