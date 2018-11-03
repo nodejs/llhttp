@@ -7,7 +7,7 @@
 #define CALLBACK_MAYBE(PARSER, NAME, ...)                                     \
   do {                                                                        \
     http_parser_settings_t* settings;                                         \
-    settings = (PARSER)->settings;                                            \
+    settings = (http_parser_settings_t*) (PARSER)->settings;                  \
     if (settings == NULL || settings->NAME == NULL) {                         \
       err = 0;                                                                \
       break;                                                                  \
