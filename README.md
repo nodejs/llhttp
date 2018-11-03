@@ -3,9 +3,6 @@
 
 Port of [http_parser][0] to [llparse][1].
 
-**NOTE: Only trunk and upcoming 6.0.1 version of clang are supported at the
-moment**
-
 ## Why?
 
 Let's face it, [http_parser][0] is practically unmaintainable. Even
