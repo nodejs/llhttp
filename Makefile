@@ -7,6 +7,7 @@ INCLUDES += -Ibuild/
 all: build/libhttp_parser.a
 
 clean:
+	rm -rf release/
 	rm -rf build/
 
 build/libhttp_parser.a: build/c/http_parser.o build/native/api.o \
@@ -30,7 +31,14 @@ build/c/http_parser.c: generate
 build/native:
 	mkdir -p build/native
 
+release: generate
+	mkdir -p release/src
+	cp -rf build/http_parser.h release/http_parser.h
+	cp -rf build/c/http_parser.c release/src/http_parser.c
+	cp -rf src/native/*.c release/src/
+	cp -rf src/http_parser.gyp release/http_parser.gyp
+
 generate:
 	./bin/generate.ts
 
-.PHONY: all generate clean
+.PHONY: all generate clean release
