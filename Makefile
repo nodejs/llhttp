@@ -33,7 +33,8 @@ build/native:
 
 release: generate
 	mkdir -p release/src
-	cp -rf build/llhttp.h release/llhttp.h
+	mkdir -p release/include
+	cp -rf build/llhttp.h release/include/llhttp.h
 	cp -rf build/c/llhttp.c release/src/llhttp.c
 	cp -rf src/native/*.c release/src/
 	cp -rf src/llhttp.gyp release/llhttp.gyp

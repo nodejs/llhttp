@@ -33,21 +33,21 @@ const instance = new llhttp.HTTP(llparse, mode);
 
 const artifacts = llparse.build(instance.build().entry, {
   debug: process.env.LLPARSE_DEBUG ? 'llhttp__debug' : undefined,
-  headerGuard: 'INCLUDE_llhttp_ITSELF_H_',
+  headerGuard: 'INCLUDE_LLHTTP_ITSELF_H_',
 });
 
 let headers = '';
 
-headers += '#ifndef INCLUDE_llhttp_H_\n';
-headers += '#define INCLUDE_llhttp_H_\n';
+headers += '#ifndef INCLUDE_LLHTTP_H_\n';
+headers += '#define INCLUDE_LLHTTP_H_\n';
 
 headers += '\n';
 
 const version = semver.parse(pkg.version)!;
 
-headers += `#define llhttp_VERSION_MAJOR ${version.major}\n`;
-headers += `#define llhttp_VERSION_MINOR ${version.minor}\n`;
-headers += `#define llhttp_VERSION_PATCH ${version.patch}\n`;
+headers += `#define LLHTTP_VERSION_MAJOR ${version.major}\n`;
+headers += `#define LLHTTP_VERSION_MINOR ${version.minor}\n`;
+headers += `#define LLHTTP_VERSION_PATCH ${version.patch}\n`;
 headers += '\n';
 
 const cHeaders = new llhttp.CHeaders();
@@ -63,7 +63,7 @@ headers += '\n';
 headers += fs.readFileSync(path.join(SRC_DIR, 'native', 'api.h'));
 
 headers += '\n';
-headers += '#endif  /* INCLUDE_llhttp_H_ */\n';
+headers += '#endif  /* INCLUDE_LLHTTP_H_ */\n';
 
 fs.writeFileSync(BITCODE_FILE, artifacts.bitcode);
 fs.writeFileSync(C_FILE, artifacts.c);
