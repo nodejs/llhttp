@@ -2,7 +2,7 @@
 # http://code.google.com/p/gyp/
 # To build try this:
 #   svn co http://gyp.googlecode.com/svn/trunk gyp
-#   ./gyp/gyp -f make --depth=`pwd` http_parser.gyp 
+#   ./gyp/gyp -f make --depth=`pwd` llhttp.gyp 
 #   ./out/Debug/test 
 {
   'target_defaults': {
@@ -49,19 +49,18 @@
 
   'targets': [
     {
-      'target_name': 'http_parser',
+      'target_name': 'llhttp',
       'type': 'static_library',
       'include_dirs': [ '.', 'src' ],
       'direct_dependent_settings': {
         'include_dirs': [ '.' ],
       },
-      'defines': [ 'HTTP_PARSER_STRICT=0' ],
-      'sources': [ 'src/http_parser.c', 'src/api.c', 'src/http.c' ],
+      'sources': [ 'src/llhttp.c', 'src/api.c', 'src/http.c' ],
       'conditions': [
         ['OS=="win"', {
           'msvs_settings': {
             'VCCLCompilerTool': {
-              # Compile as C++. http_parser.c is actually C99, but C++ is
+              # Compile as C++. llhttp.c is actually C99, but C++ is
               # close enough in this case.
               'CompileAs': 2,
             },

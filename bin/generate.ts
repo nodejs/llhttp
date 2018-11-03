@@ -14,9 +14,9 @@ const BITCODE_DIR = path.join(BUILD_DIR, 'bitcode');
 const C_DIR = path.join(BUILD_DIR, 'c');
 const SRC_DIR = path.join(__dirname, '..', 'src');
 
-const BITCODE_FILE = path.join(BITCODE_DIR, 'http_parser.bc');
-const C_FILE = path.join(C_DIR, 'http_parser.c');
-const HEADER_FILE = path.join(BUILD_DIR, 'http_parser.h');
+const BITCODE_FILE = path.join(BITCODE_DIR, 'llhttp.bc');
+const C_FILE = path.join(C_DIR, 'llhttp.c');
+const HEADER_FILE = path.join(BUILD_DIR, 'llhttp.h');
 
 for (const dir of [ BUILD_DIR, BITCODE_DIR, C_DIR ]) {
   try {
@@ -28,26 +28,26 @@ for (const dir of [ BUILD_DIR, BITCODE_DIR, C_DIR ]) {
 
 const mode = process.argv[2] === 'strict' ? 'strict' : 'loose';
 
-const llparse = new LLParse('http_parser');
+const llparse = new LLParse('llhttp');
 const instance = new llhttp.HTTP(llparse, mode);
 
 const artifacts = llparse.build(instance.build().entry, {
-  debug: process.env.LLPARSE_DEBUG ? 'http_parser__debug' : undefined,
-  headerGuard: 'INCLUDE_HTTP_PARSER_ITSELF_H_',
+  debug: process.env.LLPARSE_DEBUG ? 'llhttp__debug' : undefined,
+  headerGuard: 'INCLUDE_llhttp_ITSELF_H_',
 });
 
 let headers = '';
 
-headers += '#ifndef INCLUDE_HTTP_PARSER_H_\n';
-headers += '#define INCLUDE_HTTP_PARSER_H_\n';
+headers += '#ifndef INCLUDE_llhttp_H_\n';
+headers += '#define INCLUDE_llhttp_H_\n';
 
 headers += '\n';
 
 const version = semver.parse(pkg.version)!;
 
-headers += `#define HTTP_PARSER_VERSION_MAJOR ${version.major}\n`;
-headers += `#define HTTP_PARSER_VERSION_MINOR ${version.minor}\n`;
-headers += `#define HTTP_PARSER_VERSION_PATCH ${version.patch}\n`;
+headers += `#define llhttp_VERSION_MAJOR ${version.major}\n`;
+headers += `#define llhttp_VERSION_MINOR ${version.minor}\n`;
+headers += `#define llhttp_VERSION_PATCH ${version.patch}\n`;
 headers += '\n';
 
 const cHeaders = new llhttp.CHeaders();
@@ -63,7 +63,7 @@ headers += '\n';
 headers += fs.readFileSync(path.join(SRC_DIR, 'native', 'api.h'));
 
 headers += '\n';
-headers += '#endif  /* INCLUDE_HTTP_PARSER_H_ */\n';
+headers += '#endif  /* INCLUDE_llhttp_H_ */\n';
 
 fs.writeFileSync(BITCODE_FILE, artifacts.bitcode);
 fs.writeFileSync(C_FILE, artifacts.c);

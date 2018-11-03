@@ -59,7 +59,7 @@ function buildMode(mode: llhttp.HTTPMode, ty: TestType): FixtureResult {
     node = httpNode[mode];
     prefix = 'http';
     extra = [
-      '-DHTTP_PARSER__TEST_HTTP',
+      '-DLLHTTP__TEST_HTTP',
       path.join(__dirname, '..', 'src', 'native', 'http.c'),
     ];
   }

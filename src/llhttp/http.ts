@@ -141,26 +141,26 @@ export class HTTP {
     this.TOKEN = mode === 'strict' ? STRICT_TOKEN : TOKEN;
 
     this.span = {
-      body: p.span(p.code.span('http_parser__on_body')),
-      headerField: p.span(p.code.span('http_parser__on_header_field')),
-      headerValue: p.span(p.code.span('http_parser__on_header_value')),
-      status: p.span(p.code.span('http_parser__on_status')),
+      body: p.span(p.code.span('llhttp__on_body')),
+      headerField: p.span(p.code.span('llhttp__on_header_field')),
+      headerValue: p.span(p.code.span('llhttp__on_header_value')),
+      status: p.span(p.code.span('llhttp__on_status')),
     };
 
     /* tslint:disable:object-literal-sort-keys */
     this.callback = {
       // User callbacks
-      onHeadersComplete: p.code.match('http_parser__on_headers_complete'),
-      onMessageBegin: p.code.match('http_parser__on_message_begin'),
-      onMessageComplete: p.code.match('http_parser__on_message_complete'),
-      onChunkHeader: p.code.match('http_parser__on_chunk_header'),
-      onChunkComplete: p.code.match('http_parser__on_chunk_complete'),
+      onHeadersComplete: p.code.match('llhttp__on_headers_complete'),
+      onMessageBegin: p.code.match('llhttp__on_message_begin'),
+      onMessageComplete: p.code.match('llhttp__on_message_complete'),
+      onChunkHeader: p.code.match('llhttp__on_chunk_header'),
+      onChunkComplete: p.code.match('llhttp__on_chunk_complete'),
 
       // Internal callbacks `src/http.c`
       beforeHeadersComplete:
-        p.code.match('http_parser__before_headers_complete'),
-      afterHeadersComplete: p.code.match('http_parser__after_headers_complete'),
-      afterMessageComplete: p.code.match('http_parser__after_message_complete'),
+        p.code.match('llhttp__before_headers_complete'),
+      afterHeadersComplete: p.code.match('llhttp__after_headers_complete'),
+      afterMessageComplete: p.code.match('llhttp__after_message_complete'),
     };
     /* tslint:enable:object-literal-sort-keys */
 

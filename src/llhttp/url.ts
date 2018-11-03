@@ -48,14 +48,14 @@ export class URL {
 
     const table = this.spanTable;
     if (separateSpans) {
-      table.set('schema', p.span(p.code.span('http_parser__on_url_schema')));
-      table.set('host', p.span(p.code.span('http_parser__on_url_host')));
-      table.set('path', p.span(p.code.span('http_parser__on_url_path')));
-      table.set('query', p.span(p.code.span('http_parser__on_url_query')));
+      table.set('schema', p.span(p.code.span('llhttp__on_url_schema')));
+      table.set('host', p.span(p.code.span('llhttp__on_url_host')));
+      table.set('path', p.span(p.code.span('llhttp__on_url_path')));
+      table.set('query', p.span(p.code.span('llhttp__on_url_query')));
       table.set('fragment',
-        p.span(p.code.span('http_parser__on_url_fragment')));
+        p.span(p.code.span('llhttp__on_url_fragment')));
     } else {
-      table.set('url', p.span(p.code.span('http_parser__on_url')));
+      table.set('url', p.span(p.code.span('llhttp__on_url')));
     }
   }
 

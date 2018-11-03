@@ -2,12 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "http_parser.h"
+#include "llhttp.h"
 
 #define CALLBACK_MAYBE(PARSER, NAME, ...)                                     \
   do {                                                                        \
-    http_parser_settings_t* settings;                                         \
-    settings = (http_parser_settings_t*) (PARSER)->settings;                  \
+    llhttp_settings_t* settings;                                              \
+    settings = (llhttp_settings_t*) (PARSER)->settings;                       \
     if (settings == NULL || settings->NAME == NULL) {                         \
       err = 0;                                                                \
       break;                                                                  \
@@ -19,23 +19,23 @@
     }                                                                         \
   } while (0)
 
-void http_parser_set_type(http_parser_t* parser, enum http_parser_type type) {
+void llhttp_set_type(llhttp_t* parser, enum llhttp_type type) {
   parser->type = type;
 }
 
 
-void http_parser_set_settings(http_parser_t* parser,
-                              const http_parser_settings_t* settings) {
+void llhttp_set_settings(llhttp_t* parser,
+                              const llhttp_settings_t* settings) {
   parser->settings = (void*) settings;
 }
 
 
-void http_parser_settings_init(http_parser_settings_t* settings) {
+void llhttp_settings_init(llhttp_settings_t* settings) {
   memset(settings, 0, sizeof(*settings));
 }
 
 
-int http_parser_finish(http_parser_t* parser) {
+int llhttp_finish(llhttp_t* parser) {
   int err;
 
   /* We're in an error state. Don't bother doing anything. */
@@ -60,7 +60,7 @@ int http_parser_finish(http_parser_t* parser) {
 }
 
 
-void http_parser_resume(http_parser_t* parser) {
+void llhttp_resume(llhttp_t* parser) {
   if (parser->error != HPE_PAUSED) {
     return;
   }
@@ -69,7 +69,7 @@ void http_parser_resume(http_parser_t* parser) {
 }
 
 
-void http_parser_resume_after_upgrade(http_parser_t* parser) {
+void llhttp_resume_after_upgrade(llhttp_t* parser) {
   if (parser->error != HPE_PAUSED_UPGRADE) {
     return;
   }
@@ -78,7 +78,7 @@ void http_parser_resume_after_upgrade(http_parser_t* parser) {
 }
 
 
-const char* http_parser_errno_name(enum http_parser_errno err) {
+const char* llhttp_errno_name(enum llhttp_errno err) {
 #define HTTP_ERRNO_GEN(CODE, NAME, _) case HPE_##NAME: return "HPE_" #NAME;
   switch (err) {
     HTTP_ERRNO_MAP(HTTP_ERRNO_GEN)
@@ -91,78 +91,70 @@ const char* http_parser_errno_name(enum http_parser_errno err) {
 /* Callbacks */
 
 
-int http_parser__on_message_begin(http_parser_t* s, const char* p,
-                                  const char* endp) {
+int llhttp__on_message_begin(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_message_begin, s);
   return err;
 }
 
 
-int http_parser__on_url(http_parser_t* s, const char* p, const char* endp) {
+int llhttp__on_url(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_url, s, p, endp - p);
   return err;
 }
 
 
-int http_parser__on_status(http_parser_t* s, const char* p,
-                           const char* endp) {
+int llhttp__on_status(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_status, s, p, endp - p);
   return err;
 }
 
 
-int http_parser__on_header_field(http_parser_t* s, const char* p,
-                                 const char* endp) {
+int llhttp__on_header_field(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_header_field, s, p, endp - p);
   return err;
 }
 
 
-int http_parser__on_header_value(http_parser_t* s, const char* p,
-                                 const char* endp) {
+int llhttp__on_header_value(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_header_value, s, p, endp - p);
   return err;
 }
 
 
-int http_parser__on_headers_complete(http_parser_t* s, const char* p,
-                                     const char* endp) {
+int llhttp__on_headers_complete(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_headers_complete, s);
   return err;
 }
 
 
-int http_parser__on_message_complete(http_parser_t* s, const char* p,
-                                     const char* endp) {
+int llhttp__on_message_complete(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_message_complete, s);
   return err;
 }
 
 
-int http_parser__on_body(http_parser_t* s, const char* p, const char* endp) {
+int llhttp__on_body(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_body, s, p, endp - p);
   return err;
 }
 
 
-int http_parser__on_chunk_header(http_parser_t* s, const char* p,
-                                 const char* endp) {
+int llhttp__on_chunk_header(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_chunk_header, s);
   return err;
 }
 
 
-int http_parser__on_chunk_complete(http_parser_t* s, const char* p,
-                                   const char* endp) {
+int llhttp__on_chunk_complete(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_chunk_complete, s);
   return err;
@@ -172,13 +164,13 @@ int http_parser__on_chunk_complete(http_parser_t* s, const char* p,
 /* Private */
 
 
-void http_parser__debug(http_parser_t* s, const char* p, const char* endp,
-                        const char* msg) {
+void llhttp__debug(llhttp_t* s, const char* p, const char* endp,
+                   const char* msg) {
   if (p == endp) {
     fprintf(stderr, "p=%p type=%d flags=%02x next=null debug=%s\n", s, s->type,
             s->flags, msg);
   } else {
     fprintf(stderr, "p=%p type=%d flags=%02x next=%02x   debug=%s\n", s,
-        s->type, s->flags, *p, msg);
+            s->type, s->flags, *p, msg);
   }
 }

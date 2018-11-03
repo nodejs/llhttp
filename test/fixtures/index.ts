@@ -26,7 +26,7 @@ fs.writeFileSync(CHEADERS_FILE, cheaders);
 const fixtures = new Fixture({
   buildDir: path.join(__dirname, '..', 'tmp'),
   extra: [
-    '-DHTTP_PARSER__TEST',
+    '-DLLHTTP__TEST',
     '-DLLPARSE__ERROR_PAUSE=' + llhttp.constants.ERROR.PAUSED,
     '-include', CHEADERS_FILE,
     path.join(__dirname, 'extra.c'),
@@ -56,7 +56,7 @@ export function build(llparse: LLParse, node: any, outFile: string,
 
   const extra = options.extra === undefined ? [] : options.extra.slice();
   if (ty === 'request' || ty === 'response') {
-    extra.push(`-DLLPARSE__TEST_INIT=http_parser__test_init_${ty}`);
+    extra.push(`-DLLPARSE__TEST_INIT=llhttp__test_init_${ty}`);
   }
 
   return fixtures.build(artifacts, outFile, Object.assign(options, {

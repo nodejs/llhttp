@@ -1,16 +1,16 @@
 #include <stdio.h>
-#ifndef HTTP_PARSER__TEST
-# include "http_parser.h"
+#ifndef LLHTTP__TEST
+# include "llhttp.h"
 #else
-# define http_parser_t llparse_t
+# define llhttp_t llparse_t
 #endif  /* */
 
 /* TODO(indutny): this was public before, what should we do? */
-int http_parser_message_needs_eof(const http_parser_t* parser);
-int http_parser_should_keep_alive(const http_parser_t* parser);
+int llhttp_message_needs_eof(const llhttp_t* parser);
+int llhttp_should_keep_alive(const llhttp_t* parser);
 
-int http_parser__before_headers_complete(http_parser_t* parser, const char* p,
-                                         const char* endp) {
+int llhttp__before_headers_complete(llhttp_t* parser, const char* p,
+                                    const char* endp) {
   /* Set this here so that on_headers_complete() callbacks can see it */
   if ((parser->flags & F_UPGRADE) &&
       (parser->flags & F_CONNECTION_UPGRADE)) {
@@ -34,8 +34,8 @@ int http_parser__before_headers_complete(http_parser_t* parser, const char* p,
  * 3 - body_identity
  * 4 - body_identity_eof
  */
-int http_parser__after_headers_complete(http_parser_t* parser, const char* p,
-                                        const char* endp) {
+int llhttp__after_headers_complete(llhttp_t* parser, const char* p,
+                                   const char* endp) {
   int hasBody;
 
   hasBody = parser->flags & F_CHUNKED || parser->content_length > 0;
@@ -52,7 +52,7 @@ int http_parser__after_headers_complete(http_parser_t* parser, const char* p,
     return 2;
   } else {
     if (!(parser->flags & F_CONTENT_LENGTH)) {
-      if (!http_parser_message_needs_eof(parser)) {
+      if (!llhttp_message_needs_eof(parser)) {
         /* Assume content-length 0 - read the next */
         return 0;
       } else {
@@ -70,11 +70,11 @@ int http_parser__after_headers_complete(http_parser_t* parser, const char* p,
 }
 
 
-int http_parser__after_message_complete(http_parser_t* parser, const char* p,
-                                        const char* endp) {
+int llhttp__after_message_complete(llhttp_t* parser, const char* p,
+                                   const char* endp) {
   int should_keep_alive;
 
-  should_keep_alive = http_parser_should_keep_alive(parser);
+  should_keep_alive = llhttp_should_keep_alive(parser);
   parser->flags = 0;
   parser->finish = HTTP_FINISH_SAFE;
 
@@ -83,7 +83,7 @@ int http_parser__after_message_complete(http_parser_t* parser, const char* p,
 }
 
 
-int http_parser_message_needs_eof(const http_parser_t* parser) {
+int llhttp_message_needs_eof(const llhttp_t* parser) {
   if (parser->type == HTTP_REQUEST) {
     return 0;
   }
@@ -104,7 +104,7 @@ int http_parser_message_needs_eof(const http_parser_t* parser) {
 }
 
 
-int http_parser_should_keep_alive(const http_parser_t* parser) {
+int llhttp_should_keep_alive(const llhttp_t* parser) {
   if (parser->http_major > 0 && parser->http_minor > 0) {
     /* HTTP/1.1 */
     if (parser->flags & F_CONNECTION_CLOSE) {
@@ -117,5 +117,5 @@ int http_parser_should_keep_alive(const http_parser_t* parser) {
     }
   }
 
-  return !http_parser_message_needs_eof(parser);
+  return !llhttp_message_needs_eof(parser);
 }

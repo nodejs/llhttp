@@ -16,6 +16,8 @@ This project aims to:
 
 ## How?
 
+**OUTDATED**
+
 Over time, different approaches for improving [http_parser][0]'s code base
 were tried. However, all of them failed due to resulting significant performance
 degradation. Most of this degradation comes from the extensive [spilling][2]

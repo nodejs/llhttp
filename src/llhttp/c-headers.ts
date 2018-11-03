@@ -7,8 +7,8 @@ export class CHeaders {
   public build(): string {
     let res = '';
 
-    res += '#ifndef LLHTTP_PARSER_C_HEADERS_\n';
-    res += '#define LLHTTP_PARSER_C_HEADERS_\n';
+    res += '#ifndef LLLLHTTP_C_HEADERS_\n';
+    res += '#define LLLLHTTP_C_HEADERS_\n';
 
     res += '#ifdef __cplusplus\n';
     res += 'extern "C" {\n';
@@ -19,18 +19,18 @@ export class CHeaders {
     const errorMap = enumToMap(constants.ERROR);
     const methodMap = enumToMap(constants.METHODS);
 
-    res += this.buildEnum('http_parser_errno', 'HPE', errorMap);
+    res += this.buildEnum('llhttp_errno', 'HPE', errorMap);
     res += '\n';
-    res += this.buildEnum('http_parser_flags', 'F', enumToMap(constants.FLAGS),
+    res += this.buildEnum('llhttp_flags', 'F', enumToMap(constants.FLAGS),
       'hex');
     res += '\n';
-    res += this.buildEnum('http_parser_type', 'HTTP',
+    res += this.buildEnum('llhttp_type', 'HTTP',
       enumToMap(constants.TYPE));
     res += '\n';
-    res += this.buildEnum('http_parser_finish', 'HTTP_FINISH',
+    res += this.buildEnum('llhttp_finish', 'HTTP_FINISH',
       enumToMap(constants.FINISH));
     res += '\n';
-    res += this.buildEnum('http_parser_method', 'HTTP', methodMap);
+    res += this.buildEnum('llhttp_method', 'HTTP', methodMap);
 
     res += '\n';
 
@@ -44,7 +44,7 @@ export class CHeaders {
     res += '#ifdef __cplusplus\n';
     res += '}  /* extern "C" */\n';
     res += '#endif\n';
-    res += '#endif  /* LLHTTP_PARSER_C_HEADERS_ */\n';
+    res += '#endif  /* LLLLHTTP_C_HEADERS_ */\n';
 
     return res;
   }
