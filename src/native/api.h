@@ -7,10 +7,11 @@ extern "C" {
 /* Get an http_errno value from an llhttp */
 #define LLHTTP_ERRNO(p) ((enum llhttp_errno) (p)->error)
 
+typedef llhttp__internal_t llhttp_t;
+typedef struct llhttp_settings_s llhttp_settings_t;
+
 typedef int (*llhttp_data_cb)(llhttp_t*, const char *at, size_t length);
 typedef int (*llhttp_cb)(llhttp_t*);
-
-typedef struct llhttp_settings_s llhttp_settings_t;
 
 struct llhttp_settings_s {
   llhttp_cb      on_message_begin;
@@ -28,13 +29,16 @@ struct llhttp_settings_s {
   llhttp_cb      on_chunk_complete;
 };
 
-void llhttp_set_type(llhttp_t* parser, enum llhttp_type type);
-void llhttp_set_settings(llhttp_t* parser, const llhttp_settings_t* settings);
+void llhttp_init(llhttp_t* parser, enum llhttp_type type,
+                 const llhttp_settings_t* settings);
 void llhttp_settings_init(llhttp_settings_t* settings);
+
+enum llhttp_errno llhttp_execute(llhttp_t* parser, const char* data,
+                                 size_t len);
+enum llhttp_errno llhttp_finish(llhttp_t* parser);
 
 int llhttp_message_needs_eof(const llhttp_t* parser);
 int llhttp_should_keep_alive(const llhttp_t* parser);
-int llhttp_finish(llhttp_t* parser);
 void llhttp_resume(llhttp_t* parser);
 void llhttp_resume_after_upgrade(llhttp_t* parser);
 

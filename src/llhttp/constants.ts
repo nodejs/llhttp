@@ -29,6 +29,8 @@ export enum ERROR {
 
   PAUSED,
   PAUSED_UPGRADE,
+
+  USER,
 }
 
 export enum TYPE {

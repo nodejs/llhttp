@@ -28,10 +28,13 @@ for (const dir of [ BUILD_DIR, BITCODE_DIR, C_DIR ]) {
 
 const mode = process.argv[2] === 'strict' ? 'strict' : 'loose';
 
-const llparse = new LLParse('llhttp');
+const llparse = new LLParse('llhttp__internal');
 const instance = new llhttp.HTTP(llparse, mode);
 
 const artifacts = llparse.build(instance.build().entry, {
+  c: {
+    header: 'llhttp',
+  },
   debug: process.env.LLPARSE_DEBUG ? 'llhttp__debug' : undefined,
   headerGuard: 'INCLUDE_LLHTTP_ITSELF_H_',
 });

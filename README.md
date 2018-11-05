@@ -16,26 +16,13 @@ This project aims to:
 
 ## How?
 
-**OUTDATED**
-
 Over time, different approaches for improving [http_parser][0]'s code base
 were tried. However, all of them failed due to resulting significant performance
-degradation. Most of this degradation comes from the extensive [spilling][2]
-that is inevitable for such large function as `http_parser_execute`.
+degradation.
 
-Splitting the big switch statement into small functions naively should work,
-but, in practice, is feasible only through using a dispatch loop in
-`http_parser_execute`, which is slow due to lots of failed branch predictions.
-The loop can be avoided by use of [tail calls][3], but their generation can not
-be enforced in C language.
-
-To overcome this impediment, this project utilizes [llparse][1] for converting
-the switch statement into [LLVM bitcode][4]. Small functions for each separate
-state of the parser are created and linked together through [`musttail`][5]
-calls.
-
-The end result of such process is a binary bitcode file, that could be compiled
-to machine code with [clang][6] compiler.
+This project is a port of [http_parser][0] to TypeScript. [llparse][1] is used
+to generate the output C and/or bitcode artifacts, which could be compiled and
+linked with the embedder's program (like [Node.js][7]).
 
 ## Peformance
 
@@ -43,24 +30,67 @@ So far llhttp outperforms http_parser:
 
 |                 | input size |  bandwidth   |  reqs/sec  |   time  |
 |:----------------|-----------:|-------------:|-----------:|--------:|
-| **llhttp** _(bitcode)_ | 8192.00 mb | 1131.75 mb/s | 2282171.24 ops/sec | 7.24 s |
 | **llhttp** _(C)_ | 8192.00 mb | 1497.88 mb/s | 3020458.87 ops/sec | 5.47 s |
+| **llhttp** _(bitcode)_ | 8192.00 mb | 1131.75 mb/s | 2282171.24 ops/sec | 7.24 s |
 | **http_parser** | 8192.00 mb | 694.66 mb/s | 1406180.33 req/sec | 11.79 s |
 
 llhttp is faster by approximately **116%**.
 
 ## Maintenance
 
-llhttp project has less 1000 LoC (lines of code), while the same code in
-[http_parser][0] is implemented in approximately 2000 LoC. All optimizations
-and multi-character matching in llhttp is generated automatically, and thus
-doesn't add any extra maintenance cost.
+llhttp project has about 1400 lines of TypeScript code describing the parser
+itself and around 300 lines of C code and headers providing the helper methods.
+The whole [http_parser][0] is implemented in approximately 2500 lines of C, and
+436 lines of headers.
+
+All optimizations and multi-character matching in llhttp are generated
+automatically, and thus doesn't add any extra maintenance cost. On the contrary,
+most of http_parser's code is hand-optimized and unrolled. Instead describing
+"how" it should parse the HTTP requests/responses, a maintainer should
+implement the new features in [http_parser][0] cautiously, considering
+possible performance degradation and manually optimizing the new code.
 
 ## Verification
 
-The state machine graph is encoded explicitly in llhttp.
+The state machine graph is encoded explicitly in llhttp. The [llparse][1]
+automatically checks the graph for absence of loops and correct reporting of the
+input ranges (spans) like header names and values. In the future, additional
+checks could be performed to get even stricter verification of the llhttp.
 
-WIP.
+## Usage
+
+```C
+#include "llhttp.h"
+
+llhttp_t parser;
+llhttp_settings_t settings;
+
+/* Initialize user callbacks and settings */
+llhttp_settings_init(&settings);
+
+/* Set user callback */
+settings.on_message_complete = handle_on_message_complete;
+
+/* Initialize the parser in HTTP_BOTH mode, meaning that it will select between
+ * HTTP_REQUEST and HTTP_RESPONSE parsing automatically while reading the first
+ * input.
+ */
+llhttp_init(&parser, HTTP_BOTH, &settings);
+
+/* Use `llhttp_set_type(&parser, HTTP_REQUEST);` to override the mode */
+
+/* Parse request! */
+const char* request = "GET / HTTP/1.1\r\n\r\n";
+int request_len = strlen(request);
+
+enum llhttp_errno err = llhttp_execute(&parser, request, request_len);
+if (err == HPE_OK) {
+  /* Successfully parsed! */
+} else {
+  fprintf(stderr, "Parse error: %s %s\n", llhttp_errno_name(err),
+          parser.reason);
+}
+```
 
 ---
 
@@ -96,3 +126,4 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 [4]: https://llvm.org/docs/LangRef.html
 [5]: https://llvm.org/docs/LangRef.html#call-instruction
 [6]: https://clang.llvm.org/
+[7]: https://github.com/nodejs/node

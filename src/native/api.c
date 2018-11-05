@@ -19,14 +19,18 @@
     }                                                                         \
   } while (0)
 
-void llhttp_set_type(llhttp_t* parser, enum llhttp_type type) {
+void llhttp_init(llhttp_t* parser, enum llhttp_type type,
+                 const llhttp_settings_t* settings) {
+  llhttp__internal_init(parser);
+
   parser->type = type;
+  parser->settings = (void*) settings;
 }
 
 
-void llhttp_set_settings(llhttp_t* parser,
-                              const llhttp_settings_t* settings) {
-  parser->settings = (void*) settings;
+enum llhttp_errno llhttp_execute(llhttp_t* parser, const char* data,
+                                 size_t len) {
+  return llhttp__internal_execute(parser, data, data + len);
 }
 
 
@@ -35,7 +39,7 @@ void llhttp_settings_init(llhttp_settings_t* settings) {
 }
 
 
-int llhttp_finish(llhttp_t* parser) {
+enum llhttp_errno llhttp_finish(llhttp_t* parser) {
   int err;
 
   /* We're in an error state. Don't bother doing anything. */
@@ -46,11 +50,11 @@ int llhttp_finish(llhttp_t* parser) {
   switch (parser->finish) {
     case HTTP_FINISH_SAFE_WITH_CB:
       CALLBACK_MAYBE(parser, on_message_complete, parser);
-      if (err != 0) return err;
+      if (err != HPE_OK) return err;
 
     /* FALLTHROUGH */
     case HTTP_FINISH_SAFE:
-      return 0;
+      return HPE_OK;
     case HTTP_FINISH_UNSAFE:
       parser->reason = "Invalid EOF state";
       return HPE_INVALID_EOF_STATE;
