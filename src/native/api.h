@@ -11,16 +11,33 @@ typedef int (*llhttp_data_cb)(llhttp_t*, const char *at, size_t length);
 typedef int (*llhttp_cb)(llhttp_t*);
 
 struct llhttp_settings_s {
+  /* Possible return values 0, -1, `HPE_PAUSED` */
   llhttp_cb      on_message_begin;
+
   llhttp_data_cb on_url;
   llhttp_data_cb on_status;
   llhttp_data_cb on_header_field;
   llhttp_data_cb on_header_value;
+
+  /* Possible return values:
+   * 0  - Proceed normally
+   * 1  - Assume that request/response has no body, and proceed to parsing the
+   *      next message
+   * 2  - Assume absence of body (as above) and make `llhttp_execute()` return
+   *      `HPE_PAUSED_UPGRADE`
+   * -1 - Error
+   * `HPE_PAUSED`
+   */
   llhttp_cb      on_headers_complete;
+
   llhttp_data_cb on_body;
+
+  /* Possible return values 0, -1, `HPE_PAUSED` */
   llhttp_cb      on_message_complete;
+
   /* When on_chunk_header is called, the current chunk length is stored
    * in parser->content_length.
+   * Possible return values 0, -1, `HPE_PAUSED`
    */
   llhttp_cb      on_chunk_header;
   llhttp_cb      on_chunk_complete;
@@ -36,7 +53,7 @@ void llhttp_settings_init(llhttp_settings_t* settings);
 /* Parse full or partial request/response, invoking user callbacks along the
  * way.
  *
- * If any of callbacks returns errno not equal to `HPE_OK` - the parsing
+ * If any of `llhttp_data_cb` returns errno not equal to `HPE_OK` - the parsing
  * interrupts, and such errno is returned from `llhttp_execute()`. If
  * `HPE_PAUSED` was used as a errno, the execution can be resumed with
  * `llhttp_resume()` call.
