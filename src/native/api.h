@@ -4,9 +4,6 @@
 extern "C" {
 #endif
 
-/* Get an http_errno value from an llhttp */
-#define LLHTTP_ERRNO(p) ((llhttp_errno_t) (p)->error)
-
 typedef llhttp__internal_t llhttp_t;
 typedef struct llhttp_settings_s llhttp_settings_t;
 
