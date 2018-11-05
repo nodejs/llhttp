@@ -70,6 +70,14 @@ int llhttp_message_needs_eof(const llhttp_t* parser);
  */
 int llhttp_should_keep_alive(const llhttp_t* parser);
 
+/* Make further calls of `llhttp_execute()` return `HPE_PAUSED` and set
+ * appropriate error reason.
+ *
+ * Important: do not call this from user callbacks! User callbacks must return
+ * `HPE_PAUSED` if pausing is required.
+ */
+void llhttp_pause(llhttp_t* parser);
+
 /* Might be called to resume the execution after the pause in user's callback.
  * See `llhttp_execute()` above for details.
  *

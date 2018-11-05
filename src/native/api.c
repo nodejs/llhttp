@@ -63,6 +63,16 @@ llhttp_errno_t llhttp_finish(llhttp_t* parser) {
 }
 
 
+void llhttp_pause(llhttp_t* parser) {
+  if (parser->error != HPE_OK) {
+    return;
+  }
+
+  parser->error = HPE_PAUSED;
+  parser->reason = "Paused";
+}
+
+
 void llhttp_resume(llhttp_t* parser) {
   if (parser->error != HPE_PAUSED) {
     return;
