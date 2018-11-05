@@ -12,11 +12,7 @@
       err = 0;                                                                \
       break;                                                                  \
     }                                                                         \
-    (PARSER)->reason = NULL;                                                  \
     err = settings->NAME(__VA_ARGS__);                                        \
-    if (err != 0 && (PARSER)->reason == NULL) {                               \
-      (PARSER)->reason = "`" #NAME "` error";                                 \
-    }                                                                         \
   } while (0)
 
 void llhttp_init(llhttp_t* parser, llhttp_type_t type,
