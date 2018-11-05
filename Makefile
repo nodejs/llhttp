@@ -34,11 +34,13 @@ build/native:
 release: generate
 	mkdir -p release/src
 	mkdir -p release/include
-	cp -rf build/llhttp.h release/include/llhttp.h
-	cp -rf build/c/llhttp.c release/src/llhttp.c
+	cp -rf build/llhttp.h release/include/
+	cp -rf build/c/llhttp.c release/src/
 	cp -rf src/native/*.c release/src/
-	cp -rf src/llhttp.gyp release/llhttp.gyp
+	cp -rf src/llhttp.gyp release/
+	cp -rf src/common.gypi release/
 	cp -rf README.md release/
+	cp -rf LICENSE-MIT release/
 
 generate:
 	./bin/generate.ts
