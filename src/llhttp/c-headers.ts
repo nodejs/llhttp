@@ -70,6 +70,7 @@ export class CHeaders {
       }
     });
     res += '\n};\n';
+    res += `typedef enum ${name} ${name}_t;\n`;
 
     return res;
   }

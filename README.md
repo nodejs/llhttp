@@ -39,7 +39,7 @@ llhttp is faster by approximately **116%**.
 ## Maintenance
 
 llhttp project has about 1400 lines of TypeScript code describing the parser
-itself and around 300 lines of C code and headers providing the helper methods.
+itself and around 450 lines of C code and headers providing the helper methods.
 The whole [http_parser][0] is implemented in approximately 2500 lines of C, and
 436 lines of headers.
 

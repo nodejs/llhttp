@@ -5,7 +5,6 @@
 # define llhttp_t llparse_t
 #endif  /* */
 
-/* TODO(indutny): this was public before, what should we do? */
 int llhttp_message_needs_eof(const llhttp_t* parser);
 int llhttp_should_keep_alive(const llhttp_t* parser);
 

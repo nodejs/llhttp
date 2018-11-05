@@ -5,7 +5,7 @@ extern "C" {
 #endif
 
 /* Get an http_errno value from an llhttp */
-#define LLHTTP_ERRNO(p) ((enum llhttp_errno) (p)->error)
+#define LLHTTP_ERRNO(p) ((llhttp_errno_t) (p)->error)
 
 typedef llhttp__internal_t llhttp_t;
 typedef struct llhttp_settings_s llhttp_settings_t;
@@ -29,20 +29,87 @@ struct llhttp_settings_s {
   llhttp_cb      on_chunk_complete;
 };
 
-void llhttp_init(llhttp_t* parser, enum llhttp_type type,
+/* Initialize the parser with specific type and user settings */
+void llhttp_init(llhttp_t* parser, llhttp_type_t type,
                  const llhttp_settings_t* settings);
+
+/* Initialize the settings object */
 void llhttp_settings_init(llhttp_settings_t* settings);
 
-enum llhttp_errno llhttp_execute(llhttp_t* parser, const char* data,
-                                 size_t len);
-enum llhttp_errno llhttp_finish(llhttp_t* parser);
+/* Parse full or partial request/response, invoking user callbacks along the
+ * way.
+ *
+ * If any of callbacks returns errno not equal to `HPE_OK` - the parsing
+ * interrupts, and such errno is returned from `llhttp_execute()`. If
+ * `HPE_PAUSED` was used as a errno, the execution can be resumed with
+ * `llhttp_resume()` call.
+ *
+ * In a special case of CONNECT/Upgrade request/response `HPE_PAUSED_UPGRADE`
+ * is returned after fully parsing the request/response. If the user wishes to
+ * continue parsing, they need to invoke `llhttp_resume_after_upgrade()`.
+ */
+llhttp_errno_t llhttp_execute(llhttp_t* parser, const char* data, size_t len);
 
+/* This method should be called when the other side has no further bytes to
+ * send (e.g. shutdown of readable side of the TCP connection.)
+ *
+ * Requests without `Content-Length` and other messages might require treating
+ * all incoming bytes as the part of the body, up to the last byte of the
+ * connection. This method will invoke `on_message_complete()` callback if the
+ * request was terminated safely. Otherwise a error code would be returned.
+ */
+llhttp_errno_t llhttp_finish(llhttp_t* parser);
+
+/* Returns `1` if the incoming message is parsed until the last byte, and has
+ * to be completed by calling `llhttp_finish()` on EOF
+ */
 int llhttp_message_needs_eof(const llhttp_t* parser);
+
+/* Returns `1` if there might be any other messages following the last that was
+ * successfuly parsed.
+ */
 int llhttp_should_keep_alive(const llhttp_t* parser);
+
+/* Might be called to resume the execution after the pause in user's callback.
+ * See `llhttp_execute()` above for details.
+ *
+ * Call this only if `llhttp_execute()` returns `HPE_PAUSED`.
+ */
 void llhttp_resume(llhttp_t* parser);
+
+/* Might be called to resume the execution after the pause in user's callback.
+ * See `llhttp_execute()` above for details.
+ *
+ * Call this only if `llhttp_execute()` returns `HPE_PAUSED_UPGRADE`
+ */
 void llhttp_resume_after_upgrade(llhttp_t* parser);
 
-const char* llhttp_errno_name(enum llhttp_errno err);
+/* Returns the latest return error */
+llhttp_errno_t llhttp_get_errno(const llhttp_t* parser);
+
+/* Returns the verbal explanation of the latest returned error.
+ *
+ * Note: User callback should set error reason when returning the error. See
+ * `llhttp_set_error_reason()` for details.
+ */
+const char* llhttp_get_error_reason(const llhttp_t* parser);
+
+/* Assign verbal description to the returned error. Must be called in user
+ * callbacks right before returning the errno.
+ *
+ * Note: `HPE_USER` error code might be useful in user callbacks.
+ */
+void llhttp_set_error_reason(llhttp_t* parser, const char* reason);
+
+/* Returns the pointer to the last parsed byte before the returned error. The
+ * pointer is relative to the `data` argument of `llhttp_execute()`.
+ *
+ * Note: this method might be useful for counting the number of parsed bytes.
+ */
+const char* llhttp_get_error_pos(const llhttp_t* parser);
+
+/* Returns textual name of error code */
+const char* llhttp_errno_name(llhttp_errno_t err);
 
 #ifdef __cplusplus
 }  /* extern "C" */

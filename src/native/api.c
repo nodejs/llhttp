@@ -19,7 +19,7 @@
     }                                                                         \
   } while (0)
 
-void llhttp_init(llhttp_t* parser, enum llhttp_type type,
+void llhttp_init(llhttp_t* parser, llhttp_type_t type,
                  const llhttp_settings_t* settings) {
   llhttp__internal_init(parser);
 
@@ -28,8 +28,7 @@ void llhttp_init(llhttp_t* parser, enum llhttp_type type,
 }
 
 
-enum llhttp_errno llhttp_execute(llhttp_t* parser, const char* data,
-                                 size_t len) {
+llhttp_errno_t llhttp_execute(llhttp_t* parser, const char* data, size_t len) {
   return llhttp__internal_execute(parser, data, data + len);
 }
 
@@ -39,7 +38,7 @@ void llhttp_settings_init(llhttp_settings_t* settings) {
 }
 
 
-enum llhttp_errno llhttp_finish(llhttp_t* parser) {
+llhttp_errno_t llhttp_finish(llhttp_t* parser) {
   int err;
 
   /* We're in an error state. Don't bother doing anything. */
@@ -82,7 +81,27 @@ void llhttp_resume_after_upgrade(llhttp_t* parser) {
 }
 
 
-const char* llhttp_errno_name(enum llhttp_errno err) {
+llhttp_errno_t llhttp_get_errno(const llhttp_t* parser) {
+  return parser->error;
+}
+
+
+const char* llhttp_get_error_reason(const llhttp_t* parser) {
+  return parser->reason;
+}
+
+
+void llhttp_set_error_reason(llhttp_t* parser, const char* reason) {
+  parser->reason = reason;
+}
+
+
+const char* llhttp_get_error_pos(const llhttp_t* parser) {
+  return parser->error_pos;
+}
+
+
+const char* llhttp_errno_name(llhttp_errno_t err) {
 #define HTTP_ERRNO_GEN(CODE, NAME, _) case HPE_##NAME: return "HPE_" #NAME;
   switch (err) {
     HTTP_ERRNO_MAP(HTTP_ERRNO_GEN)
