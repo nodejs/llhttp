@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "bench": "ts-node bench/",
-    "build": "ts-node bin/build.ts",
+    "build": "ts-node bin/generate.ts",
     "build-ts": "tsc",
     "clean": "rm -rf lib && rm -rf test/tmp",
     "prepare": "npm run clean && npm run build-ts",
