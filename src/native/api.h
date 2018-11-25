@@ -133,6 +133,9 @@ const char* llhttp_get_error_pos(const llhttp_t* parser);
 /* Returns textual name of error code */
 const char* llhttp_errno_name(llhttp_errno_t err);
 
+/* Returns textual name of HTTP method */
+const char* llhttp_method_name(llhttp_method_t method);
+
 #ifdef __cplusplus
 }  /* extern "C" */
 #endif
