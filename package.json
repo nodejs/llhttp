@@ -17,7 +17,7 @@
     "lint": "tslint -c tslint.json src/*.ts src/**/*.ts test/*.ts test/**/*.ts build/*.ts",
     "mocha": "mocha --timeout=10000 -r ts-node/register/type-check --reporter progress test/*-test.ts",
     "test": "npm run mocha && npm run lint",
-    "postversion": "TAG=`git tag` make -B postversion"
+    "postversion": "TAG=`node -e \"process.stdout.write(require('./package').version)\"` make -B postversion"
   },
   "repository": {
     "type": "git",
