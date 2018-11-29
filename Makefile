@@ -46,7 +46,7 @@ postversion: release
 	git checkout release
 	cp -rf release/* ./
 	rm -rf release
-	git add .
+	git add include src *.gyp *.gypi README.md LICENSE-MIT
 	git commit -a -m "release: $(TAG)"
 	git tag "release/$(TAG)"
 	git push && git push --tags
