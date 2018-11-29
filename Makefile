@@ -42,6 +42,16 @@ release: generate
 	cp -rf README.md release/
 	cp -rf LICENSE-MIT release/
 
+postversion: release
+	git checkout release
+	cp -rf release/* ./
+	rm -rf release
+	git add .
+	git commit -a -m "release: $(TAG)"
+	git tag "release/$(TAG)"
+	git push && git push --tags
+	git checkout master
+
 generate:
 	./bin/generate.ts
 
