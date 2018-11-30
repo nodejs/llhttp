@@ -61,6 +61,10 @@ void llhttp_settings_init(llhttp_settings_t* settings);
  * In a special case of CONNECT/Upgrade request/response `HPE_PAUSED_UPGRADE`
  * is returned after fully parsing the request/response. If the user wishes to
  * continue parsing, they need to invoke `llhttp_resume_after_upgrade()`.
+ *
+ * NOTE: if this function ever returns a non-pause type error, it will continue
+ * to return the same error upon each successive call up until `llhttp_init()`
+ * call.
  */
 llhttp_errno_t llhttp_execute(llhttp_t* parser, const char* data, size_t len);
 
