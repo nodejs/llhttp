@@ -3,7 +3,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-  
 #include <stddef.h>
 
 typedef llhttp__internal_t llhttp_t;
