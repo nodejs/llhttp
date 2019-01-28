@@ -65,7 +65,7 @@ void llhttp_settings_init(llhttp_settings_t* settings);
  *
  * NOTE: if this function ever returns a non-pause type error, it will continue
  * to return the same error upon each successive call up until `llhttp_init()`
- * call.
+ * is called.
  */
 llhttp_errno_t llhttp_execute(llhttp_t* parser, const char* data, size_t len);
 
