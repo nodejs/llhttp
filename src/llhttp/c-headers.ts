@@ -1,11 +1,11 @@
-import * as constants from './constants';
+import { ERROR, METHODS, FLAGS, TYPE, FINISH } from './constants';
 import { enumToMap, IEnumMap } from './utils';
 
 type Encoding = 'none' | 'hex';
 
 export class CHeaders {
   public build(): string {
-    let res = '';
+    let res: string = '';
 
     res += '#ifndef LLLLHTTP_C_HEADERS_\n';
     res += '#define LLLLHTTP_C_HEADERS_\n';
@@ -16,19 +16,16 @@ export class CHeaders {
 
     res += '\n';
 
-    const errorMap = enumToMap(constants.ERROR);
-    const methodMap = enumToMap(constants.METHODS);
+    const errorMap = enumToMap(ERROR);
+    const methodMap = enumToMap(METHODS);
 
     res += this.buildEnum('llhttp_errno', 'HPE', errorMap);
     res += '\n';
-    res += this.buildEnum('llhttp_flags', 'F', enumToMap(constants.FLAGS),
-      'hex');
+    res += this.buildEnum('llhttp_flags', 'F', enumToMap(FLAGS), 'hex');
     res += '\n';
-    res += this.buildEnum('llhttp_type', 'HTTP',
-      enumToMap(constants.TYPE));
+    res += this.buildEnum('llhttp_type', 'HTTP', enumToMap(TYPE));
     res += '\n';
-    res += this.buildEnum('llhttp_finish', 'HTTP_FINISH',
-      enumToMap(constants.FINISH));
+    res += this.buildEnum('llhttp_finish', 'HTTP_FINISH', enumToMap(FINISH));
     res += '\n';
     res += this.buildEnum('llhttp_method', 'HTTP', methodMap);
 
@@ -49,9 +46,13 @@ export class CHeaders {
     return res;
   }
 
-  private buildEnum(name: string, prefix: string, map: IEnumMap,
-                    encoding: Encoding = 'none'): string {
-    let res = '';
+  private buildEnum(
+    name: string,
+    prefix: string,
+    map: IEnumMap,
+    encoding: Encoding = 'none'
+  ): string {
+    let res: string = '';
 
     res += `enum ${name} {\n`;
     const keys = Object.keys(map);
@@ -76,10 +77,10 @@ export class CHeaders {
   }
 
   private buildMap(name: string, map: IEnumMap): string {
-    let res = '';
+    let res: string = '';
 
     res += `#define ${name}_MAP(XX) \\\n`;
-    Object.keys(map).forEach((key) => {
+    Object.keys(map).forEach(key => {
       res += `  XX(${map[key]!}, ${key.replace(/-/g, '')}, ${key}) \\\n`;
     });
     res += '\n';

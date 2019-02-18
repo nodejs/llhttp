@@ -2,7 +2,9 @@ import * as fs from 'fs';
 import { ICompilerResult, LLParse } from 'llparse';
 import { Dot } from 'llparse-dot';
 import {
-  Fixture, FixtureResult, IFixtureBuildOptions,
+  Fixture,
+  FixtureResult,
+  IFixtureBuildOptions
 } from 'llparse-test-fixture';
 import * as path from 'path';
 
@@ -28,20 +30,24 @@ const fixtures = new Fixture({
   extra: [
     '-DLLHTTP__TEST',
     '-DLLPARSE__ERROR_PAUSE=' + llhttp.constants.ERROR.PAUSED,
-    '-include', CHEADERS_FILE,
-    path.join(__dirname, 'extra.c'),
+    '-include',
+    CHEADERS_FILE,
+    path.join(__dirname, 'extra.c')
   ],
-  maxParallel: process.env.LLPARSE_DEBUG ? 1 : undefined,
+  maxParallel: process.env.LLPARSE_DEBUG ? 1 : undefined
 });
 
 const cache: Map<any, ICompilerResult> = new Map();
 
-export function build(llparse: LLParse, node: any, outFile: string,
-                      options: IFixtureBuildOptions = {},
-                      ty: TestType = 'none'): FixtureResult {
+export function build(
+  llparse: LLParse,
+  node: any,
+  outFile: string,
+  options: IFixtureBuildOptions = {},
+  ty: TestType = 'none'
+): FixtureResult {
   const dot = new Dot();
-  fs.writeFileSync(path.join(BUILD_DIR, outFile + '.dot'),
-    dot.build(node));
+  fs.writeFileSync(path.join(BUILD_DIR, outFile + '.dot'), dot.build(node));
 
   let artifacts: ICompilerResult;
   if (cache.has(node)) {
@@ -49,17 +55,22 @@ export function build(llparse: LLParse, node: any, outFile: string,
   } else {
     artifacts = llparse.build(node, {
       c: { header: outFile },
-      debug: process.env.LLPARSE_DEBUG ? 'llparse__debug' : undefined,
+      debug: process.env.LLPARSE_DEBUG ? 'llparse__debug' : undefined
     });
     cache.set(node, artifacts);
   }
 
-  const extra = options.extra === undefined ? [] : options.extra.slice();
+  const extra: string[] =
+    options.extra === undefined ? [] : options.extra.slice();
   if (ty === 'request' || ty === 'response') {
     extra.push(`-DLLPARSE__TEST_INIT=llhttp__test_init_${ty}`);
   }
 
-  return fixtures.build(artifacts, outFile, Object.assign(options, {
-    extra,
-  }));
+  return fixtures.build(
+    artifacts,
+    outFile,
+    Object.assign(options, {
+      extra
+    })
+  );
 }
