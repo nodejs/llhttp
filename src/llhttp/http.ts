@@ -68,8 +68,8 @@ const NODES: ReadonlyArray<string> = [
   'headers_done',
 
   'chunk_size_start',
+  'chunk_size_digit',
   'chunk_size',
-  'chunk_size2',
   'chunk_size_otherwise',
   'chunk_size_almost_done',
   'chunk_size_almost_done_lf',
@@ -590,21 +590,20 @@ export class HTTP {
       .skipTo(n('eof'));
 
     n('chunk_size_start')
-      .otherwise(this.update('content_length', 0, 'chunk_size'));
+      .otherwise(this.update('content_length', 0, 'chunk_size_digit'));
 
-    n('chunk_size')
-      .select(HEX_MAP, this.mulAdd('content_length', {
-        overflow: p.error(ERROR.INVALID_CHUNK_SIZE, 'Chunk size overflow'),
-        success: 'chunk_size2',
-      }, { signed: false, base: 0x10 }))
+    const addContentLength = this.mulAdd('content_length', {
+      overflow: p.error(ERROR.INVALID_CHUNK_SIZE, 'Chunk size overflow'),
+      success: 'chunk_size',
+    }, { signed: false, base: 0x10 });
+
+    n('chunk_size_digit')
+      .select(HEX_MAP, addContentLength)
       .otherwise(p.error(ERROR.INVALID_CHUNK_SIZE,
         'Invalid character in chunk size'));
 
-    n('chunk_size2')
-      .select(HEX_MAP, this.mulAdd('content_length', {
-        overflow: p.error(ERROR.INVALID_CHUNK_SIZE, 'Chunk size overflow'),
-        success: 'chunk_size2',
-      }, { signed: false, base: 0x10 }))
+    n('chunk_size')
+      .select(HEX_MAP, addContentLength)
       .otherwise(n('chunk_size_otherwise'));
 
     n('chunk_size_otherwise')
