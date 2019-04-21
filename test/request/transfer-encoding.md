@@ -253,3 +253,28 @@ off=117 headers complete method=3 v=1/1 flags=20 content_length=5
 off=117 len=5 span[body]="World"
 off=122 message complete
 ```
+
+## Missing last-chunk
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Transfer-Encoding: chunked
+
+3
+foo
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=19 len=17 span[header_field]="Transfer-Encoding"
+off=38 len=7 span[header_value]="chunked"
+off=49 headers complete method=4 v=1/1 flags=8 content_length=0
+off=52 chunk header len=3
+off=52 len=3 span[body]="foo"
+off=57 chunk complete
+off=57 error code=12 reason="Invalid character in chunk size"
+```
