@@ -153,7 +153,7 @@ export const STRICT_URL_CHAR: CharList = ([
   ':', ';', '<', '=', '>',
   '@', '[', '\\', ']', '^', '_',
   '`',
-  '{', '}', '~',
+  '{', '|', '}', '~',
 ] as CharList).concat(ALPHANUM);
 
 export const URL_CHAR: CharList = STRICT_URL_CHAR

@@ -67,6 +67,26 @@ off=51 headers complete method=1 v=1/1 flags=0 content_length=0
 off=51 message complete
 ```
 
+## Query URL with vertical bar character
+
+It should be allowed to have vertical bar symbol in URI: `|`.
+
+See: https://github.com/nodejs/node/issues/27584
+
+<!-- meta={"type": "request"} -->
+```http
+GET /test.cgi?query=| HTTP/1.1
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=17 span[url]="/test.cgi?query=|"
+off=34 headers complete method=1 v=1/1 flags=0 content_length=0
+off=34 message complete
+```
+
 ## `host:port` terminated by a space
 
 <!-- meta={"type": "request"} -->
