@@ -75,20 +75,20 @@ interface IFixtureMap {
 
 const http: IFixtureMap = {
   loose: {
-    none: buildMode('loose', 'none'),
-    request: buildMode('loose', 'request'),
+    'none': buildMode('loose', 'none'),
+    'request': buildMode('loose', 'request'),
     'request-finish': buildMode('loose', 'request-finish'),
-    response: buildMode('loose', 'response'),
+    'response': buildMode('loose', 'response'),
     'response-finish': buildMode('loose', 'response-finish'),
-    url: buildMode('loose', 'url'),
+    'url': buildMode('loose', 'url'),
   },
   strict: {
-    none: buildMode('strict', 'none'),
-    request: buildMode('strict', 'request'),
+    'none': buildMode('strict', 'none'),
+    'request': buildMode('strict', 'request'),
     'request-finish': buildMode('strict', 'request-finish'),
-    response: buildMode('strict', 'response'),
+    'response': buildMode('strict', 'response'),
     'response-finish': buildMode('strict', 'response-finish'),
-    url: buildMode('strict', 'url'),
+    'url': buildMode('strict', 'url'),
   },
 };
 
