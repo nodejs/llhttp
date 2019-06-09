@@ -8,7 +8,8 @@ import * as path from 'path';
 
 import * as llhttp from '../../src/llhttp';
 
-export type TestType = 'request' | 'response' | 'none' | 'url';
+export type TestType = 'request' | 'response' | 'request-finish' |
+  'response-finish' | 'none' | 'url';
 
 export { FixtureResult };
 
@@ -57,6 +58,13 @@ export function build(llparse: LLParse, node: any, outFile: string,
   const extra = options.extra === undefined ? [] : options.extra.slice();
   if (ty === 'request' || ty === 'response') {
     extra.push(`-DLLPARSE__TEST_INIT=llhttp__test_init_${ty}`);
+  } else if (ty === 'request-finish' || ty === 'response-finish') {
+    if (ty === 'request-finish') {
+      extra.push('-DLLPARSE__TEST_INIT=llhttp__test_init_request');
+    } else {
+      extra.push('-DLLPARSE__TEST_INIT=llhttp__test_init_response');
+    }
+    extra.push('-DLLPARSE__TEST_FINISH=llhttp__test_finish');
   }
 
   return fixtures.build(artifacts, outFile, Object.assign(options, {

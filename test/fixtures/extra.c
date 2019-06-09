@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "fixture.h"
 
 int llhttp__on_url(llparse_t* s, const char* p, const char* endp) {
@@ -52,6 +54,11 @@ void llhttp__test_init_request(llparse_t* s) {
 
 void llhttp__test_init_response(llparse_t* s) {
   s->type = HTTP_RESPONSE;
+}
+
+
+void llhttp__test_finish(llparse_t* s) {
+  llparse__print(NULL, NULL, "finish=%d", s->finish);
 }
 
 

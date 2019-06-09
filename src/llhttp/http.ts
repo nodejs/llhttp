@@ -582,8 +582,8 @@ export class HTTP {
           span.body.end(n('message_done')))));
 
     n('body_identity_eof')
-      .otherwise(span.body.start(
-        this.update('finish', FINISH.SAFE_WITH_CB, 'eof')));
+      .otherwise(
+        this.update('finish', FINISH.SAFE_WITH_CB, span.body.start(n('eof'))));
 
     // Just read everything until EOF
     n('eof')
@@ -671,8 +671,9 @@ export class HTTP {
     // Check if we'd like to keep-alive
     if (this.mode === 'strict') {
       n('cleanup')
-        .otherwise(p.invoke(callback.afterMessageComplete, this.mode === 'strict' ?
-          { 1: n('restart') } : {}, n('closed')));
+        .otherwise(p.invoke(callback.afterMessageComplete, {
+          1: n('restart'),
+        }, this.update('finish', FINISH.SAFE, n('closed'))));
     } else {
       n('cleanup')
         .otherwise(p.invoke(callback.afterMessageComplete, n('restart')));
@@ -684,7 +685,7 @@ export class HTTP {
         'Data after `Connection: close`'));
 
     n('restart')
-      .otherwise(n('start'));
+      .otherwise(this.update('finish', FINISH.SAFE, n('start')));
   }
 
   private node<T extends Node>(name: string | T): T {

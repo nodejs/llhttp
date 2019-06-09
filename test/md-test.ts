@@ -77,13 +77,17 @@ const http: IFixtureMap = {
   loose: {
     none: buildMode('loose', 'none'),
     request: buildMode('loose', 'request'),
+    'request-finish': buildMode('loose', 'request-finish'),
     response: buildMode('loose', 'response'),
+    'response-finish': buildMode('loose', 'response-finish'),
     url: buildMode('loose', 'url'),
   },
   strict: {
     none: buildMode('strict', 'none'),
     request: buildMode('strict', 'request'),
+    'request-finish': buildMode('strict', 'request-finish'),
     response: buildMode('strict', 'response'),
+    'response-finish': buildMode('strict', 'response-finish'),
     url: buildMode('strict', 'url'),
   },
 };
@@ -141,6 +145,10 @@ function run(name: string): void {
           types = [ 'request' ];
         } else if (meta.type === 'response-only') {
           types = [ 'response' ];
+        } else if (meta.type === 'request-finish') {
+          types = [ 'request-finish' ];
+        } else if (meta.type === 'response-finish') {
+          types = [ 'response-finish' ];
         } else {
           throw new Error(`Invalid value of \`type\` metadata: "${meta.type}"`);
         }
@@ -229,11 +237,13 @@ run('request/connection');
 run('request/content-length');
 run('request/transfer-encoding');
 run('request/invalid');
+run('request/finish');
 
 run('response/sample');
 run('response/connection');
 run('response/content-length');
 run('response/transfer-encoding');
 run('response/invalid');
+run('response/finish');
 
 run('url');
