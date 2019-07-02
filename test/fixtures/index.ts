@@ -27,6 +27,7 @@ fs.writeFileSync(CHEADERS_FILE, cheaders);
 const fixtures = new Fixture({
   buildDir: path.join(__dirname, '..', 'tmp'),
   extra: [
+    '-msse4.2',
     '-DLLHTTP__TEST',
     '-DLLPARSE__ERROR_PAUSE=' + llhttp.constants.ERROR.PAUSED,
     '-include', CHEADERS_FILE,
@@ -51,6 +52,7 @@ export function build(llparse: LLParse, node: any, outFile: string,
     artifacts = llparse.build(node, {
       c: { header: outFile },
       debug: process.env.LLPARSE_DEBUG ? 'llparse__debug' : undefined,
+      generateJS: false,
     });
     cache.set(node, artifacts);
   }
