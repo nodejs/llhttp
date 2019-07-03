@@ -36,19 +36,19 @@
   },
   "homepage": "https://github.com/indutny/llhttp#readme",
   "devDependencies": {
-    "@types/mocha": "^5.2.5",
-    "@types/node": "^10.12.9",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^10.14.10",
     "llparse-dot": "^1.0.1",
     "llparse-test-fixture": "^3.3.0",
     "mdgator": "^1.1.2",
     "mocha": "^5.2.0",
     "ts-node": "^7.0.1",
-    "tslint": "^5.11.0",
-    "typescript": "^3.1.6"
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.2"
   },
   "dependencies": {
     "@types/semver": "^5.5.0",
-    "llparse": "^6.0.1",
-    "semver": "^5.6.0"
+    "llparse": "^6.0.2",
+    "semver": "^5.7.0"
   }
 }
