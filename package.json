@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@types/semver": "^5.5.0",
-    "llparse": "^6.1.1",
+    "llparse": "^6.2.0",
     "semver": "^5.7.0"
   }
 }
