@@ -33,7 +33,7 @@ So far llhttp outperforms http_parser:
 | **llhttp** _(C)_ | 8192.00 mb | 1777.24 mb/s | 3583799.39 ops/sec | 4.61 s |
 | **http_parser** | 8192.00 mb | 694.66 mb/s | 1406180.33 req/sec | 11.79 s |
 
-llhttp is faster by approximately **116%**.
+llhttp is faster by approximately **156%**.
 
 ## Maintenance
 
