@@ -14,6 +14,8 @@ This project aims to:
 * Verifiable
 * Improving benchmarks where possible
 
+More detials in [Fedor Indutny's talk at JSConf EU 2019](https://youtu.be/x3k_5Mi66sY)
+
 ## How?
 
 Over time, different approaches for improving [http_parser][0]'s code base
