@@ -14,7 +14,7 @@ This project aims to:
 * Verifiable
 * Improving benchmarks where possible
 
-More detials in [Fedor Indutny's talk at JSConf EU 2019](https://youtu.be/x3k_5Mi66sY)
+More details in [Fedor Indutny's talk at JSConf EU 2019](https://youtu.be/x3k_5Mi66sY)
 
 ## How?
 
