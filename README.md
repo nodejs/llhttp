@@ -78,8 +78,6 @@ settings.on_message_complete = handle_on_message_complete;
  */
 llhttp_init(&parser, HTTP_BOTH, &settings);
 
-/* Use `llhttp_set_type(&parser, HTTP_REQUEST);` to override the mode */
-
 /* Parse request! */
 const char* request = "GET / HTTP/1.1\r\n\r\n";
 int request_len = strlen(request);
