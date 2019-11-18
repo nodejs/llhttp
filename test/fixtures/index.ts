@@ -8,8 +8,8 @@ import * as path from 'path';
 
 import * as llhttp from '../../src/llhttp';
 
-export type TestType = 'request' | 'response' | 'request-finish' |
-  'response-finish' | 'none' | 'url';
+export type TestType = 'request' | 'response' | 'request-lenient' |
+  'request-finish' | 'response-finish' | 'none' | 'url';
 
 export { FixtureResult };
 
@@ -58,8 +58,9 @@ export function build(llparse: LLParse, node: any, outFile: string,
   }
 
   const extra = options.extra === undefined ? [] : options.extra.slice();
-  if (ty === 'request' || ty === 'response') {
-    extra.push(`-DLLPARSE__TEST_INIT=llhttp__test_init_${ty}`);
+  if (ty === 'request' || ty === 'response' || ty === 'request-lenient') {
+    extra.push(
+      `-DLLPARSE__TEST_INIT=llhttp__test_init_${ty.replace(/-/g, '_')}`);
   } else if (ty === 'request-finish' || ty === 'response-finish') {
     if (ty === 'request-finish') {
       extra.push('-DLLPARSE__TEST_INIT=llhttp__test_init_request');

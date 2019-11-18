@@ -54,6 +54,7 @@ const NODES: ReadonlyArray<string> = [
   'header_value_start',
   'header_value',
   'header_value_otherwise',
+  'header_value_lenient',
   'header_value_lws',
   'header_value_te_chunked',
   'header_value_content_length_once',
@@ -177,7 +178,7 @@ export class HTTP {
     p.property('i8', 'http_major');
     p.property('i8', 'http_minor');
     p.property('i8', 'header_state');
-    p.property('i8', 'flags');
+    p.property('i16', 'flags');
     p.property('i8', 'upgrade');
     p.property('i16', 'status_code');
     p.property('i8', 'finish');
@@ -491,12 +492,19 @@ export class HTTP {
       .match(HEADER_CHARS, n('header_value'))
       .otherwise(n('header_value_otherwise'));
 
+    const checkLenient = this.testFlags(FLAGS.LENIENT, {
+      1: n('header_value_lenient'),
+    }, p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char'));
+
     n('header_value_otherwise')
       .peek('\r', span.headerValue.end().skipTo(n('header_value_almost_done')))
       .peek('\n', span.headerValue.end(n('header_value_almost_done')))
-      // TODO(indutny): do we need `lenient` option? (it is always off now)
-      .otherwise(p.error(ERROR.INVALID_HEADER_TOKEN,
-        'Invalid header value char'));
+      .otherwise(checkLenient);
+
+    n('header_value_lenient')
+      .peek('\r', span.headerValue.end().skipTo(n('header_value_almost_done')))
+      .peek('\n', span.headerValue.end(n('header_value_almost_done')))
+      .skipTo(n('header_value_lenient'));
 
     n('header_value_almost_done')
       .match('\n', n('header_value_lws'))
