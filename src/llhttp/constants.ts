@@ -48,6 +48,7 @@ export enum FLAGS {
   CONTENT_LENGTH = 1 << 5,
   SKIPBODY = 1 << 6,
   TRAILING = 1 << 7,
+  LENIENT = 1 << 8,
 }
 
 export enum METHODS {

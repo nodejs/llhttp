@@ -78,6 +78,7 @@ const http: IFixtureMap = {
     'none': buildMode('loose', 'none'),
     'request': buildMode('loose', 'request'),
     'request-finish': buildMode('loose', 'request-finish'),
+    'request-lenient': buildMode('loose', 'request-lenient'),
     'response': buildMode('loose', 'response'),
     'response-finish': buildMode('loose', 'response-finish'),
     'url': buildMode('loose', 'url'),
@@ -86,6 +87,7 @@ const http: IFixtureMap = {
     'none': buildMode('strict', 'none'),
     'request': buildMode('strict', 'request'),
     'request-finish': buildMode('strict', 'request-finish'),
+    'request-lenient': buildMode('strict', 'request-lenient'),
     'response': buildMode('strict', 'response'),
     'response-finish': buildMode('strict', 'response-finish'),
     'url': buildMode('strict', 'url'),
@@ -143,6 +145,8 @@ function run(name: string): void {
           types.push('response');
         } else if (meta.type === 'request-only') {
           types = [ 'request' ];
+        } else if (meta.type === 'request-lenient') {
+          types = [ 'request-lenient' ];
         } else if (meta.type === 'response-only') {
           types = [ 'response' ];
         } else if (meta.type === 'request-finish') {
@@ -231,6 +235,7 @@ function run(name: string): void {
 }
 
 run('request/sample');
+run('request/lenient');
 run('request/method');
 run('request/uri');
 run('request/connection');

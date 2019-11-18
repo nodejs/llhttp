@@ -141,6 +141,18 @@ const char* llhttp_errno_name(llhttp_errno_t err);
 /* Returns textual name of HTTP method */
 const char* llhttp_method_name(llhttp_method_t method);
 
+
+/* Enables/disables lenient header value parsing (disabled by default).
+ *
+ * Lenient parsing disables header value token checks, extending llhttp's
+ * protocol support to highly non-compliant clients/server. No
+ * `HPE_INVALID_HEADER_TOKEN` will be raised for incorrect header values when
+ * lenient parsing is "on".
+ *
+ * **(USE AT YOUR OWN RISK)**
+ */
+void llhttp_set_lenient(llhttp_t* parser, int enabled);
+
 #ifdef __cplusplus
 }  /* extern "C" */
 #endif

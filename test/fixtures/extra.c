@@ -57,6 +57,12 @@ void llhttp__test_init_response(llparse_t* s) {
 }
 
 
+void llhttp__test_init_request_lenient(llparse_t* s) {
+  llhttp__test_init_request(s);
+  s->flags |= F_LENIENT;
+}
+
+
 void llhttp__test_finish(llparse_t* s) {
   llparse__print(NULL, NULL, "finish=%d", s->finish);
 }
