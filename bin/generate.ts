@@ -1,4 +1,4 @@
-#!/usr/bin/env npx ts-node
+#!/usr/bin/env -S npx ts-node
 import * as fs from 'fs';
 import { LLParse } from 'llparse';
 import * as path from 'path';
