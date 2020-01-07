@@ -182,3 +182,20 @@ off=17 len=14 span[header_field]="Content-Length"
 off=33 len=3 span[header_value]="13 "
 off=36 error code=11 reason="Invalid character in Content-Length"
 ```
+
+### Empty `Content-Length`
+
+<!-- meta={"type": "request"} -->
+```http
+POST / HTTP/1.1
+Content-Length:
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=1 span[url]="/"
+off=17 len=14 span[header_field]="Content-Length"
+off=34 error code=11 reason="Empty Content-Length"
+```

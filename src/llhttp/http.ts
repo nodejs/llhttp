@@ -400,10 +400,16 @@ export class HTTP {
         n('header_value_discard_lws'));
     }
 
+    const emptyContentLengthError = p.error(
+      ERROR.INVALID_CONTENT_LENGTH, 'Empty Content-Length');
+    const checkContentLengthEmptiness = this.load('header_state', {
+      [HEADER_STATE.CONTENT_LENGTH]: emptyContentLengthError,
+    }, this.setHeaderFlags(
+      this.emptySpan(span.headerValue, 'header_field_start')));
+
     n('header_value_discard_lws')
       .match([ ' ', '\t' ], n('header_value_discard_ws'))
-      .otherwise(this.setHeaderFlags(
-        this.emptySpan(span.headerValue, 'header_field_start')));
+      .otherwise(checkContentLengthEmptiness);
 
     n('header_value_start')
       .otherwise(this.load('header_state', {
