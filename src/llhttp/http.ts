@@ -9,8 +9,8 @@ import {
   CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, H_METHOD_MAP, HEADER_CHARS,
   HEADER_STATE, HEX_MAP,
   HTTPMode,
-  MAJOR, METHOD_MAP, METHODS, MINOR, NUM_MAP, SPECIAL_HEADERS, STRICT_TOKEN,
-  TOKEN, TYPE,
+  MAJOR, METHOD_MAP, METHODS, MINOR, NUM, NUM_MAP, SPECIAL_HEADERS,
+  STRICT_TOKEN, TOKEN, TYPE,
 } from './constants';
 import { URL } from './url';
 
@@ -54,10 +54,13 @@ const NODES: ReadonlyArray<string> = [
   'header_value_start',
   'header_value',
   'header_value_otherwise',
+  'header_value_otherwise2',
   'header_value_lenient',
+  'header_value_lenient2',
   'header_value_lws',
   'header_value_te_chunked',
   'header_value_content_length_once',
+  'header_value_content_length_dup',
   'header_value_content_length',
   'header_value_content_length_ws',
   'header_value_connection',
@@ -441,6 +444,12 @@ export class HTTP {
         0: n('header_value_content_length'),
       }, p.error(ERROR.UNEXPECTED_CONTENT_LENGTH, 'Duplicate Content-Length')));
 
+    n('header_value_content_length_dup')
+      .match([ ' ', '\t' ], n('header_value_content_length_dup'))
+      .match(NUM, p.error(ERROR.UNEXPECTED_CONTENT_LENGTH, 'Duplicate Content-Length'))
+      .peek([ '\r', '\n' ], n('header_value_otherwise2'))
+      .otherwise(p.error(ERROR.INVALID_CONTENT_LENGTH, 'Invalid character in Content-Length'));
+
     n('header_value_content_length')
       .select(NUM_MAP, this.mulAdd('content_length', {
         overflow: invalidContentLength('Content-Length overflow'),
@@ -512,13 +521,29 @@ export class HTTP {
       .peek('\n', span.headerValue.end(n('header_value_almost_done')))
       .skipTo(n('header_value_lenient'));
 
+    const checkLenient2 = this.testFlags(FLAGS.LENIENT, {
+      1: n('header_value_lenient2'),
+    }, p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char'));
+
+    n('header_value_otherwise2')
+      .match('\r', n('header_value_almost_done'))
+      .peek('\n', n('header_value_almost_done'))
+      .otherwise(checkLenient2);
+
+    n('header_value_lenient2')
+      .match('\r', n('header_value_almost_done'))
+      .peek('\n', n('header_value_almost_done'))
+      .skipTo(n('header_value_lenient2'));
+
     n('header_value_almost_done')
       .match('\n', n('header_value_lws'))
       .otherwise(p.error(ERROR.LF_EXPECTED,
         'Missing expected LF after header value'));
 
     n('header_value_lws')
-      .peek([ ' ', '\t' ], span.headerValue.start(n('header_value_start')))
+      .peek([ ' ', '\t' ], this.load('header_state', {
+        [HEADER_STATE.CONTENT_LENGTH]: n('header_value_content_length_dup'),
+      }, span.headerValue.start(n('header_value_start'))))
       .otherwise(this.setHeaderFlags('header_field_start'));
 
     const checkTrailing = this.testFlags(FLAGS.TRAILING, {
