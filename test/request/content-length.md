@@ -129,8 +129,7 @@ off=72 len=5 span[body]="HELLO"
 off=77 message complete
 ```
 
-
-## `Content-Length` with spaces after the value
+## Spaces in `Content-Length` (surrounding)
 
 <!-- meta={"type": "request"} -->
 ```http
@@ -146,4 +145,40 @@ off=5 len=1 span[url]="/"
 off=17 len=14 span[header_field]="Content-Length"
 off=34 len=3 span[header_value]="42 "
 off=41 headers complete method=3 v=1/1 flags=20 content_length=42
+```
+
+### Spaces in `Content-Length` #2
+
+<!-- meta={"type": "request"} -->
+```http
+POST / HTTP/1.1
+Content-Length: 4 2
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=1 span[url]="/"
+off=17 len=14 span[header_field]="Content-Length"
+off=33 len=2 span[header_value]="4 "
+off=35 error code=11 reason="Invalid character in Content-Length"
+```
+
+### Spaces in `Content-Length` #3
+
+<!-- meta={"type": "request"} -->
+```http
+POST / HTTP/1.1
+Content-Length: 13 37
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=1 span[url]="/"
+off=17 len=14 span[header_field]="Content-Length"
+off=33 len=3 span[header_value]="13 "
+off=36 error code=11 reason="Invalid character in Content-Length"
 ```
