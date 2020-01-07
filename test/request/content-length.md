@@ -183,6 +183,41 @@ off=33 len=3 span[header_value]="13 "
 off=36 error code=11 reason="Invalid character in Content-Length"
 ```
 
+### Spaces in `Content-Length` #4 (surrounding and on next line)
+
+<!-- meta={"type": "request"} -->
+```http
+POST / HTTP/1.1
+Content-Length:  42
+ 
+
+```
+
+```log
+off=0 message begin
+off=5 len=1 span[url]="/"
+off=17 len=14 span[header_field]="Content-Length"
+off=34 len=2 span[header_value]="42"
+```
+
+### Spaces in `Content-Length` #5 (surrounding and with text on next line)
+
+<!-- meta={"type": "request"} -->
+```http
+POST / HTTP/1.1
+Content-Length:  42
+ Hello world!
+
+```
+
+```log
+off=0 message begin
+off=5 len=1 span[url]="/"
+off=17 len=14 span[header_field]="Content-Length"
+off=34 len=2 span[header_value]="42"
+off=39 error code=11 reason="Invalid character in Content-Length"
+```
+
 ### Empty `Content-Length`
 
 <!-- meta={"type": "request"} -->
