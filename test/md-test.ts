@@ -1,7 +1,9 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
 import { LLParse } from 'llparse';
+import * as makeConcurrent from 'make-concurrent';
 import { Group, MDGator, Metadata, Test } from 'mdgator';
+import * as os from 'os';
 import * as path from 'path';
 import * as vm from 'vm';
 
@@ -98,6 +100,16 @@ const http: IFixtureMap = {
 // Run test suite
 //
 
+const maxParallel: number = process.env.LLPARSE_DEBUG ? 1 : os.cpus().length;
+const runJobInQueue = makeConcurrent(jobFunction, { concurrency: maxParallel });
+async function jobFunction(fixture: FixtureResult, input: string,
+                           expected: ReadonlyArray<string | RegExp>,
+                           options: { noScan: boolean }): Promise<void> {
+  const p = fixture.check(input, expected, options);
+  p.catch(() => null); // skip unhandledRejection for this promise
+  return p;
+}
+
 function run(name: string): void {
   const md = new MDGator();
 
@@ -107,11 +119,10 @@ function run(name: string): void {
   function runSingleTest(mode: llhttp.HTTPMode, ty: TestType, meta: any,
                          input: string,
                          expected: ReadonlyArray<string | RegExp>): void {
-    it(`should pass in mode="${mode}" and for type="${ty}"`, async () => {
-      await http[mode][ty].check(input, expected, {
-        noScan: meta.noScan === true,
-      });
-    });
+
+    const jobOptions = { noScan: meta.noScan === true };
+    const job = runJobInQueue(http[mode][ty], input, expected, jobOptions);
+    it(`should pass in mode="${mode}" and for type="${ty}"`, async () => job);
   }
 
   function runTest(test: Test) {

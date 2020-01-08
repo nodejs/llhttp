@@ -33,7 +33,8 @@ const fixtures = new Fixture({
     '-include', CHEADERS_FILE,
     path.join(__dirname, 'extra.c'),
   ],
-  maxParallel: process.env.LLPARSE_DEBUG ? 1 : undefined,
+  // faster check whole input instead split it to chunks, so 1 in anycase
+  maxParallel: process.env.LLPARSE_DEBUG ? 1 : 1,
 });
 
 const cache: Map<any, ICompilerResult> = new Map();
