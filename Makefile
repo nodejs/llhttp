@@ -54,6 +54,6 @@ postversion: release
 	git checkout master
 
 generate:
-	./bin/generate.ts
+	npx ts-node bin/generate.ts
 
 .PHONY: all generate clean release
