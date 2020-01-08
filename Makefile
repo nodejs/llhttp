@@ -1,7 +1,7 @@
 CLANG ?= clang
 CFLAGS ?=
 
-CFLAGS += -Os -g3 -Wall -Wextra -Wno-unused-parameter
+CFLAGS += -Os -g3 -Wall -Wextra
 INCLUDES += -Ibuild/
 
 all: build/libllhttp.a
