@@ -105,9 +105,7 @@ const runJobInQueue = makeConcurrent(jobFunction, { concurrency: maxParallel });
 async function jobFunction(fixture: FixtureResult, input: string,
                            expected: ReadonlyArray<string | RegExp>,
                            options: { noScan: boolean }): Promise<void> {
-  const p = fixture.check(input, expected, options);
-  p.catch(() => null); // skip unhandledRejection for this promise
-  return p;
+  return fixture.check(input, expected, options);
 }
 
 function run(name: string): void {
@@ -122,6 +120,7 @@ function run(name: string): void {
 
     const jobOptions = { noScan: meta.noScan === true };
     const job = runJobInQueue(http[mode][ty], input, expected, jobOptions);
+    job.catch(() => null); // skip unhandledRejection for this promise
     it(`should pass in mode="${mode}" and for type="${ty}"`, async () => job);
   }
 
