@@ -200,6 +200,17 @@ function run(name: string): void {
         return vm.runInNewContext(code) + '';
       });
 
+      // Escape first symbol `\r` or `\n`, `|`, `&` for Windows
+      if (process.platform === 'win32') {
+        const firstByte = Buffer.from(input)[0];
+        if (firstByte === 0x0a || firstByte === 0x0d) {
+          input = '\\' + input;
+        }
+
+        input = input.replace(/\|/g, '^|');
+        input = input.replace(/&/g, '^&');
+      }
+
       // Replace escaped tabs/form-feed in expected too
       expected = expected.replace(/\\t/g, '\t');
       expected = expected.replace(/\\f/g, '\f');
