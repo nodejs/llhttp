@@ -26,7 +26,7 @@ jobs:
           echo "::set-env name=PATH::$env:PATH"
 
       - name: Fetch code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
@@ -67,7 +67,7 @@ jobs:
           echo "::set-env name=PATH::$env:PATH"
 
       - name: Fetch code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fetch code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
