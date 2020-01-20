@@ -57,6 +57,9 @@ const NODES: ReadonlyArray<string> = [
   'header_value_lenient',
   'header_value_lws',
   'header_value_te_chunked',
+  'header_value_te_chunked_last',
+  'header_value_te_token',
+  'header_value_te_token_ows',
   'header_value_content_length_once',
   'header_value_content_length',
   'header_value_content_length_ws',
@@ -414,20 +417,43 @@ export class HTTP {
     n('header_value_start')
       .otherwise(this.load('header_state', {
         [HEADER_STATE.UPGRADE]: this.setFlag(FLAGS.UPGRADE, fallback),
-        [HEADER_STATE.TRANSFER_ENCODING]: n('header_value_te_chunked'),
+        [HEADER_STATE.TRANSFER_ENCODING]: this.setFlag(
+          FLAGS.TRANSFER_ENCODING, 'header_value_te_chunked'),
         [HEADER_STATE.CONTENT_LENGTH]: n('header_value_content_length_once'),
         [HEADER_STATE.CONNECTION]: n('header_value_connection'),
       }, 'header_value'));
+
+    //
+    // Transfer-Encoding
+    //
 
     n('header_value_te_chunked')
       .transform(p.transform.toLowerUnsafe())
       .match(
         'chunked',
-        this.update('header_state', HEADER_STATE.TRANSFER_ENCODING_CHUNKED,
-          'header_value_discard_rws'),
+        n('header_value_te_chunked_last'),
       )
-      .peek([ ' ', '\r', '\n' ], n('header_value_discard_rws'))
+      .otherwise(n('header_value_te_token'));
+
+    n('header_value_te_chunked_last')
+      .match(' ', n('header_value_te_chunked_last'))
+      .peek([ '\r', '\n' ], this.update('header_state',
+        HEADER_STATE.TRANSFER_ENCODING_CHUNKED,
+        'header_value_otherwise'))
+      .otherwise(n('header_value_te_chunked'));
+
+    n('header_value_te_token')
+      .match(',', n('header_value_te_token_ows'))
+      .match(CONNECTION_TOKEN_CHARS, n('header_value_te_token'))
       .otherwise(fallback);
+
+    n('header_value_te_token_ows')
+      .match([ ' ', '\t' ], n('header_value_te_token_ows'))
+      .otherwise(n('header_value_te_chunked'));
+
+    //
+    // Content-Length
+    //
 
     const invalidContentLength = (reason: string): Node => {
       // End span for easier testing
@@ -453,6 +479,10 @@ export class HTTP {
       .peek([ '\r', '\n' ],
           this.setFlag(FLAGS.CONTENT_LENGTH, 'header_value_discard_rws'))
       .otherwise(invalidContentLength('Invalid character in Content-Length'));
+
+    //
+    // Connection
+    //
 
     n('header_value_connection')
       .transform(p.transform.toLowerUnsafe())
@@ -535,18 +565,48 @@ export class HTTP {
         .skipTo(checkTrailing);
     }
 
-    /* Cannot use chunked encoding and a content-length header together
-       per the HTTP specification. */
-    const ENCODING_CONFLICT = FLAGS.CHUNKED | FLAGS.CONTENT_LENGTH;
-    const checkEncConflict = this.testFlags(ENCODING_CONFLICT, {
-      1: p.error(ERROR.UNEXPECTED_CONTENT_LENGTH,
-        'Content-Length can\'t be present with chunked encoding'),
-    });
-
-    checkTrailing.otherwise(checkEncConflict);
-
     // Set `upgrade` if needed
     const beforeHeadersComplete = p.invoke(callback.beforeHeadersComplete);
+
+    /* Present `Transfer-Encoding` header overrides `Content-Length` even if the
+     * actual coding is not `chunked`. As per spec:
+     *
+     * https://www.rfc-editor.org/rfc/rfc7230.html#section-3.3.3
+     *
+     * If a message is received with both a Transfer-Encoding and a
+     * Content-Length header field, the Transfer-Encoding overrides the
+     * Content-Length.  Such a message might indicate an attempt to
+     * perform request smuggling (Section 9.5) or response splitting
+     * (Section 9.4) and **ought to be handled as an error**.  A sender MUST
+     * remove the received Content-Length field prior to forwarding such
+     * a message downstream.
+     *
+     * (Note our emphasis on **ought to be handled as an error**
+     */
+
+    const LENIENT_ENCODING_CONFLICT = FLAGS.CHUNKED | FLAGS.CONTENT_LENGTH;
+    const checkLenientEncConflict = this.testFlags(LENIENT_ENCODING_CONFLICT, {
+      1: p.error(ERROR.UNEXPECTED_CONTENT_LENGTH,
+        'Content-Length can\'t be present with chunked encoding'),
+    }).otherwise(beforeHeadersComplete);
+
+    const ENCODING_CONFLICT = FLAGS.TRANSFER_ENCODING | FLAGS.CONTENT_LENGTH;
+
+    const onEncodingConflict = this.testFlags(FLAGS.LENIENT, {
+      0: p.error(ERROR.UNEXPECTED_CONTENT_LENGTH,
+        'Content-Length can\'t be present with Transfer-Encoding'),
+
+      // For LENIENT mode fall back to past behavior:
+      // Ignore `Transfer-Encoding` unless it is `chunked` and `Content-Length`
+      // is present.
+      1: checkLenientEncConflict,
+    }).otherwise(beforeHeadersComplete);
+
+    const checkEncConflict = this.testFlags(ENCODING_CONFLICT, {
+      1: onEncodingConflict,
+    }).otherwise(beforeHeadersComplete);
+
+    checkTrailing.otherwise(checkEncConflict);
 
     /* Here we call the headers_complete callback. This is somewhat
      * different than other callbacks because if the user returns 1, we
@@ -566,7 +626,6 @@ export class HTTP {
         'headers_done'),
     }, p.error(ERROR.CB_HEADERS_COMPLETE, 'User callback error'));
 
-    checkEncConflict.otherwise(beforeHeadersComplete);
     beforeHeadersComplete.otherwise(onHeadersComplete);
 
     const upgradePause = p.pause(ERROR.PAUSED_UPGRADE,
@@ -578,6 +637,10 @@ export class HTTP {
       2: n('chunk_size_start'),
       3: n('body_identity'),
       4: n('body_identity_eof'),
+
+      // non-chunked `Transfer-Encoding` for request, see `src/native/http.c`
+      5: p.error(ERROR.INVALID_CONTENT_LENGTH,
+        'Request has invalid `Transfer-Encoding`'),
     });
 
     n('headers_done')

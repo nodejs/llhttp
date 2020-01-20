@@ -49,6 +49,7 @@ export enum FLAGS {
   SKIPBODY = 1 << 6,
   TRAILING = 1 << 7,
   LENIENT = 1 << 8,
+  TRANSFER_ENCODING = 1 << 9,
 }
 
 export enum METHODS {

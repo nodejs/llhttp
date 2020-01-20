@@ -87,7 +87,7 @@ off=17 len=16 span[header_field]="Content-Length-X"
 off=35 len=1 span[header_value]="0"
 off=38 len=17 span[header_field]="Transfer-Encoding"
 off=57 len=7 span[header_value]="chunked"
-off=68 headers complete status=200 v=1/1 flags=8 content_length=0
+off=68 headers complete status=200 v=1/1 flags=208 content_length=0
 off=71 chunk header len=2
 off=71 len=2 span[body]="OK"
 off=75 chunk complete

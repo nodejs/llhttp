@@ -210,7 +210,7 @@ off=55 len=7 span[header_field]="Upgrade"
 off=64 len=3 span[header_value]="h2c"
 off=69 len=17 span[header_field]="Transfer-Encoding"
 off=88 len=7 span[header_value]="chunked"
-off=99 headers complete status=101 v=1/1 flags=1c content_length=0
+off=99 headers complete status=101 v=1/1 flags=21c content_length=0
 off=102 chunk header len=2
 off=102 len=2 span[body]="bo"
 off=106 chunk complete
@@ -298,7 +298,7 @@ off=38 len=7 span[header_field]="Upgrade"
 off=47 len=3 span[header_value]="h2c"
 off=52 len=17 span[header_field]="Transfer-Encoding"
 off=71 len=7 span[header_value]="chunked"
-off=82 headers complete status=200 v=1/1 flags=1c content_length=0
+off=82 headers complete status=200 v=1/1 flags=21c content_length=0
 off=85 chunk header len=2
 off=85 len=2 span[body]="bo"
 off=89 chunk complete

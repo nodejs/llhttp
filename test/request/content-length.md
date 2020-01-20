@@ -106,7 +106,7 @@ off=19 len=14 span[header_field]="Content-Length"
 off=35 len=1 span[header_value]="1"
 off=38 len=17 span[header_field]="Transfer-Encoding"
 off=57 len=7 span[header_value]="chunked"
-off=68 error code=4 reason="Content-Length can't be present with chunked encoding"
+off=68 error code=4 reason="Content-Length can't be present with Transfer-Encoding"
 ```
 
 ## Funky `Content-Length` with body

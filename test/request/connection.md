@@ -96,7 +96,7 @@ off=40 message begin
 off=44 len=4 span[url]="/url"
 off=59 len=17 span[header_field]="Transfer-Encoding"
 off=78 len=7 span[header_value]="chunked"
-off=89 headers complete method=4 v=1/1 flags=8 content_length=0
+off=89 headers complete method=4 v=1/1 flags=208 content_length=0
 ```
 
 ### CRLF between requests, implicit `keep-alive`

@@ -157,7 +157,7 @@ off=641 len=12 span[header_field]="Content-Type"
 off=655 len=29 span[header_value]="text/html; charset=ISO-8859-1"
 off=686 len=17 span[header_field]="Transfer-Encoding"
 off=705 len=7 span[header_value]="chunked"
-off=716 headers complete status=301 v=1/1 flags=8 content_length=0
+off=716 headers complete status=301 v=1/1 flags=208 content_length=0
 off=719 chunk header len=1
 off=719 len=1 span[body]=lf
 off=722 chunk complete
@@ -354,7 +354,7 @@ off=319 len=12 span[header_field]="Content-Type"
 off=333 len=9 span[header_value]="text/html"
 off=344 len=10 span[header_field]="Connection"
 off=356 len=5 span[header_value]="close"
-off=365 headers complete status=200 v=1/1 flags=a content_length=0
+off=365 headers complete status=200 v=1/1 flags=20a content_length=0
 off=368 chunk header len=0
 off=370 chunk complete
 off=370 message complete
