@@ -88,9 +88,30 @@ off=38 len=14 span[header_field]="Content-Length"
 off=54 error code=4 reason="Duplicate Content-Length"
 ```
 
-## Error on simultaneous `Content-Length` and `Transfer-Encoding: chunked`
+## Error on simultaneous `Content-Length` and `Transfer-Encoding: identity`
 
 <!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Content-Length: 1
+Transfer-Encoding: identity
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=19 len=14 span[header_field]="Content-Length"
+off=35 len=1 span[header_value]="1"
+off=38 len=17 span[header_field]="Transfer-Encoding"
+off=57 len=8 span[header_value]="identity"
+off=69 error code=4 reason="Content-Length can't be present with Transfer-Encoding"
+```
+
+## Error on simultaneous `Content-Length` and `Transfer-Encoding: chunked` (lenient)
+
+<!-- meta={"type": "request-lenient"} -->
 ```http
 PUT /url HTTP/1.1
 Content-Length: 1
@@ -106,7 +127,28 @@ off=19 len=14 span[header_field]="Content-Length"
 off=35 len=1 span[header_value]="1"
 off=38 len=17 span[header_field]="Transfer-Encoding"
 off=57 len=7 span[header_value]="chunked"
-off=68 error code=4 reason="Content-Length can't be present with Transfer-Encoding"
+off=68 error code=4 reason="Content-Length can't be present with chunked encoding"
+```
+
+## No error on simultaneous `Content-Length` and `Transfer-Encoding: identity` (lenient)
+
+<!-- meta={"type": "request-lenient"} -->
+```http
+PUT /url HTTP/1.1
+Content-Length: 1
+Transfer-Encoding: identity
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=19 len=14 span[header_field]="Content-Length"
+off=35 len=1 span[header_value]="1"
+off=38 len=17 span[header_field]="Transfer-Encoding"
+off=57 len=8 span[header_value]="identity"
+off=69 headers complete method=4 v=1/1 flags=320 content_length=1
 ```
 
 ## Funky `Content-Length` with body
