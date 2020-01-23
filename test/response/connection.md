@@ -180,7 +180,7 @@ off=85 len=1 span[header_value]="4"
 off=90 headers complete status=101 v=1/1 flags=34 content_length=4
 off=90 len=4 span[body]="body"
 off=94 message complete
-off=94 error code=21 reason="Pause on CONNECT/Upgrade"
+off=94 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ## HTTP 101 response with Upgrade and Transfer-Encoding header
@@ -220,7 +220,7 @@ off=113 chunk complete
 off=116 chunk header len=0
 off=118 chunk complete
 off=118 message complete
-off=118 error code=21 reason="Pause on CONNECT/Upgrade"
+off=118 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ## HTTP 200 response with Upgrade header

@@ -226,7 +226,7 @@ off=4 len=4 span[url]="/url"
 off=19 len=17 span[header_field]="Transfer-Encoding"
 off=38 len=7 span[header_value]="pigeons"
 off=49 headers complete method=4 v=1/1 flags=200 content_length=0
-off=49 error code=11 reason="Request has invalid `Transfer-Encoding`"
+off=49 error code=15 reason="Request has invalid `Transfer-Encoding`"
 ```
 
 ## POST with `Transfer-Encoding` and `Content-Length`
@@ -303,7 +303,7 @@ off=62 len=3 span[header_value]="*/*"
 off=67 len=17 span[header_field]="Transfer-Encoding"
 off=86 len=16 span[header_value]="chunked, deflate"
 off=106 headers complete method=3 v=1/1 flags=200 content_length=0
-off=106 error code=11 reason="Request has invalid `Transfer-Encoding`"
+off=106 error code=15 reason="Request has invalid `Transfer-Encoding`"
 ```
 
 ## POST with `chunked` before other transfer-coding (lenient)

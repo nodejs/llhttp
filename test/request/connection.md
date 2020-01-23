@@ -280,7 +280,7 @@ off=220 len=6 span[header_field]="Origin"
 off=228 len=18 span[header_value]="http://example.com"
 off=250 headers complete method=1 v=1/1 flags=15 content_length=0
 off=250 message complete
-off=250 error code=21 reason="Pause on CONNECT/Upgrade"
+off=250 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ### Multiple tokens with folding and LWS
@@ -303,7 +303,7 @@ off=53 len=7 span[header_field]="Upgrade"
 off=62 len=9 span[header_value]="WebSocket"
 off=75 headers complete method=1 v=1/1 flags=15 content_length=0
 off=75 message complete
-off=75 error code=21 reason="Pause on CONNECT/Upgrade"
+off=75 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ### Multiple tokens with folding, LWS, and CRLF
@@ -327,7 +327,7 @@ off=56 len=7 span[header_field]="Upgrade"
 off=65 len=9 span[header_value]="WebSocket"
 off=78 headers complete method=1 v=1/1 flags=15 content_length=0
 off=78 message complete
-off=78 error code=21 reason="Pause on CONNECT/Upgrade"
+off=78 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ## `upgrade`
@@ -352,7 +352,7 @@ off=40 len=7 span[header_field]="Upgrade"
 off=49 len=2 span[header_value]="ws"
 off=55 headers complete method=4 v=1/1 flags=14 content_length=0
 off=55 message complete
-off=55 error code=21 reason="Pause on CONNECT/Upgrade"
+off=55 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ### Emitting part of body and pausing
@@ -379,7 +379,7 @@ off=68 len=2 span[header_value]="ws"
 off=74 headers complete method=4 v=1/1 flags=34 content_length=4
 off=74 len=4 span[body]="abcd"
 off=78 message complete
-off=78 error code=21 reason="Pause on CONNECT/Upgrade"
+off=78 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ### Upgrade GET request
@@ -417,7 +417,7 @@ off=194 len=6 span[header_field]="Origin"
 off=202 len=18 span[header_value]="http://example.com"
 off=224 headers complete method=1 v=1/1 flags=14 content_length=0
 off=224 message complete
-off=224 error code=21 reason="Pause on CONNECT/Upgrade"
+off=224 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ### Upgrade POST request
@@ -448,5 +448,5 @@ off=96 len=2 span[header_value]="15"
 off=102 headers complete method=3 v=1/1 flags=34 content_length=15
 off=102 len=15 span[body]="sweet post body"
 off=117 message complete
-off=117 error code=21 reason="Pause on CONNECT/Upgrade"
+off=117 error code=22 reason="Pause on CONNECT/Upgrade"
 ```

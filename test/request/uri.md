@@ -173,7 +173,7 @@ off=68 len=19 span[header_field]="Proxy-authorization"
 off=89 len=22 span[header_value]="basic aGVsbG86d29ybGQ="
 off=115 headers complete method=5 v=1/0 flags=0 content_length=0
 off=115 message complete
-off=115 error code=21 reason="Pause on CONNECT/Upgrade"
+off=115 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ## `host:port` and basic auth

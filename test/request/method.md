@@ -38,7 +38,7 @@ off=69 len=19 span[header_field]="Proxy-authorization"
 off=90 len=22 span[header_value]="basic aGVsbG86d29ybGQ="
 off=116 headers complete method=5 v=1/0 flags=0 content_length=0
 off=116 message complete
-off=116 error code=21 reason="Pause on CONNECT/Upgrade"
+off=116 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ### CONNECT request with CAPS
@@ -61,7 +61,7 @@ off=67 len=19 span[header_field]="Proxy-authorization"
 off=88 len=22 span[header_value]="basic aGVsbG86d29ybGQ="
 off=114 headers complete method=5 v=1/0 flags=0 content_length=0
 off=114 message complete
-off=114 error code=21 reason="Pause on CONNECT/Upgrade"
+off=114 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ### CONNECT with body
@@ -87,7 +87,7 @@ off=105 len=14 span[header_field]="Content-Length"
 off=121 len=2 span[header_value]="10"
 off=127 headers complete method=5 v=1/0 flags=20 content_length=10
 off=127 message complete
-off=127 error code=21 reason="Pause on CONNECT/Upgrade"
+off=127 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ### M-SEARCH request

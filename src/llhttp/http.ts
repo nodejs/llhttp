@@ -639,7 +639,7 @@ export class HTTP {
       4: n('body_identity_eof'),
 
       // non-chunked `Transfer-Encoding` for request, see `src/native/http.c`
-      5: p.error(ERROR.INVALID_CONTENT_LENGTH,
+      5: p.error(ERROR.INVALID_TRANSFER_ENCODING,
         'Request has invalid `Transfer-Encoding`'),
     });
 
