@@ -27,7 +27,7 @@ static const unsigned char llparse_blob0[] = {
 #ifdef __SSE4_2__
 static const unsigned char ALIGN(16) llparse_blob1[] = {
   0x9, 0x9, 0xc, 0xc, '!', '"', '$', '>', '@', '~', 0x80,
-  0xff
+  0xff, 0x0, 0x0, 0x0, 0x0
 };
 #endif  /* __SSE4_2__ */
 static const unsigned char llparse_blob2[] = {
@@ -47,7 +47,8 @@ static const unsigned char llparse_blob6[] = {
 };
 #ifdef __SSE4_2__
 static const unsigned char ALIGN(16) llparse_blob7[] = {
-  0x9, 0x9, ' ', '~', 0x80, 0xfe
+  0x9, 0x9, ' ', '~', 0x80, 0xfe, 0x0, 0x0, 0x0, 0x0, 0x0,
+  0x0, 0x0, 0x0, 0x0, 0x0
 };
 #endif  /* __SSE4_2__ */
 static const unsigned char llparse_blob8[] = {
@@ -61,7 +62,8 @@ static const unsigned char ALIGN(16) llparse_blob9[] = {
 #endif  /* __SSE4_2__ */
 #ifdef __SSE4_2__
 static const unsigned char ALIGN(16) llparse_blob10[] = {
-  '~', '~'
+  '~', '~', 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+  0x0, 0x0, 0x0, 0x0, 0x0
 };
 #endif  /* __SSE4_2__ */
 static const unsigned char llparse_blob11[] = {
