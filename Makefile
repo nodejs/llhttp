@@ -10,6 +10,25 @@ clean:
 	rm -rf release/
 	rm -rf build/
 
+llx: build/llx
+
+test-fast: build/compat
+	rm -f _out
+	./build/compat >>_out 2>>_out
+
+test: build/compat
+	./build/compat
+
+test-g: build/compat-g
+	lldb -o run -o bt -o exit ./build/compat-g
+
+build/compat: test/compat/compat.c test/compat/http_parser.h
+	$(CLANG) $(CFLAGS) $(INCLUDES) -o $@  -Wfatal-errors -Werror $< build/libllhttp.a
+
+build/compat-g: test/compat/compat.c test/compat/http_parser.h
+	$(CLANG) -g $(INCLUDES) -o $@ -Wfatal-errors -Werror $< build/libllhttp.a
+
+
 build/libllhttp.a: build/c/llhttp.o build/native/api.o \
 		build/native/http.o
 	$(AR) rcs $@ build/c/llhttp.o build/native/api.o build/native/http.o
