@@ -24,6 +24,9 @@ build/native/%.o: src/native/%.c build/llhttp.h src/native/api.h \
 		build/native
 	$(CLANG) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+build/llx: test/llx/llx.c
+	$(CLANG) $(CFLAGS) $(INCLUDES) -o $@  -Wfatal-errors -Werror $< build/libllhttp.a
+
 build/llhttp.h: generate
 build/bitcode/llhttp.bc: generate
 build/c/llhttp.c: generate
