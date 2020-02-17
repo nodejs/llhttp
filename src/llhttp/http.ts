@@ -139,7 +139,7 @@ export class HTTP {
   private readonly nodes: Map<string, Match> = new Map();
 
   constructor(private readonly llparse: LLParse,
-              private readonly mode: HTTPMode = 'loose') {
+    private readonly mode: HTTPMode = 'loose') {
     const p = llparse;
 
     this.url = new URL(p, mode);
@@ -214,7 +214,7 @@ export class HTTP {
     }, n('start_req_or_res'));
 
     n('start')
-      .match([ '\r', '\n' ], n('start'))
+      .match(['\r', '\n'], n('start'))
       .otherwise(this.update('finish', FINISH.UNSAFE,
         this.invokePausable('on_message_begin',
           ERROR.CB_MESSAGE_BEGIN, switchType)));
@@ -250,7 +250,7 @@ export class HTTP {
     n('res_http_end')
       .match(' ', this.update('status_code', 0, 'res_status_code'))
       .otherwise(p.error(ERROR.INVALID_VERSION,
-          'Expected space after version'));
+        'Expected space after version'));
 
     n('res_status_code')
       .select(NUM_MAP, this.mulAdd('status_code', {
@@ -261,7 +261,7 @@ export class HTTP {
 
     n('res_status_code_otherwise')
       .match(' ', n('res_status_start'))
-      .peek([ '\r', '\n' ], n('res_status_start'))
+      .peek(['\r', '\n'], n('res_status_start'))
       .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid response status'));
 
     n('res_status_start')
@@ -335,7 +335,7 @@ export class HTTP {
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Invalid minor version'));
 
     n('req_http_end')
-      .match([ '\r\n', '\n' ], n('header_field_start'))
+      .match(['\r\n', '\n'], n('header_field_start'))
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected CRLF after version'));
   }
 
@@ -389,7 +389,7 @@ export class HTTP {
     const fallback = this.resetHeaderState('header_value');
 
     n('header_value_discard_ws')
-      .match([ ' ', '\t' ], n('header_value_discard_ws'))
+      .match([' ', '\t'], n('header_value_discard_ws'))
       .match('\r', n('header_value_discard_ws_almost_done'))
       .match('\n', n('header_value_discard_lws'))
       .otherwise(span.headerValue.start(n('header_value_start')));
@@ -411,7 +411,7 @@ export class HTTP {
       this.emptySpan(span.headerValue, 'header_field_start')));
 
     n('header_value_discard_lws')
-      .match([ ' ', '\t' ], n('header_value_discard_ws'))
+      .match([' ', '\t'], n('header_value_discard_ws'))
       .otherwise(checkContentLengthEmptiness);
 
     n('header_value_start')
@@ -437,7 +437,7 @@ export class HTTP {
 
     n('header_value_te_chunked_last')
       .match(' ', n('header_value_te_chunked_last'))
-      .peek([ '\r', '\n' ], this.update('header_state',
+      .peek(['\r', '\n'], this.update('header_state',
         HEADER_STATE.TRANSFER_ENCODING_CHUNKED,
         'header_value_otherwise'))
       .otherwise(n('header_value_te_chunked'));
@@ -448,7 +448,7 @@ export class HTTP {
       .otherwise(fallback);
 
     n('header_value_te_token_ows')
-      .match([ ' ', '\t' ], n('header_value_te_token_ows'))
+      .match([' ', '\t'], n('header_value_te_token_ows'))
       .otherwise(n('header_value_te_chunked'));
 
     //
@@ -476,8 +476,8 @@ export class HTTP {
 
     n('header_value_content_length_ws')
       .match(' ', n('header_value_content_length_ws'))
-      .peek([ '\r', '\n' ],
-          this.setFlag(FLAGS.CONTENT_LENGTH, 'header_value_discard_rws'))
+      .peek(['\r', '\n'],
+        this.setFlag(FLAGS.CONTENT_LENGTH, 'header_value_discard_rws'))
       .otherwise(invalidContentLength('Invalid character in Content-Length'));
 
     //
@@ -488,7 +488,7 @@ export class HTTP {
       .transform(p.transform.toLowerUnsafe())
       // TODO(indutny): extra node for token back-edge?
       // Skip lws
-      .match([ ' ', '\t' ], n('header_value_connection'))
+      .match([' ', '\t'], n('header_value_connection'))
       .match(
         'close',
         this.update('header_state', HEADER_STATE.CONNECTION_CLOSE,
@@ -509,7 +509,7 @@ export class HTTP {
     n('header_value_connection_ws')
       .match(',', this.setHeaderFlags('header_value_connection'))
       .match(' ', n('header_value_connection_ws'))
-      .peek([ '\r', '\n' ], n('header_value_otherwise'))
+      .peek(['\r', '\n'], n('header_value_otherwise'))
       .otherwise(this.resetHeaderState('header_value_connection_token'));
 
     n('header_value_connection_token')
@@ -520,7 +520,7 @@ export class HTTP {
 
     n('header_value_discard_rws')
       .match(' ', n('header_value_discard_rws'))
-      .peek([ '\r', '\n' ], n('header_value_otherwise'))
+      .peek(['\r', '\n'], n('header_value_otherwise'))
       .otherwise(fallback);
 
     // Split for performance reasons
@@ -548,7 +548,7 @@ export class HTTP {
         'Missing expected LF after header value'));
 
     n('header_value_lws')
-      .peek([ ' ', '\t' ], span.headerValue.start(n('header_value_start')))
+      .peek([' ', '\t'], span.headerValue.start(n('header_value_start')))
       .otherwise(this.setHeaderFlags('header_field_start'));
 
     const checkTrailing = this.testFlags(FLAGS.TRAILING, {
@@ -685,7 +685,7 @@ export class HTTP {
 
     n('chunk_size_otherwise')
       .match('\r', n('chunk_size_almost_done'))
-      .match([ ';', ' ' ], n('chunk_parameters'))
+      .match([';', ' '], n('chunk_parameters'))
       .otherwise(p.error(ERROR.INVALID_CHUNK_SIZE,
         'Invalid character in chunk size'));
 
@@ -757,7 +757,7 @@ export class HTTP {
     }
 
     n('closed')
-      .match([ '\r', '\n' ], n('closed'))
+      .match(['\r', '\n'], n('closed'))
       .skipTo(p.error(ERROR.CLOSED_CONNECTION,
         'Data after `Connection: close`'));
 
@@ -775,7 +775,7 @@ export class HTTP {
   }
 
   private load(field: string, map: { [key: number]: Node },
-               next?: string | Node): Node {
+    next?: string | Node): Node {
     const p = this.llparse;
 
     const res = p.invoke(p.code.load(field), map);
@@ -819,7 +819,7 @@ export class HTTP {
   }
 
   private testFlags(flag: FLAGS, map: { [key: number]: Node },
-                    next?: string | Node): Node {
+    next?: string | Node): Node {
     const p = this.llparse;
     const res = p.invoke(p.code.test('flags', flag), map);
     if (next !== undefined) {
@@ -845,7 +845,7 @@ export class HTTP {
   }
 
   private mulAdd(field: string, targets: IMulTargets,
-                 options: IMulOptions = { base: 10, signed: false }): Node {
+    options: IMulOptions = { base: 10, signed: false }): Node {
     const p = this.llparse;
 
     return p.invoke(p.code.mulAdd(field, options), {
@@ -873,16 +873,26 @@ export class HTTP {
   private invokePausable(name: string, errorCode: ERROR, next: string | Node)
     : Node {
     let cb;
-    if (name === 'on_message_begin') {
-      cb = this.callback.onMessageBegin;
-    } else if (name === 'on_message_complete') {
-      cb = this.callback.onMessageComplete;
-    } else if (name === 'on_chunk_header') {
-      cb = this.callback.onChunkHeader;
-    } else if (name === 'on_chunk_complete') {
-      cb = this.callback.onChunkComplete;
-    } else {
-      throw new Error('Unknown callback: ' + name);
+    switch (name) {
+      case 'on_message_begin': {
+        cb = this.callback.onMessageBegin;
+        break;
+      }
+      case 'on_message_complete': {
+        cb = this.callback.onMessageComplete;
+        break;
+      }
+      case 'on_chunk_header': {
+        cb = this.callback.onChunkHeader;
+        break;
+      }
+      case 'on_chunk_complete': {
+        cb = this.callback.onChunkComplete;
+        break;
+      }
+      default: {
+        throw new Error('Unknown callback: ' + name);
+      }
     }
 
     const p = this.llparse;
