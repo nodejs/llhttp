@@ -4,6 +4,11 @@ CFLAGS ?=
 CFLAGS += -Os -g3 -Wall -Wextra -Wno-unused-parameter
 INCLUDES += -Ibuild/
 
+INSTALL ?= install
+PREFIX ?= /usr/local
+LIBDIR = $(PREFIX)/lib
+INCLUDEDIR = $(PREFIX)/include
+
 all: build/libllhttp.a
 
 clean:
@@ -55,5 +60,9 @@ postversion: release
 
 generate:
 	./bin/generate.ts
+
+install: build/libllhttp.a
+	$(INSTALL) build/llhttp.h $(DESTDIR)$(INCLUDEDIR)/llhttp.h
+	$(INSTALL) build/libllhttp.a $(DESTDIR)$(LIBDIR)/libllhttp.a
 
 .PHONY: all generate clean release
