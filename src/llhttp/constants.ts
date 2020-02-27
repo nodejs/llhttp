@@ -96,6 +96,8 @@ export enum METHODS {
   UNLINK = 32,
   /* icecast */
   SOURCE = 33,
+  /* RFC-7540, section 11.6 */
+  PRI = 34,
 }
 
 export const METHOD_MAP = enumToMap(METHODS);
