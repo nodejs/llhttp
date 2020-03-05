@@ -59,7 +59,7 @@ postversion: release
 	git checkout master
 
 generate:
-	./bin/generate.ts
+	npm run build
 
 install: build/libllhttp.a
 	$(INSTALL) build/llhttp.h $(DESTDIR)$(INCLUDEDIR)/llhttp.h
