@@ -15,10 +15,12 @@ Header1: \f
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=7 span[header_field]="Header1"
 off=28 len=1 span[header_value]="\f"
-off=33 headers complete method=1 v=1/1 flags=100 content_length=0
+off=33 headers complete v=1/1 flags=100 content_length=0
 off=33 message complete
 ```
 
@@ -38,16 +40,20 @@ Header1: \f
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=7 span[header_field]="Header1"
 off=28 len=4 span[header_value]="Okay"
-off=36 headers complete method=1 v=1/1 flags=100 content_length=0
+off=36 headers complete v=1/1 flags=100 content_length=0
 off=36 message complete
 off=38 message begin
+off=38 len=3 span[method]="GET"
 off=42 len=4 span[url]="/url"
+off=47 len=4 span[protocol]="HTTP"
 off=57 len=7 span[header_field]="Header1"
 off=66 len=1 span[header_value]="\f"
-off=71 headers complete method=1 v=1/1 flags=100 content_length=0
+off=71 headers complete v=1/1 flags=100 content_length=0
 off=71 message complete
 ```
 
@@ -64,7 +70,9 @@ Header1: \f
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=7 span[header_field]="Header1"
 off=28 error code=10 reason="Invalid header value char"
 ```

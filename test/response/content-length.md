@@ -31,6 +31,7 @@ Connection: close
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=4 span[header_field]="Date"
 off=23 len=29 span[header_value]="Tue, 04 Aug 2009 07:59:32 GMT"
@@ -82,6 +83,7 @@ OK
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=16 span[header_field]="Content-Length-X"
 off=35 len=1 span[header_value]="0"

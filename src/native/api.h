@@ -17,6 +17,8 @@ struct llhttp_settings_s {
 
   llhttp_data_cb on_url;
   llhttp_data_cb on_status;
+  llhttp_data_cb on_method;
+  llhttp_data_cb on_protocol;
   llhttp_data_cb on_header_field;
   llhttp_data_cb on_header_value;
 
@@ -137,9 +139,6 @@ const char* llhttp_get_error_pos(const llhttp_t* parser);
 
 /* Returns textual name of error code */
 const char* llhttp_errno_name(llhttp_errno_t err);
-
-/* Returns textual name of HTTP method */
-const char* llhttp_method_name(llhttp_method_t method);
 
 
 /* Enables/disables lenient header value parsing (disabled by default).

@@ -51,63 +51,8 @@ export enum FLAGS {
   TRAILING = 1 << 7,
   LENIENT = 1 << 8,
   TRANSFER_ENCODING = 1 << 9,
+  METHOD_CONNECT = 1 << 10,
 }
-
-export enum METHODS {
-  DELETE = 0,
-  GET = 1,
-  HEAD = 2,
-  POST = 3,
-  PUT = 4,
-  /* pathological */
-  CONNECT = 5,
-  OPTIONS = 6,
-  TRACE = 7,
-  /* WebDAV */
-  COPY = 8,
-  LOCK = 9,
-  MKCOL = 10,
-  MOVE = 11,
-  PROPFIND = 12,
-  PROPPATCH = 13,
-  SEARCH = 14,
-  UNLOCK = 15,
-  BIND = 16,
-  REBIND = 17,
-  UNBIND = 18,
-  ACL = 19,
-  /* subversion */
-  REPORT = 20,
-  MKACTIVITY = 21,
-  CHECKOUT = 22,
-  MERGE = 23,
-  /* upnp */
-  'M-SEARCH' = 24,
-  NOTIFY = 25,
-  SUBSCRIBE = 26,
-  UNSUBSCRIBE = 27,
-  /* RFC-5789 */
-  PATCH = 28,
-  PURGE = 29,
-  /* CalDAV */
-  MKCALENDAR = 30,
-  /* RFC-2068, section 19.6.1.2 */
-  LINK = 31,
-  UNLINK = 32,
-  /* icecast */
-  SOURCE = 33,
-  /* RFC-7540, section 11.6 */
-  PRI = 34,
-}
-
-export const METHOD_MAP = enumToMap(METHODS);
-export const H_METHOD_MAP: IEnumMap = {};
-
-Object.keys(METHOD_MAP).forEach((key) => {
-  if (/^H/.test(key)) {
-    H_METHOD_MAP[key] = METHOD_MAP[key];
-  }
-});
 
 export enum FINISH {
   SAFE = 0,

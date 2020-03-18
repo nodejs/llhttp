@@ -16,12 +16,14 @@ Header2:\t Value2
 
 ```log
 off=0 message begin
+off=0 len=7 span[method]="OPTIONS"
 off=8 len=4 span[url]="/url"
+off=13 len=4 span[protocol]="HTTP"
 off=23 len=7 span[header_field]="Header1"
 off=32 len=6 span[header_value]="Value1"
 off=40 len=7 span[header_field]="Header2"
 off=50 len=6 span[header_value]="Value2"
-off=60 headers complete method=6 v=1/1 flags=0 content_length=0
+off=60 headers complete v=1/1 flags=0 content_length=0
 off=60 message complete
 ```
 
@@ -41,8 +43,10 @@ HEAD /url HTTP/1.1
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="HEAD"
 off=5 len=4 span[url]="/url"
-off=22 headers complete method=2 v=1/1 flags=0 content_length=0
+off=10 len=4 span[protocol]="HTTP"
+off=22 headers complete v=1/1 flags=0 content_length=0
 off=22 message complete
 ```
 
@@ -60,14 +64,16 @@ Accept: */*
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=5 span[url]="/test"
+off=10 len=4 span[protocol]="HTTP"
 off=20 len=10 span[header_field]="User-Agent"
 off=32 len=85 span[header_value]="curl/7.18.0 (i486-pc-linux-gnu) libcurl/7.18.0 OpenSSL/0.9.8g zlib/1.2.3.3 libidn/1.1"
 off=119 len=4 span[header_field]="Host"
 off=125 len=12 span[header_value]="0.0.0.0=5000"
 off=139 len=6 span[header_field]="Accept"
 off=147 len=3 span[header_value]="*/*"
-off=154 headers complete method=1 v=1/1 flags=0 content_length=0
+off=154 headers complete v=1/1 flags=0 content_length=0
 off=154 message complete
 ```
 
@@ -90,7 +96,9 @@ Connection: keep-alive
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=12 span[url]="/favicon.ico"
+off=17 len=4 span[protocol]="HTTP"
 off=27 len=4 span[header_field]="Host"
 off=33 len=12 span[header_value]="0.0.0.0=5000"
 off=47 len=10 span[header_field]="User-Agent"
@@ -107,7 +115,7 @@ off=322 len=10 span[header_field]="Keep-Alive"
 off=334 len=3 span[header_value]="300"
 off=339 len=10 span[header_field]="Connection"
 off=351 len=10 span[header_value]="keep-alive"
-off=365 headers complete method=1 v=1/1 flags=1 content_length=0
+off=365 headers complete v=1/1 flags=1 content_length=0
 off=365 message complete
 ```
 
@@ -123,10 +131,12 @@ aaaaaaaaaaaaa:++++++++++
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=9 span[url]="/dumbpack"
+off=14 len=4 span[protocol]="HTTP"
 off=24 len=13 span[header_field]="aaaaaaaaaaaaa"
 off=38 len=10 span[header_value]="++++++++++"
-off=52 headers complete method=1 v=1/1 flags=0 content_length=0
+off=52 headers complete v=1/1 flags=0 content_length=0
 off=52 message complete
 ```
 
@@ -141,8 +151,10 @@ GET /get_no_headers_no_body/world HTTP/1.1
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=29 span[url]="/get_no_headers_no_body/world"
-off=46 headers complete method=1 v=1/1 flags=0 content_length=0
+off=34 len=4 span[protocol]="HTTP"
+off=46 headers complete v=1/1 flags=0 content_length=0
 off=46 message complete
 ```
 
@@ -158,10 +170,12 @@ Accept: */*
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=23 span[url]="/get_one_header_no_body"
+off=28 len=4 span[protocol]="HTTP"
 off=38 len=6 span[header_field]="Accept"
 off=46 len=3 span[header_value]="*/*"
-off=53 headers complete method=1 v=1/1 flags=0 content_length=0
+off=53 headers complete v=1/1 flags=0 content_length=0
 off=53 message complete
 ```
 
@@ -182,14 +196,16 @@ Accept: */*
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=5 span[url]="/test"
+off=10 len=4 span[protocol]="HTTP"
 off=20 len=4 span[header_field]="Host"
 off=26 len=12 span[header_value]="0.0.0.0:5000"
 off=40 len=10 span[header_field]="User-Agent"
 off=52 len=15 span[header_value]="ApacheBench/2.3"
 off=69 len=6 span[header_field]="Accept"
 off=77 len=3 span[header_value]="*/*"
-off=84 headers complete method=1 v=1/0 flags=0 content_length=0
+off=84 headers complete v=1/0 flags=0 content_length=0
 off=84 message complete
 ```
 
@@ -207,8 +223,10 @@ will send an extra CRLF before the next request.
 
 ```log
 off=2 message begin
+off=2 len=3 span[method]="GET"
 off=6 len=5 span[url]="/test"
-off=24 headers complete method=1 v=1/1 flags=0 content_length=0
+off=12 len=4 span[protocol]="HTTP"
+off=24 headers complete v=1/1 flags=0 content_length=0
 off=24 message complete
 ```
 
@@ -223,8 +241,9 @@ GET /
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=1 span[url]="/"
-off=9 headers complete method=1 v=0/9 flags=0 content_length=0
+off=9 headers complete v=0/9 flags=0 content_length=0
 off=9 message complete
 ```
 
@@ -252,7 +271,9 @@ Connection:
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=1 span[url]="/"
+off=6 len=4 span[protocol]="HTTP"
 off=16 len=5 span[header_field]="Line1"
 off=25 len=3 span[header_value]="abc"
 off=30 len=4 span[header_value]="\tdef"
@@ -268,7 +289,7 @@ off=98 len=5 span[header_field]="Line4"
 off=110 len=0 span[header_value]=""
 off=110 len=10 span[header_field]="Connection"
 off=124 len=5 span[header_value]="close"
-off=133 headers complete method=1 v=1/1 flags=2 content_length=0
+off=133 headers complete v=1/1 flags=2 content_length=0
 off=133 message complete
 ```
 
@@ -295,7 +316,9 @@ Connection:\n\
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=1 span[url]="/"
+off=6 len=4 span[protocol]="HTTP"
 off=15 len=5 span[header_field]="Line1"
 off=24 len=3 span[header_value]="abc"
 off=28 len=4 span[header_value]="\tdef"
@@ -311,7 +334,7 @@ off=88 len=5 span[header_field]="Line4"
 off=98 len=0 span[header_value]=""
 off=98 len=10 span[header_field]="Connection"
 off=111 len=5 span[header_value]="close"
-off=118 headers complete method=1 v=1/1 flags=2 content_length=0
+off=118 headers complete v=1/1 flags=2 content_length=0
 off=118 message complete
 ```
 
@@ -327,10 +350,12 @@ Header1: Value1
 
 ```log
 off=2 message begin
+off=2 len=3 span[method]="GET"
 off=6 len=4 span[url]="/url"
+off=11 len=4 span[protocol]="HTTP"
 off=21 len=7 span[header_field]="Header1"
 off=30 len=6 span[header_value]="Value1"
-off=40 headers complete method=1 v=1/1 flags=0 content_length=0
+off=40 headers complete v=1/1 flags=0 content_length=0
 off=40 message complete
 ```
 
@@ -348,11 +373,61 @@ Test: Düsseldorf
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=1 span[url]="/"
+off=6 len=4 span[protocol]="HTTP"
 off=16 len=4 span[header_field]="Test"
 off=22 len=11 span[header_value]="Düsseldorf"
-off=37 headers complete method=1 v=1/1 flags=0 content_length=0
+off=37 headers complete v=1/1 flags=0 content_length=0
 off=37 message complete
+```
+
+### Custom protocol
+
+<!-- meta={"type": "request"} -->
+```http
+GET /music/sweet/music IHTTP/1.0
+Host: example.com
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="GET"
+off=4 len=18 span[url]="/music/sweet/music"
+off=23 len=5 span[protocol]="IHTTP"
+off=34 len=4 span[header_field]="Host"
+off=40 len=11 span[header_value]="example.com"
+off=55 headers complete v=1/0 flags=0 content_length=0
+off=55 message complete
+```
+
+## RTSP protocol
+
+<!-- meta={"type": "request"} -->
+```http
+OPTIONS rtsp://example.com/media.mp4 RTSP/1.0
+CSeq: 1
+Require: implicit-play
+Proxy-Require: gzipped-messages
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=7 span[method]="OPTIONS"
+off=8 len=28 span[url]="rtsp://example.com/media.mp4"
+off=37 len=4 span[protocol]="RTSP"
+off=47 len=4 span[header_field]="CSeq"
+off=53 len=1 span[header_value]="1"
+off=56 len=7 span[header_field]="Require"
+off=65 len=13 span[header_value]="implicit-play"
+off=80 len=13 span[header_field]="Proxy-Require"
+off=95 len=16 span[header_value]="gzipped-messages"
+off=115 headers complete v=1/0 flags=0 content_length=0
+off=115 message complete
 ```
 
 ## X-SSL-Nonsense
@@ -400,7 +475,9 @@ X-SSL-Nonsense:   -----BEGIN CERTIFICATE-----
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=1 span[url]="/"
+off=6 len=4 span[protocol]="HTTP"
 off=16 len=14 span[header_field]="X-SSL-Nonsense"
 off=34 len=27 span[header_value]="-----BEGIN CERTIFICATE-----"
 off=63 len=65 span[header_value]="\tMIIFbTCCBFWgAwIBAgICH4cwDQYJKoZIhvcNAQEFBQAwcDELMAkGA1UEBhMCVUsx"
@@ -434,7 +511,7 @@ off=1873 len=65 span[header_value]="\twTC6o2xq5y0qZ03JonF7OJspEd3I5zKY3E+ov7/ZhW
 off=1940 len=65 span[header_value]="\tYhixw1aKEPzNjNowuIseVogKOLXxWI5vAi5HgXdS0/ES5gDGsABo4fqovUKlgop3"
 off=2007 len=5 span[header_value]="\tRA=="
 off=2014 len=26 span[header_value]="\t-----END CERTIFICATE-----"
-off=2044 headers complete method=1 v=1/1 flags=0 content_length=0
+off=2044 headers complete v=1/1 flags=0 content_length=0
 off=2044 message complete
 ```
 

@@ -22,6 +22,7 @@ and this is the second one
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=12 span[header_field]="Content-Type"
 off=31 len=10 span[header_value]="text/plain"
@@ -56,6 +57,7 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=6 span[header_field]="Accept"
 off=25 len=3 span[header_value]="*/*"

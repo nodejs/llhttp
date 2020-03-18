@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+
 #ifndef LLHTTP__TEST
 # include "llhttp.h"
 #else
@@ -7,6 +9,11 @@
 
 int llhttp_message_needs_eof(const llhttp_t* parser);
 int llhttp_should_keep_alive(const llhttp_t* parser);
+int llhttp__on_message_begin(const llhttp_t* parser, const char* p, const char* endp);
+int llhttp__on_method(const llhttp_t* parser, const char* p, const char* endp);
+int llhttp__on_protocol(const llhttp_t* parser, const char* p, const char* endp);
+
+const char* HTTP_CONNECT = "CONNECT";
 
 int llhttp__before_headers_complete(llhttp_t* parser, const char* p,
                                     const char* endp) {
@@ -20,7 +27,7 @@ int llhttp__before_headers_complete(llhttp_t* parser, const char* p,
     parser->upgrade =
         (parser->type == HTTP_REQUEST || parser->status_code == 101);
   } else {
-    parser->upgrade = (parser->method == HTTP_CONNECT);
+    parser->upgrade = F_METHOD_CONNECT == (parser->flags & F_METHOD_CONNECT);
   }
   return 0;
 }
@@ -39,7 +46,7 @@ int llhttp__after_headers_complete(llhttp_t* parser, const char* p,
   int hasBody;
 
   hasBody = parser->flags & F_CHUNKED || parser->content_length > 0;
-  if (parser->upgrade && (parser->method == HTTP_CONNECT ||
+  if (parser->upgrade && (F_METHOD_CONNECT == (parser->flags & F_METHOD_CONNECT) ||
                           (parser->flags & F_SKIPBODY) || !hasBody)) {
     /* Exit, the rest of the message is in a different protocol. */
     return 1;
@@ -130,6 +137,33 @@ int llhttp_message_needs_eof(const llhttp_t* parser) {
   }
 
   return 1;
+}
+
+
+int llhttp__internal_c_on_method(llhttp_t* parser, const char* p, const char* endp) {
+  if (NULL == parser->method)
+    parser->method = (void*) p;
+
+  if (HTTP_BOTH == parser->type) {
+    if (NULL == parser->method_or_protocol) {
+      parser->method_or_protocol = (void*) p;
+    }
+    return 0;
+  } else if (NULL != parser->method_or_protocol) {
+    p = (const char*) parser->method_or_protocol;
+    parser->method_or_protocol = NULL;
+  }
+
+  if (HTTP_RESPONSE == parser->type)
+    return llhttp__on_protocol(parser, p, endp);
+
+  parser->method_length = (uint16_t) (endp - (const char*)parser->method);
+  if (7 == parser->method_length && 0 == memcmp(HTTP_CONNECT, parser->method, parser->method_length))
+    parser->flags |= F_METHOD_CONNECT;
+  else
+    parser->flags &= ~F_METHOD_CONNECT;
+
+  return llhttp__on_method(parser, p, endp);
 }
 
 

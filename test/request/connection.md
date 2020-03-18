@@ -15,10 +15,12 @@ Connection: keep-alive
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=10 span[header_field]="Connection"
 off=31 len=10 span[header_value]="keep-alive"
-off=45 headers complete method=4 v=1/1 flags=1 content_length=0
+off=45 headers complete v=1/1 flags=1 content_length=0
 off=45 message complete
 ```
 
@@ -37,16 +39,20 @@ Connection: keep-alive
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=10 span[header_field]="Connection"
 off=31 len=10 span[header_value]="keep-alive"
-off=45 headers complete method=4 v=1/1 flags=1 content_length=0
+off=45 headers complete v=1/1 flags=1 content_length=0
 off=45 message complete
 off=45 message begin
+off=45 len=3 span[method]="PUT"
 off=49 len=4 span[url]="/url"
+off=54 len=4 span[protocol]="HTTP"
 off=64 len=10 span[header_field]="Connection"
 off=76 len=10 span[header_value]="keep-alive"
-off=90 headers complete method=4 v=1/1 flags=1 content_length=0
+off=90 headers complete v=1/1 flags=1 content_length=0
 off=90 message complete
 ```
 
@@ -63,8 +69,10 @@ PUT /url HTTP/1.1
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
-off=21 headers complete method=4 v=1/0 flags=0 content_length=0
+off=9 len=4 span[protocol]="HTTP"
+off=21 headers complete v=1/0 flags=0 content_length=0
 off=21 message complete
 off=22 error code=5 reason="Data after `Connection: close`"
 ```
@@ -87,16 +95,20 @@ Transfer-Encoding: chunked
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=14 span[header_field]="Content-Length"
 off=35 len=1 span[header_value]="0"
-off=40 headers complete method=4 v=1/0 flags=20 content_length=0
+off=40 headers complete v=1/0 flags=20 content_length=0
 off=40 message complete
 off=40 message begin
+off=40 len=3 span[method]="PUT"
 off=44 len=4 span[url]="/url"
+off=49 len=4 span[protocol]="HTTP"
 off=59 len=17 span[header_field]="Transfer-Encoding"
 off=78 len=7 span[header_value]="chunked"
-off=89 headers complete method=4 v=1/1 flags=208 content_length=0
+off=89 headers complete v=1/1 flags=208 content_length=0
 ```
 
 ### CRLF between requests, implicit `keep-alive`
@@ -116,18 +128,22 @@ _Note the trailing CRLF above_
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=1 span[url]="/"
+off=7 len=4 span[protocol]="HTTP"
 off=17 len=4 span[header_field]="Host"
 off=23 len=15 span[header_value]="www.example.com"
 off=40 len=12 span[header_field]="Content-Type"
 off=54 len=33 span[header_value]="application/x-www-form-urlencoded"
 off=89 len=14 span[header_field]="Content-Length"
 off=105 len=1 span[header_value]="4"
-off=110 headers complete method=3 v=1/1 flags=20 content_length=4
+off=110 headers complete v=1/1 flags=20 content_length=4
 off=110 len=4 span[body]="q=42"
 off=114 message complete
 off=118 message begin
+off=118 len=3 span[method]="GET"
 off=122 len=1 span[url]="/"
+off=124 len=4 span[protocol]="HTTP"
 ```
 
 ## `close`
@@ -144,10 +160,12 @@ Connection: close
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=10 span[header_field]="Connection"
 off=31 len=5 span[header_value]="close"
-off=40 headers complete method=4 v=1/1 flags=2 content_length=0
+off=40 headers complete v=1/1 flags=2 content_length=0
 off=40 message complete
 ```
 
@@ -171,7 +189,9 @@ _Note the trailing CRLF above_
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=1 span[url]="/"
+off=7 len=4 span[protocol]="HTTP"
 off=17 len=4 span[header_field]="Host"
 off=23 len=15 span[header_value]="www.example.com"
 off=40 len=12 span[header_field]="Content-Type"
@@ -180,7 +200,7 @@ off=89 len=14 span[header_field]="Content-Length"
 off=105 len=1 span[header_value]="4"
 off=108 len=10 span[header_field]="Connection"
 off=120 len=5 span[header_value]="close"
-off=129 headers complete method=3 v=1/1 flags=22 content_length=4
+off=129 headers complete v=1/1 flags=22 content_length=4
 off=129 len=4 span[body]="q=42"
 off=133 message complete
 off=138 error code=5 reason="Data after `Connection: close`"
@@ -206,7 +226,9 @@ _Note the trailing CRLF above_
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=1 span[url]="/"
+off=7 len=4 span[protocol]="HTTP"
 off=17 len=4 span[header_field]="Host"
 off=23 len=15 span[header_value]="www.example.com"
 off=40 len=12 span[header_field]="Content-Type"
@@ -215,11 +237,13 @@ off=89 len=14 span[header_field]="Content-Length"
 off=105 len=1 span[header_value]="4"
 off=108 len=10 span[header_field]="Connection"
 off=120 len=5 span[header_value]="close"
-off=129 headers complete method=3 v=1/1 flags=22 content_length=4
+off=129 headers complete v=1/1 flags=22 content_length=4
 off=129 len=4 span[body]="q=42"
 off=133 message complete
 off=137 message begin
+off=137 len=3 span[method]="GET"
 off=141 len=1 span[url]="/"
+off=143 len=4 span[protocol]="HTTP"
 ```
 
 ## Parsing multiple tokens
@@ -236,10 +260,12 @@ Connection: close, token, upgrade, token, keep-alive
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=10 span[header_field]="Connection"
 off=31 len=40 span[header_value]="close, token, upgrade, token, keep-alive"
-off=75 headers complete method=4 v=1/1 flags=7 content_length=0
+off=75 headers complete v=1/1 flags=7 content_length=0
 off=75 message complete
 ```
 
@@ -262,7 +288,9 @@ Hot diggity dogg
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=5 span[url]="/demo"
+off=10 len=4 span[protocol]="HTTP"
 off=20 len=4 span[header_field]="Host"
 off=26 len=11 span[header_value]="example.com"
 off=39 len=10 span[header_field]="Connection"
@@ -278,7 +306,7 @@ off=178 len=18 span[header_field]="Sec-WebSocket-Key1"
 off=198 len=20 span[header_value]="4 @1  46546xW%0l 1 5"
 off=220 len=6 span[header_field]="Origin"
 off=228 len=18 span[header_value]="http://example.com"
-off=250 headers complete method=1 v=1/1 flags=15 content_length=0
+off=250 headers complete v=1/1 flags=15 content_length=0
 off=250 message complete
 off=250 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
@@ -296,12 +324,14 @@ Hot diggity dogg
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=5 span[url]="/demo"
+off=10 len=4 span[protocol]="HTTP"
 off=20 len=10 span[header_field]="Connection"
 off=32 len=19 span[header_value]="keep-alive, upgrade"
 off=53 len=7 span[header_field]="Upgrade"
 off=62 len=9 span[header_value]="WebSocket"
-off=75 headers complete method=1 v=1/1 flags=15 content_length=0
+off=75 headers complete v=1/1 flags=15 content_length=0
 off=75 message complete
 off=75 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
@@ -319,13 +349,15 @@ Hot diggity dogg
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=5 span[url]="/demo"
+off=10 len=4 span[protocol]="HTTP"
 off=20 len=10 span[header_field]="Connection"
 off=32 len=12 span[header_value]="keep-alive, "
 off=46 len=8 span[header_value]=" upgrade"
 off=56 len=7 span[header_field]="Upgrade"
 off=65 len=9 span[header_value]="WebSocket"
-off=78 headers complete method=1 v=1/1 flags=15 content_length=0
+off=78 headers complete v=1/1 flags=15 content_length=0
 off=78 message complete
 off=78 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
@@ -345,12 +377,14 @@ Upgrade: ws
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=10 span[header_field]="Connection"
 off=31 len=7 span[header_value]="upgrade"
 off=40 len=7 span[header_field]="Upgrade"
 off=49 len=2 span[header_value]="ws"
-off=55 headers complete method=4 v=1/1 flags=14 content_length=0
+off=55 headers complete v=1/1 flags=14 content_length=0
 off=55 message complete
 off=55 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
@@ -369,14 +403,16 @@ abcdefgh
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=10 span[header_field]="Connection"
 off=31 len=7 span[header_value]="upgrade"
 off=40 len=14 span[header_field]="Content-Length"
 off=56 len=1 span[header_value]="4"
 off=59 len=7 span[header_field]="Upgrade"
 off=68 len=2 span[header_value]="ws"
-off=74 headers complete method=4 v=1/1 flags=34 content_length=4
+off=74 headers complete v=1/1 flags=34 content_length=4
 off=74 len=4 span[body]="abcd"
 off=78 message complete
 off=78 error code=22 reason="Pause on CONNECT/Upgrade"
@@ -400,7 +436,9 @@ Hot diggity dogg
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=5 span[url]="/demo"
+off=10 len=4 span[protocol]="HTTP"
 off=20 len=4 span[header_field]="Host"
 off=26 len=11 span[header_value]="example.com"
 off=39 len=10 span[header_field]="Connection"
@@ -415,7 +453,7 @@ off=152 len=18 span[header_field]="Sec-WebSocket-Key1"
 off=172 len=20 span[header_value]="4 @1  46546xW%0l 1 5"
 off=194 len=6 span[header_field]="Origin"
 off=202 len=18 span[header_value]="http://example.com"
-off=224 headers complete method=1 v=1/1 flags=14 content_length=0
+off=224 headers complete v=1/1 flags=14 content_length=0
 off=224 message complete
 off=224 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
@@ -436,7 +474,9 @@ Hot diggity dogg
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=5 span[url]="/demo"
+off=11 len=4 span[protocol]="HTTP"
 off=21 len=4 span[header_field]="Host"
 off=27 len=11 span[header_value]="example.com"
 off=40 len=10 span[header_field]="Connection"
@@ -445,7 +485,7 @@ off=61 len=7 span[header_field]="Upgrade"
 off=70 len=8 span[header_value]="HTTP/2.0"
 off=80 len=14 span[header_field]="Content-Length"
 off=96 len=2 span[header_value]="15"
-off=102 headers complete method=3 v=1/1 flags=34 content_length=15
+off=102 headers complete v=1/1 flags=34 content_length=15
 off=102 len=15 span[body]="sweet post body"
 off=117 message complete
 off=117 error code=22 reason="Pause on CONNECT/Upgrade"

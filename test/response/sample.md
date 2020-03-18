@@ -15,6 +15,7 @@ Content-Length: 0
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=7 span[header_field]="Header1"
 off=26 len=6 span[header_value]="Value1"
@@ -26,7 +27,7 @@ off=73 headers complete status=200 v=1/1 flags=20 content_length=0
 off=73 message complete
 ```
 
-## Error on invalid response start
+## Custom protocol
 
 Every response must start with `HTTP/`.
 
@@ -39,7 +40,116 @@ HTTPER/1.1 200 OK
 
 ```log
 off=0 message begin
-off=4 error code=8 reason="Expected HTTP/"
+off=0 len=6 span[protocol]="HTTPER"
+off=15 len=2 span[status]="OK"
+off=21 headers complete status=200 v=1/1 flags=0 content_length=0
+```
+
+## RTSP protocol
+
+<!-- meta={"type": "response-only"} -->
+```http
+RTSP/1.0 200 OK
+CSeq: 2
+Content-Base: rtsp://example.com/media.mp4
+Content-Type: application/sdp
+Content-Length: 460
+
+m=video 0 RTP/AVP 96
+a=control:streamid=0
+a=range:npt=0-7.741000
+a=length:npt=7.741000
+a=rtpmap:96 MP4V-ES/5544
+a=mimetype:string;"video/MP4V-ES"
+a=AvgBitRate:integer;304018
+a=StreamName:string;"hinted video track"
+m=audio 0 RTP/AVP 97
+a=control:streamid=1
+a=range:npt=0-7.712000
+a=length:npt=7.712000
+a=rtpmap:97 mpeg4-generic/32000/2
+a=mimetype:string;"audio/mpeg4-generic"
+a=AvgBitRate:integer;65790
+a=StreamName:string;"hinted audio track"
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[protocol]="RTSP"
+off=13 len=2 span[status]="OK"
+off=17 len=4 span[header_field]="CSeq"
+off=23 len=1 span[header_value]="2"
+off=26 len=12 span[header_field]="Content-Base"
+off=40 len=28 span[header_value]="rtsp://example.com/media.mp4"
+off=70 len=12 span[header_field]="Content-Type"
+off=84 len=15 span[header_value]="application/sdp"
+off=101 len=14 span[header_field]="Content-Length"
+off=117 len=3 span[header_value]="460"
+off=124 headers complete status=200 v=1/0 flags=20 content_length=460
+off=124 len=20 span[body]="m=video 0 RTP/AVP 96"
+off=144 len=1 span[body]=cr
+off=145 len=1 span[body]=lf
+off=146 len=20 span[body]="a=control:streamid=0"
+off=166 len=1 span[body]=cr
+off=167 len=1 span[body]=lf
+off=168 len=22 span[body]="a=range:npt=0-7.741000"
+off=190 len=1 span[body]=cr
+off=191 len=1 span[body]=lf
+off=192 len=21 span[body]="a=length:npt=7.741000"
+off=213 len=1 span[body]=cr
+off=214 len=1 span[body]=lf
+off=215 len=24 span[body]="a=rtpmap:96 MP4V-ES/5544"
+off=239 len=1 span[body]=cr
+off=240 len=1 span[body]=lf
+off=241 len=33 span[body]="a=mimetype:string;"video/MP4V-ES""
+off=274 len=1 span[body]=cr
+off=275 len=1 span[body]=lf
+off=276 len=27 span[body]="a=AvgBitRate:integer;304018"
+off=303 len=1 span[body]=cr
+off=304 len=1 span[body]=lf
+off=305 len=40 span[body]="a=StreamName:string;"hinted video track""
+off=345 len=1 span[body]=cr
+off=346 len=1 span[body]=lf
+off=347 len=20 span[body]="m=audio 0 RTP/AVP 97"
+off=367 len=1 span[body]=cr
+off=368 len=1 span[body]=lf
+off=369 len=20 span[body]="a=control:streamid=1"
+off=389 len=1 span[body]=cr
+off=390 len=1 span[body]=lf
+off=391 len=22 span[body]="a=range:npt=0-7.712000"
+off=413 len=1 span[body]=cr
+off=414 len=1 span[body]=lf
+off=415 len=21 span[body]="a=length:npt=7.712000"
+off=436 len=1 span[body]=cr
+off=437 len=1 span[body]=lf
+off=438 len=33 span[body]="a=rtpmap:97 mpeg4-generic/32000/2"
+off=471 len=1 span[body]=cr
+off=472 len=1 span[body]=lf
+off=473 len=39 span[body]="a=mimetype:string;"audio/mpeg4-generic""
+off=512 len=1 span[body]=cr
+off=513 len=1 span[body]=lf
+off=514 len=26 span[body]="a=AvgBitRate:integer;65790"
+off=540 len=1 span[body]=cr
+off=541 len=1 span[body]=lf
+off=542 len=40 span[body]="a=StreamName:string;"hinted audio track""
+```
+
+### Incomplete HTTP protocol
+
+*TODO(indutny): test `req_or_res` mode too*
+
+<!-- meta={"type": "response-only"} -->
+```http
+HTP/1.1 200 OK
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[protocol]="HTP"
+off=12 len=2 span[status]="OK"
+off=18 headers complete status=200 v=1/1 flags=0 content_length=0
 ```
 
 ## Empty body should not trigger spurious span callbacks
@@ -53,6 +163,7 @@ HTTP/1.1 200 OK
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=19 headers complete status=200 v=1/1 flags=0 content_length=0
 ```
@@ -82,6 +193,7 @@ _(Note the `$` char in header field)_
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=17 span[status]="Moved Permanently"
 off=32 len=8 span[header_field]="Location"
 off=42 len=22 span[header_value]="http://www.google.com/"
@@ -138,6 +250,7 @@ Transfer-Encoding: chunked
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=16 span[status]="MovedPermanently"
 off=31 len=4 span[header_field]="Date"
 off=37 len=29 span[header_value]="Wed, 15 May 2013 17:06:33 GMT"
@@ -177,6 +290,7 @@ HTTP/1.1 404 Not Found
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=9 span[status]="Not Found"
 off=26 headers complete status=404 v=1/1 flags=0 content_length=0
 ```
@@ -192,6 +306,7 @@ HTTP/1.1 301
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=16 headers complete status=301 v=1/1 flags=0 content_length=0
 ```
 
@@ -206,6 +321,7 @@ HTTP/1.1 200 \r\n\
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=17 headers complete status=200 v=1/1 flags=0 content_length=0
 ```
 
@@ -222,6 +338,7 @@ these headers are from http://news.ycombinator.com/
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=16 len=12 span[header_field]="Content-Type"
 off=30 len=24 span[header_value]="text/html; charset=utf-8"
@@ -248,6 +365,7 @@ DCLK_imp: v7;x;114750856;0-0;0;17820020;0/0;21603567/21621457/1;;~okv=;dcmt=text
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=6 span[header_field]="Server"
 off=25 len=10 span[header_value]="DCLK-AdSvr"
@@ -284,6 +402,7 @@ Connection: keep-alive
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=17 span[status]="Moved Permanently"
 off=32 len=4 span[header_field]="Date"
 off=38 len=29 span[header_value]="Thu, 03 Jun 2010 09:56:32 GMT"
@@ -331,6 +450,7 @@ Connection: close
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=4 span[header_field]="Date"
 off=23 len=29 span[header_value]="Tue, 28 Sep 2010 01:14:13 GMT"
@@ -378,6 +498,7 @@ Connection: keep-alive
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=6 span[header_field]="Server"
 off=25 len=17 span[header_value]="Microsoft-IIS/6.0"
@@ -406,6 +527,7 @@ Connection: keep-alive
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=6 span[header_field]="Server"
 off=25 len=17 span[header_value]="Microsoft-IIS/6.0"
@@ -440,6 +562,7 @@ Connection: close
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=19 span[status]="Oriëntatieprobleem"
 off=34 len=4 span[header_field]="Date"
 off=40 len=30 span[header_value]="Fri, 5 Nov 2010 23:07:12 GMT+2"
@@ -462,6 +585,7 @@ HTTP/0.9 200 OK
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=19 headers complete status=200 v=0/9 flags=0 content_length=0
 ```
@@ -482,6 +606,7 @@ hello world
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=12 span[header_field]="Content-Type"
 off=31 len=10 span[header_value]="text/plain"
@@ -503,6 +628,7 @@ Content-Length: 0
 
 ```log
 off=2 message begin
+off=2 len=4 span[protocol]="HTTP"
 off=15 len=2 span[status]="OK"
 off=19 len=7 span[header_field]="Header1"
 off=28 len=6 span[header_value]="Value1"

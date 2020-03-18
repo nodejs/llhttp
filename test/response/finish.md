@@ -14,6 +14,7 @@ HTTP/1.1 200 OK
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=19 headers complete status=200 v=1/1 flags=0 content_length=0
 off=NULL finish=1

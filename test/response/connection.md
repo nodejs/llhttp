@@ -16,6 +16,7 @@ hello world
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=12 span[header_field]="Content-Type"
 off=31 len=24 span[header_value]="text/html; charset=UTF-8"
@@ -45,6 +46,7 @@ HTTP/1.0 200 OK
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=10 span[header_field]="Connection"
 off=29 len=10 span[header_value]="keep-alive"
@@ -66,12 +68,14 @@ HTTP/1.0 200 OK
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=10 span[status]="No content"
 off=25 len=10 span[header_field]="Connection"
 off=37 len=10 span[header_value]="keep-alive"
 off=51 headers complete status=204 v=1/0 flags=1 content_length=0
 off=51 message complete
 off=51 message begin
+off=51 len=4 span[protocol]="HTTP"
 off=64 len=2 span[status]="OK"
 ```
 
@@ -89,6 +93,7 @@ HTTP/1.1 200 OK
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=19 headers complete status=200 v=1/1 flags=0 content_length=0
 off=19 len=15 span[body]="HTTP/1.1 200 OK"
@@ -107,10 +112,12 @@ HTTP/1.1 200 OK
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=10 span[status]="No content"
 off=27 headers complete status=204 v=1/1 flags=0 content_length=0
 off=27 message complete
 off=27 message begin
+off=27 len=4 span[protocol]="HTTP"
 off=40 len=2 span[status]="OK"
 ```
 
@@ -126,6 +133,7 @@ HTTP/1.1 200 OK
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=10 span[status]="No content"
 off=25 len=10 span[header_field]="Connection"
 off=37 len=5 span[header_value]="close"
@@ -146,12 +154,14 @@ HTTP/1.1 200 OK
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=10 span[status]="No content"
 off=25 len=10 span[header_field]="Connection"
 off=37 len=5 span[header_value]="close"
 off=46 headers complete status=204 v=1/1 flags=2 content_length=0
 off=46 message complete
 off=46 message begin
+off=46 len=4 span[protocol]="HTTP"
 off=59 len=2 span[status]="OK"
 ```
 
@@ -170,6 +180,7 @@ proto
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=19 span[status]="Switching Protocols"
 off=34 len=10 span[header_field]="Connection"
 off=46 len=7 span[header_value]="upgrade"
@@ -203,6 +214,7 @@ proto
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=19 span[status]="Switching Protocols"
 off=34 len=10 span[header_field]="Connection"
 off=46 len=7 span[header_value]="upgrade"
@@ -236,6 +248,7 @@ body
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=10 span[header_field]="Connection"
 off=29 len=7 span[header_value]="upgrade"
@@ -259,6 +272,7 @@ body
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=10 span[header_field]="Connection"
 off=29 len=7 span[header_value]="upgrade"
@@ -291,6 +305,7 @@ dy
 
 ```log
 off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
 off=13 len=2 span[status]="OK"
 off=17 len=10 span[header_field]="Connection"
 off=29 len=7 span[header_value]="upgrade"

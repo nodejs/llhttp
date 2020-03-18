@@ -13,10 +13,12 @@ abc
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=14 span[header_field]="Content-Length"
 off=35 len=3 span[header_value]="003"
-off=42 headers complete method=4 v=1/1 flags=20 content_length=3
+off=42 headers complete v=1/1 flags=20 content_length=3
 off=42 len=3 span[body]="abc"
 off=45 message complete
 ```
@@ -42,12 +44,14 @@ abc
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=14 span[header_field]="Content-Length"
 off=35 len=3 span[header_value]="003"
 off=40 len=4 span[header_field]="Ohai"
 off=46 len=5 span[header_value]="world"
-off=55 headers complete method=4 v=1/1 flags=20 content_length=3
+off=55 headers complete v=1/1 flags=20 content_length=3
 off=55 len=3 span[body]="abc"
 off=58 message complete
 ```
@@ -63,7 +67,9 @@ Content-Length: 1000000000000000000000
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=14 span[header_field]="Content-Length"
 off=35 len=21 span[header_value]="100000000000000000000"
 off=56 error code=11 reason="Content-Length overflow"
@@ -81,7 +87,9 @@ Content-Length: 2
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=14 span[header_field]="Content-Length"
 off=35 len=1 span[header_value]="1"
 off=38 len=14 span[header_field]="Content-Length"
@@ -101,7 +109,9 @@ Transfer-Encoding: identity
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=14 span[header_field]="Content-Length"
 off=35 len=1 span[header_value]="1"
 off=38 len=17 span[header_field]="Transfer-Encoding"
@@ -122,7 +132,9 @@ Transfer-Encoding: chunked
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=14 span[header_field]="Content-Length"
 off=35 len=1 span[header_value]="1"
 off=38 len=17 span[header_field]="Transfer-Encoding"
@@ -143,12 +155,14 @@ Transfer-Encoding: identity
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=14 span[header_field]="Content-Length"
 off=35 len=1 span[header_value]="1"
 off=38 len=17 span[header_field]="Transfer-Encoding"
 off=57 len=8 span[header_value]="identity"
-off=69 headers complete method=4 v=1/1 flags=320 content_length=1
+off=69 headers complete v=1/1 flags=320 content_length=1
 ```
 
 ## Funky `Content-Length` with body
@@ -163,10 +177,12 @@ HELLO
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
 off=4 len=36 span[url]="/get_funky_content_length_body_hello"
+off=41 len=4 span[protocol]="HTTP"
 off=51 len=14 span[header_field]="conTENT-Length"
 off=67 len=1 span[header_value]="5"
-off=72 headers complete method=1 v=1/0 flags=20 content_length=5
+off=72 headers complete v=1/0 flags=20 content_length=5
 off=72 len=5 span[body]="HELLO"
 off=77 message complete
 ```
@@ -183,10 +199,12 @@ Content-Length:  42
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=1 span[url]="/"
+off=7 len=4 span[protocol]="HTTP"
 off=17 len=14 span[header_field]="Content-Length"
 off=34 len=3 span[header_value]="42 "
-off=41 headers complete method=3 v=1/1 flags=20 content_length=42
+off=41 headers complete v=1/1 flags=20 content_length=42
 ```
 
 ### Spaces in `Content-Length` #2
@@ -201,7 +219,9 @@ Content-Length: 4 2
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=1 span[url]="/"
+off=7 len=4 span[protocol]="HTTP"
 off=17 len=14 span[header_field]="Content-Length"
 off=33 len=2 span[header_value]="4 "
 off=35 error code=11 reason="Invalid character in Content-Length"
@@ -219,7 +239,9 @@ Content-Length: 13 37
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=1 span[url]="/"
+off=7 len=4 span[protocol]="HTTP"
 off=17 len=14 span[header_field]="Content-Length"
 off=33 len=3 span[header_value]="13 "
 off=36 error code=11 reason="Invalid character in Content-Length"
@@ -237,7 +259,9 @@ Content-Length:
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=1 span[url]="/"
+off=7 len=4 span[protocol]="HTTP"
 off=17 len=14 span[header_field]="Content-Length"
 off=34 error code=11 reason="Empty Content-Length"
 ```

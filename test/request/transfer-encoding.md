@@ -15,10 +15,12 @@ Transfer-Encoding: chunked
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=17 span[header_field]="Transfer-Encoding"
 off=38 len=7 span[header_value]="chunked"
-off=49 headers complete method=4 v=1/1 flags=208 content_length=0
+off=49 headers complete v=1/1 flags=208 content_length=0
 ```
 
 ### Parse chunks with lowercase size
@@ -37,10 +39,12 @@ a
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=17 span[header_field]="Transfer-Encoding"
 off=38 len=7 span[header_value]="chunked"
-off=49 headers complete method=4 v=1/1 flags=208 content_length=0
+off=49 headers complete v=1/1 flags=208 content_length=0
 off=52 chunk header len=10
 off=52 len=10 span[body]="0123456789"
 off=64 chunk complete
@@ -65,10 +69,12 @@ A
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=17 span[header_field]="Transfer-Encoding"
 off=38 len=7 span[header_value]="chunked"
-off=49 headers complete method=4 v=1/1 flags=208 content_length=0
+off=49 headers complete v=1/1 flags=208 content_length=0
 off=52 chunk header len=10
 off=52 len=10 span[body]="0123456789"
 off=64 chunk complete
@@ -93,10 +99,12 @@ all your base are belong to us
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=27 span[url]="/post_chunked_all_your_base"
+off=33 len=4 span[protocol]="HTTP"
 off=43 len=17 span[header_field]="Transfer-Encoding"
 off=62 len=7 span[header_value]="chunked"
-off=73 headers complete method=3 v=1/1 flags=208 content_length=0
+off=73 headers complete v=1/1 flags=208 content_length=0
 off=77 chunk header len=30
 off=77 len=30 span[body]="all your base are belong to us"
 off=109 chunk complete
@@ -123,10 +131,12 @@ hello
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=25 span[url]="/two_chunks_mult_zero_end"
+off=31 len=4 span[protocol]="HTTP"
 off=41 len=17 span[header_field]="Transfer-Encoding"
 off=60 len=7 span[header_value]="chunked"
-off=71 headers complete method=3 v=1/1 flags=208 content_length=0
+off=71 headers complete v=1/1 flags=208 content_length=0
 off=74 chunk header len=5
 off=74 len=5 span[body]="hello"
 off=81 chunk complete
@@ -158,10 +168,12 @@ Content-Type: text/plain
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=27 span[url]="/chunked_w_trailing_headers"
+off=33 len=4 span[protocol]="HTTP"
 off=43 len=17 span[header_field]="Transfer-Encoding"
 off=62 len=7 span[header_value]="chunked"
-off=73 headers complete method=3 v=1/1 flags=208 content_length=0
+off=73 headers complete v=1/1 flags=208 content_length=0
 off=76 chunk header len=5
 off=76 len=5 span[body]="hello"
 off=83 chunk complete
@@ -194,10 +206,12 @@ hello
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=32 span[url]="/chunked_w_unicorns_after_length"
+off=38 len=4 span[protocol]="HTTP"
 off=48 len=17 span[header_field]="Transfer-Encoding"
 off=67 len=7 span[header_value]="chunked"
-off=78 headers complete method=3 v=1/1 flags=208 content_length=0
+off=78 headers complete v=1/1 flags=208 content_length=0
 off=123 chunk header len=5
 off=123 len=5 span[body]="hello"
 off=130 chunk complete
@@ -222,10 +236,12 @@ Transfer-Encoding: pigeons
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=17 span[header_field]="Transfer-Encoding"
 off=38 len=7 span[header_value]="pigeons"
-off=49 headers complete method=4 v=1/1 flags=200 content_length=0
+off=49 headers complete v=1/1 flags=200 content_length=0
 off=49 error code=15 reason="Request has invalid `Transfer-Encoding`"
 ```
 
@@ -243,7 +259,9 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 len=4 span[protocol]="HTTP"
 off=54 len=6 span[header_field]="Accept"
 off=62 len=3 span[header_value]="*/*"
 off=67 len=17 span[header_field]="Transfer-Encoding"
@@ -273,14 +291,16 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 len=4 span[protocol]="HTTP"
 off=54 len=6 span[header_field]="Accept"
 off=62 len=3 span[header_value]="*/*"
 off=67 len=17 span[header_field]="Transfer-Encoding"
 off=86 len=8 span[header_value]="identity"
 off=96 len=14 span[header_field]="Content-Length"
 off=112 len=1 span[header_value]="1"
-off=117 headers complete method=3 v=1/1 flags=320 content_length=1
+off=117 headers complete v=1/1 flags=320 content_length=1
 off=117 len=5 span[body]="World"
 ```
 
@@ -297,12 +317,14 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 len=4 span[protocol]="HTTP"
 off=54 len=6 span[header_field]="Accept"
 off=62 len=3 span[header_value]="*/*"
 off=67 len=17 span[header_field]="Transfer-Encoding"
 off=86 len=16 span[header_value]="chunked, deflate"
-off=106 headers complete method=3 v=1/1 flags=200 content_length=0
+off=106 headers complete v=1/1 flags=200 content_length=0
 off=106 error code=15 reason="Request has invalid `Transfer-Encoding`"
 ```
 
@@ -322,12 +344,14 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 len=4 span[protocol]="HTTP"
 off=54 len=6 span[header_field]="Accept"
 off=62 len=3 span[header_value]="*/*"
 off=67 len=17 span[header_field]="Transfer-Encoding"
 off=86 len=16 span[header_value]="chunked, deflate"
-off=106 headers complete method=3 v=1/1 flags=300 content_length=0
+off=106 headers complete v=1/1 flags=300 content_length=0
 off=106 len=5 span[body]="World"
 ```
 
@@ -348,12 +372,14 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 len=4 span[protocol]="HTTP"
 off=54 len=6 span[header_field]="Accept"
 off=62 len=3 span[header_value]="*/*"
 off=67 len=17 span[header_field]="Transfer-Encoding"
 off=86 len=16 span[header_value]="deflate, chunked"
-off=106 headers complete method=3 v=1/1 flags=208 content_length=0
+off=106 headers complete v=1/1 flags=208 content_length=0
 off=109 chunk header len=5
 off=109 len=5 span[body]="World"
 off=116 chunk complete
@@ -377,10 +403,12 @@ foo
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
 off=4 len=4 span[url]="/url"
+off=9 len=4 span[protocol]="HTTP"
 off=19 len=17 span[header_field]="Transfer-Encoding"
 off=38 len=7 span[header_value]="chunked"
-off=49 headers complete method=4 v=1/1 flags=208 content_length=0
+off=49 headers complete v=1/1 flags=208 content_length=0
 off=52 chunk header len=3
 off=52 len=3 span[body]="foo"
 off=57 chunk complete

@@ -1,18 +1,27 @@
 import * as assert from 'assert';
 import { LLParse, source } from 'llparse';
 
-import Match = source.node.Match;
-import Node = source.node.Node;
-
 import {
   CharList,
-  CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, H_METHOD_MAP, HEADER_CHARS,
-  HEADER_STATE, HEX_MAP,
+  CONNECTION_TOKEN_CHARS,
+  ERROR,
+  FINISH,
+  FLAGS,
+  HEADER_CHARS,
+  HEADER_STATE,
+  HEX_MAP,
   HTTPMode,
-  MAJOR, METHOD_MAP, METHODS, MINOR, NUM_MAP, SPECIAL_HEADERS, STRICT_TOKEN,
-  TOKEN, TYPE,
+  MAJOR,
+  MINOR,
+  NUM_MAP,
+  SPECIAL_HEADERS,
+  STRICT_TOKEN,
+  TOKEN,
+  TYPE,
 } from './constants';
 import { URL } from './url';
+import Match = source.node.Match;
+import Node = source.node.Node;
 
 type MaybeNode = string | Match | Node;
 
@@ -21,6 +30,10 @@ const NODES: ReadonlyArray<string> = [
   'start_req',
   'start_res',
   'start_req_or_res',
+  'start_req_or_res_step_2',
+  'start_req_or_res_step_3',
+  'start_req_or_res_step_4',
+  'start_req_or_res_step_5',
 
   'req_or_res_method',
 
@@ -37,6 +50,7 @@ const NODES: ReadonlyArray<string> = [
   'req_first_space_before_url',
   'req_spaces_before_url',
   'req_http_start',
+  'req_http_protocol',
   'req_http_major',
   'req_http_dot',
   'req_http_minor',
@@ -97,6 +111,8 @@ interface ISpanMap {
   readonly body: source.Span;
   readonly headerField: source.Span;
   readonly headerValue: source.Span;
+  readonly methodOrProtocol: source.Span;
+  readonly protocol: source.Span;
   readonly status: source.Span;
 }
 
@@ -149,6 +165,8 @@ export class HTTP {
       body: p.span(p.code.span('llhttp__on_body')),
       headerField: p.span(p.code.span('llhttp__on_header_field')),
       headerValue: p.span(p.code.span('llhttp__on_header_value')),
+      methodOrProtocol: p.span(p.code.span('llhttp__internal_c_on_method')),
+      protocol: p.span(p.code.span('llhttp__on_protocol')),
       status: p.span(p.code.span('llhttp__on_status')),
     };
 
@@ -177,7 +195,9 @@ export class HTTP {
 
     p.property('i64', 'content_length');
     p.property('i8', 'type');
-    p.property('i8', 'method');
+    p.property('ptr', 'method_or_protocol');
+    p.property('ptr', 'method');
+    p.property('i16', 'method_length');
     p.property('i8', 'http_major');
     p.property('i8', 'http_minor');
     p.property('i8', 'header_state');
@@ -209,8 +229,8 @@ export class HTTP {
     const url = this.url.build();
 
     const switchType = this.load('type', {
-      [TYPE.REQUEST]: n('start_req'),
-      [TYPE.RESPONSE]: n('start_res'),
+      [TYPE.REQUEST]: span.methodOrProtocol.start().skipTo(n('start_req')),
+      [TYPE.RESPONSE]: span.methodOrProtocol.start().skipTo(n('start_res')),
     }, n('start_req_or_res'));
 
     n('start')
@@ -219,21 +239,29 @@ export class HTTP {
         this.invokePausable('on_message_begin',
           ERROR.CB_MESSAGE_BEGIN, switchType)));
 
+    const startReq = this.update('type', TYPE.REQUEST, 'start_req');
+    const httpMajor = span.methodOrProtocol.end().skipTo(n('res_http_major'));
     n('start_req_or_res')
-      .peek('H', n('req_or_res_method'))
-      .otherwise(this.update('type', TYPE.REQUEST, 'start_req'));
-
-    n('req_or_res_method')
-      .select(H_METHOD_MAP, this.store('method',
-        this.update('type', TYPE.REQUEST, 'req_first_space_before_url')))
-      .match('HTTP/', this.update('type', TYPE.RESPONSE, 'res_http_major'))
-      .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Invalid word encountered'));
+      .peek('H', span.methodOrProtocol.start().skipTo(n('start_req_or_res_step_2')))
+      .otherwise(span.methodOrProtocol.start().skipTo(startReq));
+    n('start_req_or_res_step_2')
+      .match('T', n('start_req_or_res_step_3'))
+      .skipTo(startReq);
+    n('start_req_or_res_step_3')
+      .match('T', n('start_req_or_res_step_4'))
+      .skipTo(startReq);
+    n('start_req_or_res_step_4')
+      .match('P', n('start_req_or_res_step_5'))
+      .skipTo(startReq);
+    n('start_req_or_res_step_5')
+      .peek('/', this.update('type', TYPE.RESPONSE, httpMajor))
+      .otherwise(startReq);
 
     // Response
 
     n('start_res')
-      .match('HTTP/', n('res_http_major'))
-      .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
+      .peek('/', httpMajor)
+      .skipTo(n('start_res'));
 
     n('res_http_major')
       .select(MAJOR, this.store('http_major', 'res_http_dot'))
@@ -286,20 +314,14 @@ export class HTTP {
     // Request
 
     n('start_req')
-      .select(METHOD_MAP,
-        this.store('method', 'req_first_space_before_url'))
-      .otherwise(p.error(ERROR.INVALID_METHOD, 'Invalid method encountered'));
-
-    n('req_first_space_before_url')
-      .match(' ', n('req_spaces_before_url'))
-      .otherwise(p.error(ERROR.INVALID_METHOD, 'Expected space after method'));
+      .peek(' ', span.methodOrProtocol.end().skipTo(n('req_spaces_before_url')))
+      .skipTo(n('start_req'));
 
     n('req_spaces_before_url')
       .match(' ', n('req_spaces_before_url'))
-      .otherwise(this.isEqual('method', METHODS.CONNECT, {
-        equal: url.entry.connect,
-        notEqual: url.entry.normal,
-      }));
+      .otherwise(this.testFlags(FLAGS.METHOD_CONNECT, {
+        0: url.entry.normal,
+      }, url.entry.connect));
 
     url.exit.toHTTP
       .otherwise(n('req_http_start'));
@@ -310,17 +332,13 @@ export class HTTP {
           this.update('http_minor', 9, 'header_field_start')),
       );
 
-    const isSource = this.isEqual('method', METHODS.SOURCE, {
-      equal: n('req_http_major'),
-      notEqual: p.error(ERROR.INVALID_CONSTANT,
-        'Expected SOURCE method for ICE/x.x request'),
-    });
-
     n('req_http_start')
-      .match('HTTP/', n('req_http_major'))
-      .match('ICE/', isSource)
       .match(' ', n('req_http_start'))
-      .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
+      .otherwise(span.protocol.start().skipTo(n('req_http_protocol')));
+
+    n('req_http_protocol')
+      .peek('/', span.protocol.end().skipTo(n('req_http_major')))
+      .skipTo(n('req_http_protocol'));
 
     n('req_http_major')
       .select(MAJOR, this.store('http_major', 'req_http_dot'))

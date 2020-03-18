@@ -75,6 +75,20 @@ int llhttp__on_status(llparse_t* s, const char* p, const char* endp) {
 }
 
 
+int llhttp__on_method(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  return llparse__print_span("method", p, endp);
+}
+
+
+int llhttp__on_protocol(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  return llparse__print_span("protocol", p, endp);
+}
+
+
 int llhttp__on_header_field(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
@@ -95,8 +109,8 @@ int llhttp__on_headers_complete(llparse_t* s, const char* p, const char* endp) {
 
   if (s->type == HTTP_REQUEST) {
     llparse__print(p, endp,
-        "headers complete method=%d v=%d/%d flags=%x content_length=%llu",
-        s->method, s->http_major, s->http_minor, s->flags, s->content_length);
+        "headers complete v=%d/%d flags=%x content_length=%llu",
+        s->http_major, s->http_minor, s->flags, s->content_length);
   } else if (s->type == HTTP_RESPONSE) {
     llparse__print(p, endp,
         "headers complete status=%d v=%d/%d flags=%x content_length=%llu",

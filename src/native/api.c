@@ -117,16 +117,6 @@ const char* llhttp_errno_name(llhttp_errno_t err) {
 }
 
 
-const char* llhttp_method_name(llhttp_method_t method) {
-#define HTTP_METHOD_GEN(NUM, NAME, STRING) case HTTP_##NAME: return #STRING;
-  switch (method) {
-    HTTP_METHOD_MAP(HTTP_METHOD_GEN)
-    default: abort();
-  }
-#undef HTTP_METHOD_GEN
-}
-
-
 void llhttp_set_lenient(llhttp_t* parser, int enabled) {
   if (enabled) {
     parser->flags |= F_LENIENT;
@@ -156,6 +146,20 @@ int llhttp__on_url(llhttp_t* s, const char* p, const char* endp) {
 int llhttp__on_status(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_status, s, p, endp - p);
+  return err;
+}
+
+
+int llhttp__on_method(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  CALLBACK_MAYBE(s, on_method, s, p, endp - p);
+  return err;
+}
+
+
+int llhttp__on_protocol(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  CALLBACK_MAYBE(s, on_protocol, s, p, endp - p);
   return err;
 }
 
