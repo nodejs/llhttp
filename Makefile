@@ -19,9 +19,6 @@ build/libllhttp.a: build/c/llhttp.o build/native/api.o \
 		build/native/http.o
 	$(AR) rcs $@ build/c/llhttp.o build/native/api.o build/native/http.o
 
-build/bitcode/llhttp.o: build/bitcode/llhttp.bc
-	$(CLANG) $(CFLAGS) -c $< -o $@
-
 build/c/llhttp.o: build/c/llhttp.c
 	$(CLANG) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -30,7 +27,6 @@ build/native/%.o: src/native/%.c build/llhttp.h src/native/api.h \
 	$(CLANG) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 build/llhttp.h: generate
-build/bitcode/llhttp.bc: generate
 build/c/llhttp.c: generate
 
 build/native:
