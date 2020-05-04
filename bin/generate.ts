@@ -32,8 +32,8 @@ function build(mode: 'strict' | 'loose') {
     c: {
       header: 'llhttp',
     },
-    generateBitcode: false,
     debug: process.env.LLPARSE_DEBUG ? 'llhttp__debug' : undefined,
+    generateBitcode: false,
     headerGuard: 'INCLUDE_LLHTTP_ITSELF_H_',
   });
 }
@@ -60,8 +60,10 @@ function guard(strict: string, loose: string): string {
   return out;
 }
 
-const strict = build('strict');
-const loose = build('loose');
+const artifacts = {
+  loose: build('loose'),
+  strict: build('strict'),
+};
 
 let headers = '';
 
@@ -84,7 +86,7 @@ headers += '\n';
 
 const cHeaders = new llhttp.CHeaders();
 
-headers += guard(strict.header, loose.header);
+headers += guard(artifacts.strict.header, artifacts.loose.header);
 
 headers += '\n';
 
@@ -97,5 +99,6 @@ headers += fs.readFileSync(path.join(SRC_DIR, 'native', 'api.h'));
 headers += '\n';
 headers += '#endif  /* INCLUDE_LLHTTP_H_ */\n';
 
-fs.writeFileSync(C_FILE, guard(strict.c || '', loose.c || ''));
+fs.writeFileSync(C_FILE,
+  guard(artifacts.strict.c || '', artifacts.loose.c || ''));
 fs.writeFileSync(HEADER_FILE, headers);
