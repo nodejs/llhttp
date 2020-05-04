@@ -47,13 +47,11 @@ function guard(strict: string, loose: string): string {
 
   out += '#ifdef LLHTTP_STRICT_MODE\n';
   out += '\n';
-  out += strict;
-  out += '\n';
+  out += strict + '\n';
   out += '\n';
   out += '#else  /* !LLHTTP_STRICT_MODE */\n';
   out += '\n';
-  out += loose;
-  out += '\n';
+  out += loose + '\n';
   out += '\n';
   out += '#endif  /* LLHTTP_STRICT_MODE */\n';
 
