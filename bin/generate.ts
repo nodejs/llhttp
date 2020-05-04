@@ -10,15 +10,13 @@ const pkgFile = path.join(__dirname, '..', 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgFile).toString());
 
 const BUILD_DIR = path.join(__dirname, '..', 'build');
-const BITCODE_DIR = path.join(BUILD_DIR, 'bitcode');
 const C_DIR = path.join(BUILD_DIR, 'c');
 const SRC_DIR = path.join(__dirname, '..', 'src');
 
-const BITCODE_FILE = path.join(BITCODE_DIR, 'llhttp.bc');
 const C_FILE = path.join(C_DIR, 'llhttp.c');
 const HEADER_FILE = path.join(BUILD_DIR, 'llhttp.h');
 
-for (const dir of [ BUILD_DIR, BITCODE_DIR, C_DIR ]) {
+for (const dir of [ BUILD_DIR, C_DIR ]) {
   try {
     fs.mkdirSync(dir);
   } catch (e) {
@@ -26,18 +24,44 @@ for (const dir of [ BUILD_DIR, BITCODE_DIR, C_DIR ]) {
   }
 }
 
-const mode = process.argv[2] === 'strict' ? 'strict' : 'loose';
+function build(mode: 'strict' | 'loose') {
+  const llparse = new LLParse('llhttp__internal');
+  const instance = new llhttp.HTTP(llparse, mode);
 
-const llparse = new LLParse('llhttp__internal');
-const instance = new llhttp.HTTP(llparse, mode);
+  return llparse.build(instance.build().entry, {
+    c: {
+      header: 'llhttp',
+    },
+    debug: process.env.LLPARSE_DEBUG ? 'llhttp__debug' : undefined,
+    generateBitcode: false,
+    headerGuard: 'INCLUDE_LLHTTP_ITSELF_H_',
+  });
+}
 
-const artifacts = llparse.build(instance.build().entry, {
-  c: {
-    header: 'llhttp',
-  },
-  debug: process.env.LLPARSE_DEBUG ? 'llhttp__debug' : undefined,
-  headerGuard: 'INCLUDE_LLHTTP_ITSELF_H_',
-});
+function guard(strict: string, loose: string): string {
+  let out = '';
+
+  if (strict === loose) {
+    return strict;
+  }
+
+  out += '#ifdef LLHTTP_STRICT_MODE\n';
+  out += '\n';
+  out += strict + '\n';
+  out += '\n';
+  out += '#else  /* !LLHTTP_STRICT_MODE */\n';
+  out += '\n';
+  out += loose + '\n';
+  out += '\n';
+  out += '#endif  /* LLHTTP_STRICT_MODE */\n';
+
+  return out;
+}
+
+const artifacts = {
+  loose: build('loose'),
+  strict: build('strict'),
+};
 
 let headers = '';
 
@@ -53,9 +77,14 @@ headers += `#define LLHTTP_VERSION_MINOR ${version.minor}\n`;
 headers += `#define LLHTTP_VERSION_PATCH ${version.patch}\n`;
 headers += '\n';
 
+headers += '#ifndef LLHTTP_STRICT_MODE\n';
+headers += '# define LLHTTP_STRICT_MODE 1\n';
+headers += '#endif\n';
+headers += '\n';
+
 const cHeaders = new llhttp.CHeaders();
 
-headers += artifacts.header;
+headers += guard(artifacts.strict.header, artifacts.loose.header);
 
 headers += '\n';
 
@@ -68,6 +97,6 @@ headers += fs.readFileSync(path.join(SRC_DIR, 'native', 'api.h'));
 headers += '\n';
 headers += '#endif  /* INCLUDE_LLHTTP_H_ */\n';
 
-fs.writeFileSync(BITCODE_FILE, artifacts.bitcode);
-fs.writeFileSync(C_FILE, artifacts.c);
+fs.writeFileSync(C_FILE,
+  guard(artifacts.strict.c || '', artifacts.loose.c || ''));
 fs.writeFileSync(HEADER_FILE, headers);
