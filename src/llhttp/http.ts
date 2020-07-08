@@ -50,7 +50,6 @@ const NODES: ReadonlyArray<string> = [
   'header_value_discard_ws',
   'header_value_discard_ws_almost_done',
   'header_value_discard_lws',
-  'header_value_discard_rws',
   'header_value_start',
   'header_value',
   'header_value_otherwise',
@@ -477,7 +476,7 @@ export class HTTP {
     n('header_value_content_length_ws')
       .match(' ', n('header_value_content_length_ws'))
       .peek([ '\r', '\n' ],
-          this.setFlag(FLAGS.CONTENT_LENGTH, 'header_value_discard_rws'))
+          this.setFlag(FLAGS.CONTENT_LENGTH, 'header_value_otherwise'))
       .otherwise(invalidContentLength('Invalid character in Content-Length'));
 
     //
@@ -517,11 +516,6 @@ export class HTTP {
       .match(CONNECTION_TOKEN_CHARS,
         n('header_value_connection_token'))
       .otherwise(n('header_value_otherwise'));
-
-    n('header_value_discard_rws')
-      .match(' ', n('header_value_discard_rws'))
-      .peek([ '\r', '\n' ], n('header_value_otherwise'))
-      .otherwise(fallback);
 
     // Split for performance reasons
     n('header_value')
