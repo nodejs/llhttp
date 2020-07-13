@@ -33,7 +33,6 @@ function build(mode: 'strict' | 'loose') {
       header: 'llhttp',
     },
     debug: process.env.LLPARSE_DEBUG ? 'llhttp__debug' : undefined,
-    generateBitcode: false,
     headerGuard: 'INCLUDE_LLHTTP_ITSELF_H_',
   });
 }

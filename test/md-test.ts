@@ -47,7 +47,8 @@ const urlNode = {
 // Build binaries using cached nodes/llparse
 //
 
-function buildMode(mode: llhttp.HTTPMode, ty: TestType): FixtureResult {
+async function buildMode(mode: llhttp.HTTPMode, ty: TestType)
+    : Promise<FixtureResult> {
   let node;
   let prefix: string;
   let extra: ReadonlyArray<string>;
@@ -64,13 +65,13 @@ function buildMode(mode: llhttp.HTTPMode, ty: TestType): FixtureResult {
     ];
   }
 
-  return build(node.llparse, node.entry, `${prefix}-${mode}-${ty}`, {
+  return await build(node.llparse, node.entry, `${prefix}-${mode}-${ty}`, {
     extra,
   }, ty);
 }
 
 interface IFixtureMap {
-  [key: string]: { [key: string]: FixtureResult };
+  [key: string]: { [key: string]: Promise<FixtureResult> };
 }
 
 const http: IFixtureMap = {
@@ -108,7 +109,8 @@ function run(name: string): void {
                          input: string,
                          expected: ReadonlyArray<string | RegExp>): void {
     it(`should pass in mode="${mode}" and for type="${ty}"`, async () => {
-      await http[mode][ty].check(input, expected, {
+      const binary = await http[mode][ty];
+      await binary.check(input, expected, {
         noScan: meta.noScan === true,
       });
     });

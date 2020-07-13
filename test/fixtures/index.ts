@@ -38,9 +38,10 @@ const fixtures = new Fixture({
 
 const cache: Map<any, ICompilerResult> = new Map();
 
-export function build(llparse: LLParse, node: any, outFile: string,
-                      options: IFixtureBuildOptions = {},
-                      ty: TestType = 'none'): FixtureResult {
+export async function build(
+    llparse: LLParse, node: any, outFile: string,
+    options: IFixtureBuildOptions = {},
+    ty: TestType = 'none'): Promise<FixtureResult> {
   const dot = new Dot();
   fs.writeFileSync(path.join(BUILD_DIR, outFile + '.dot'),
     dot.build(node));
@@ -52,7 +53,6 @@ export function build(llparse: LLParse, node: any, outFile: string,
     artifacts = llparse.build(node, {
       c: { header: outFile },
       debug: process.env.LLPARSE_DEBUG ? 'llparse__debug' : undefined,
-      generateJS: false,
     });
     cache.set(node, artifacts);
   }
@@ -70,7 +70,7 @@ export function build(llparse: LLParse, node: any, outFile: string,
     extra.push('-DLLPARSE__TEST_FINISH=llhttp__test_finish');
   }
 
-  return fixtures.build(artifacts, outFile, Object.assign(options, {
+  return await fixtures.build(artifacts, outFile, Object.assign(options, {
     extra,
   }));
 }
