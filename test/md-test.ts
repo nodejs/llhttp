@@ -237,7 +237,9 @@ function run(name: string): void {
   }
 
   function runGroup(group: Group) {
-    describe(group.name + ` at ${name}.md:${group.line + 1}`, () => {
+    describe(group.name + ` at ${name}.md:${group.line + 1}`, function() {
+      this.timeout(60000);
+
       group.children.forEach((child) => runGroup(child));
 
       group.tests.forEach((test) => runTest(test));
