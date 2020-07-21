@@ -45,7 +45,7 @@ function guard(strict: string, loose: string): string {
     return strict;
   }
 
-  out += '#ifdef LLHTTP_STRICT_MODE\n';
+  out += '#if LLHTTP_STRICT_MODE\n';
   out += '\n';
   out += strict + '\n';
   out += '\n';
@@ -78,7 +78,7 @@ headers += `#define LLHTTP_VERSION_PATCH ${version.patch}\n`;
 headers += '\n';
 
 headers += '#ifndef LLHTTP_STRICT_MODE\n';
-headers += '# define LLHTTP_STRICT_MODE 1\n';
+headers += '# define LLHTTP_STRICT_MODE 0\n';
 headers += '#endif\n';
 headers += '\n';
 
