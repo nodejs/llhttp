@@ -1,4 +1,4 @@
-#ifdef LLHTTP_STRICT_MODE
+#if LLHTTP_STRICT_MODE
 
 #include <stdlib.h>
 #include <stdint.h>
