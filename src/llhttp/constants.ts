@@ -193,7 +193,7 @@ export const TOKEN: CharList = STRICT_TOKEN.concat([ ' ' ]);
  * character or %x80-FF
  */
 export const HEADER_CHARS: CharList = [ '\t' ];
-for (let i = 32; i < 255; i++) {
+for (let i = 32; i <= 255; i++) {
   if (i !== 127) {
     HEADER_CHARS.push(i);
   }
