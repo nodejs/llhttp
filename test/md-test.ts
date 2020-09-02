@@ -189,6 +189,9 @@ function run(name: string): void {
       input = input.replace(/\\n/g, '\n');
       input = input.replace(/\\t/g, '\t');
       input = input.replace(/\\f/g, '\f');
+      input = input.replace(/\\x([0-9a-fA-F]+)/g, (all, hex) => {
+        return String.fromCharCode(parseInt(hex, 16));
+      });
 
       // Useful in token tests
       input = input.replace(/\\([0-7]{1,3})/g, (_, digits) => {

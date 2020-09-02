@@ -355,6 +355,30 @@ off=37 headers complete method=1 v=1/1 flags=0 content_length=0
 off=37 message complete
 ```
 
+## 255 ASCII in header value
+
+Note: `Buffer.from([ 0xff ]).toString('latin1') === 'ÿ'`.
+
+<!-- meta={"type": "request", "noScan": true} -->
+```http
+OPTIONS /url HTTP/1.1
+Header1: Value1
+Header2: \xffValue2
+
+
+```
+
+```log
+off=0 message begin
+off=8 len=4 span[url]="/url"
+off=23 len=7 span[header_field]="Header1"
+off=32 len=6 span[header_value]="Value1"
+off=40 len=7 span[header_field]="Header2"
+off=49 len=8 span[header_value]="ÿValue2"
+off=61 headers complete method=6 v=1/1 flags=0 content_length=0
+off=61 message complete
+```
+
 ## X-SSL-Nonsense
 
 See nodejs/test/parallel/test-http-headers-obstext.js
