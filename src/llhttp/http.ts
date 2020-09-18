@@ -356,7 +356,7 @@ export class HTTP {
       .otherwise(span.headerField.start(n('header_field')));
 
     n('header_field')
-      .transform(p.transform.toLowerUnsafe())
+      .transform(p.transform.toLower())
       // Match headers that need special treatment
       .select(SPECIAL_HEADERS, this.store('header_state', 'header_field_colon'))
       .otherwise(this.resetHeaderState('header_field_general'));
@@ -484,7 +484,7 @@ export class HTTP {
     //
 
     n('header_value_connection')
-      .transform(p.transform.toLowerUnsafe())
+      .transform(p.transform.toLower())
       // TODO(indutny): extra node for token back-edge?
       // Skip lws
       .match([ ' ', '\t' ], n('header_value_connection'))

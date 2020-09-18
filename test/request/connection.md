@@ -130,6 +130,24 @@ off=118 message begin
 off=122 len=1 span[url]="/"
 ```
 
+### Not treating `\r` as `-`
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Connection: keep\ralive
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=19 len=10 span[header_field]="Connection"
+off=31 len=4 span[header_value]="keep"
+off=36 error code=3 reason="Missing expected LF after header value"
+```
+
 ## `close`
 
 ### Setting flag on `close`

@@ -241,3 +241,19 @@ off=5 len=1 span[url]="/"
 off=17 len=14 span[header_field]="Content-Length"
 off=34 error code=11 reason="Empty Content-Length"
 ```
+
+## `Content-Length` with CR instead of dash
+
+<!-- meta={"type": "request", "noScan": true} -->
+```http
+PUT /url HTTP/1.1
+Content\rLength: 003
+
+abc
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=26 error code=10 reason="Invalid header token"
+```
