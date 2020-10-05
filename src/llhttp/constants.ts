@@ -98,6 +98,19 @@ export enum METHODS {
   SOURCE = 33,
   /* RFC-7540, section 11.6 */
   PRI = 34,
+  /* RFC-2326 RTSP */
+  DESCRIBE = 35,
+  ANNOUNCE = 36,
+  SETUP = 37,
+  PLAY = 38,
+  PAUSE = 39,
+  TEARDOWN = 40,
+  GET_PARAMETER = 41,
+  SET_PARAMETER = 42,
+  REDIRECT = 43,
+  RECORD = 44,
+  /* RAOP */
+  FLUSH = 45,
 }
 
 export const METHOD_MAP = enumToMap(METHODS);
