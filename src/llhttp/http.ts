@@ -317,6 +317,7 @@ export class HTTP {
 
     n('req_http_start')
       .match('HTTP/', n('req_http_major'))
+      .match('RTSP/', n('req_http_major'))
       .match('ICE/', isSource)
       .match(' ', n('req_http_start'))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
