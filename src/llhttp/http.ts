@@ -424,11 +424,19 @@ export class HTTP {
       .match([ ' ', '\t' ], n('header_value_discard_ws'))
       .otherwise(checkContentLengthEmptiness);
 
+    // Multiple `Transfer-Encoding` headers should be treated as one, but with
+    // values separate by a comma.
+    //
+    // See: https://tools.ietf.org/html/rfc7230#section-3.2.2
+    const toTransferEncoding = this.unsetFlag(
+      FLAGS.CHUNKED,
+      'header_value_te_chunked');
+
     n('header_value_start')
       .otherwise(this.load('header_state', {
         [HEADER_STATE.UPGRADE]: this.setFlag(FLAGS.UPGRADE, fallback),
         [HEADER_STATE.TRANSFER_ENCODING]: this.setFlag(
-          FLAGS.TRANSFER_ENCODING, 'header_value_te_chunked'),
+          FLAGS.TRANSFER_ENCODING, toTransferEncoding),
         [HEADER_STATE.CONTENT_LENGTH]: n('header_value_content_length_once'),
         [HEADER_STATE.CONNECTION]: n('header_value_connection'),
       }, 'header_value'));
@@ -816,6 +824,11 @@ export class HTTP {
 
   private emptySpan(span: source.Span, next: string | Node): Node {
     return span.start(span.end(this.node(next)));
+  }
+
+  private unsetFlag(flag: FLAGS, next: string | Node): Node {
+    const p = this.llparse;
+    return p.invoke(p.code.and('flags', ~flag), this.node(next));
   }
 
   private setFlag(flag: FLAGS, next: string | Node): Node {

@@ -306,6 +306,31 @@ off=106 headers complete method=3 v=1/1 flags=200 content_length=0
 off=106 error code=15 reason="Request has invalid `Transfer-Encoding`"
 ```
 
+## POST with `chunked` and duplicate transfer-encoding
+
+<!-- meta={"type": "request", "noScan": true} -->
+```http
+POST /post_identity_body_world?q=search#hey HTTP/1.1
+Accept: */*
+Transfer-Encoding: chunked
+Transfer-Encoding: deflate
+
+World
+```
+
+```log
+off=0 message begin
+off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=54 len=6 span[header_field]="Accept"
+off=62 len=3 span[header_value]="*/*"
+off=67 len=17 span[header_field]="Transfer-Encoding"
+off=86 len=7 span[header_value]="chunked"
+off=95 len=17 span[header_field]="Transfer-Encoding"
+off=114 len=7 span[header_value]="deflate"
+off=125 headers complete method=3 v=1/1 flags=200 content_length=0
+off=125 error code=15 reason="Request has invalid `Transfer-Encoding`"
+```
+
 ## POST with `chunked` before other transfer-coding (lenient)
 
 TODO(indutny): should we allow it even in lenient mode? (Consider disabling
