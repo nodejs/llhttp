@@ -267,6 +267,46 @@ off=56 headers complete method=33 v=1/0 flags=0 content_length=0
 off=56 message complete
 ```
 
+### OPTIONS request with RTSP
+
+NOTE: `OPTIONS` is a valid HTTP metho too.
+
+<!-- meta={"type": "request"} -->
+```http
+OPTIONS /music/sweet/music RTSP/1.0
+Host: example.com
+
+
+```
+
+```log
+off=0 message begin
+off=8 len=18 span[url]="/music/sweet/music"
+off=37 len=4 span[header_field]="Host"
+off=43 len=11 span[header_value]="example.com"
+off=58 headers complete method=6 v=1/0 flags=0 content_length=0
+off=58 message complete
+```
+
+### ANNOUNCE request with RTSP
+
+<!-- meta={"type": "request"} -->
+```http
+ANNOUNCE /music/sweet/music RTSP/1.0
+Host: example.com
+
+
+```
+
+```log
+off=0 message begin
+off=9 len=18 span[url]="/music/sweet/music"
+off=38 len=4 span[header_field]="Host"
+off=44 len=11 span[header_value]="example.com"
+off=59 headers complete method=36 v=1/0 flags=0 content_length=0
+off=59 message complete
+```
+
 ### PRI request HTTP2
 
 <!-- meta={"type": "request"} -->

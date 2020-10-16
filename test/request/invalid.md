@@ -33,6 +33,38 @@ off=4 len=18 span[url]="/music/sweet/music"
 off=24 error code=8 reason="Expected HTTP/"
 ```
 
+### RTSP protocol and PUT method
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /music/sweet/music RTSP/1.0
+Host: example.com
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=18 span[url]="/music/sweet/music"
+off=28 error code=8 reason="Invalid method for RTSP/x.x request"
+```
+
+### HTTP protocol and ANNOUNCE method
+
+<!-- meta={"type": "request"} -->
+```http
+ANNOUNCE /music/sweet/music HTTP/1.0
+Host: example.com
+
+
+```
+
+```log
+off=0 message begin
+off=9 len=18 span[url]="/music/sweet/music"
+off=33 error code=8 reason="Invalid method for HTTP/x.x request"
+```
+
 ### Headers separated by CR
 
 <!-- meta={"type": "request"} -->
