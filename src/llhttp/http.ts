@@ -9,7 +9,8 @@ import {
   CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, H_METHOD_MAP, HEADER_CHARS,
   HEADER_STATE, HEX_MAP,
   HTTPMode,
-  MAJOR, METHOD_MAP, METHODS, MINOR, NUM_MAP, SPECIAL_HEADERS, STRICT_TOKEN,
+  MAJOR, METHOD_MAP, METHODS, METHODS_HTTP, METHODS_ICE, METHODS_RTSP,
+  MINOR, NUM_MAP, SPECIAL_HEADERS, STRICT_TOKEN,
   TOKEN, TYPE,
 } from './constants';
 import { URL } from './url';
@@ -309,16 +310,25 @@ export class HTTP {
           this.update('http_minor', 9, 'header_field_start')),
       );
 
-    const isSource = this.isEqual('method', METHODS.SOURCE, {
-      equal: n('req_http_major'),
-      notEqual: p.error(ERROR.INVALID_CONSTANT,
-        'Expected SOURCE method for ICE/x.x request'),
-    });
+    const checkMethod = (methods: METHODS[], error: string): Node => {
+      const success = n('req_http_major');
+      const failure = p.error(ERROR.INVALID_CONSTANT, error);
+
+      const map: { [key: number]: Node } = {};
+      for (const method of methods) {
+        map[method] = success;
+      }
+
+      return this.load('method', map, failure);
+    };
 
     n('req_http_start')
-      .match('HTTP/', n('req_http_major'))
-      .match('RTSP/', n('req_http_major'))
-      .match('ICE/', isSource)
+      .match('HTTP/', checkMethod(METHODS_HTTP,
+        'Invalid method for HTTP/x.x request'))
+      .match('RTSP/', checkMethod(METHODS_RTSP,
+        'Invalid method for RTSP/x.x request'))
+      .match('ICE/', checkMethod(METHODS_ICE,
+        'Expected SOURCE method for ICE/x.x request'))
       .match(' ', n('req_http_start'))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
 
