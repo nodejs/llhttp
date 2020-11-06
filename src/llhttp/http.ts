@@ -109,6 +109,10 @@ interface ICallbackMap {
   readonly onHeadersComplete: source.code.Code;
   readonly onMessageBegin: source.code.Code;
   readonly onMessageComplete: source.code.Code;
+  readonly onUrlComplete: source.code.Code;
+  readonly onStatusComplete: source.code.Code;
+  readonly onHeaderFieldComplete: source.code.Code;
+  readonly onHeaderValueComplete: source.code.Code;
 }
 
 interface IMulTargets {
@@ -155,6 +159,10 @@ export class HTTP {
     /* tslint:disable:object-literal-sort-keys */
     this.callback = {
       // User callbacks
+      onUrlComplete: p.code.match('llhttp__on_url_complete'),
+      onStatusComplete: p.code.match('llhttp__on_status_complete'),
+      onHeaderFieldComplete: p.code.match('llhttp__on_header_field_complete'),
+      onHeaderValueComplete: p.code.match('llhttp__on_header_value_complete'),
       onHeadersComplete: p.code.match('llhttp__on_headers_complete'),
       onMessageBegin: p.code.match('llhttp__on_message_begin'),
       onMessageComplete: p.code.match('llhttp__on_message_complete'),
@@ -264,23 +272,26 @@ export class HTTP {
       .peek([ '\r', '\n' ], n('res_status_start'))
       .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid response status'));
 
+    const onStatusComplete = p.invoke(this.callback.onStatusComplete);
+    onStatusComplete.otherwise(n('header_field_start'));
+
     n('res_status_start')
       .match('\r', n('res_line_almost_done'))
-      .match('\n', n('header_field_start'))
+      .match('\n', onStatusComplete)
       .otherwise(span.status.start(n('res_status')));
 
     n('res_status')
       .peek('\r', span.status.end().skipTo(n('res_line_almost_done')))
-      .peek('\n', span.status.end().skipTo(n('header_field_start')))
+      .peek('\n', span.status.end().skipTo(onStatusComplete))
       .skipTo(n('res_status'));
 
     if (this.mode === 'strict') {
       n('res_line_almost_done')
-        .match('\n', n('header_field_start'))
+        .match('\n', onStatusComplete)
         .otherwise(p.error(ERROR.STRICT, 'Expected LF after CR'));
     } else {
       n('res_line_almost_done')
-        .skipTo(n('header_field_start'));
+        .skipTo(onStatusComplete);
     }
 
     // Request
@@ -301,13 +312,19 @@ export class HTTP {
         notEqual: url.entry.normal,
       }));
 
+    const onUrlCompleteHTTP = p.invoke(this.callback.onUrlComplete);
+    onUrlCompleteHTTP.otherwise(n('req_http_start'));
+
     url.exit.toHTTP
-      .otherwise(n('req_http_start'));
+      .otherwise(onUrlCompleteHTTP);
+
+    const onUrlCompleteHTTP09 = p.invoke(this.callback.onUrlComplete);
+    onUrlCompleteHTTP09.otherwise(n('header_field_start'));
 
     url.exit.toHTTP09
       .otherwise(
         this.update('http_major', 0,
-          this.update('http_minor', 9, 'header_field_start')),
+          this.update('http_minor', 9, onUrlCompleteHTTP09)),
       );
 
     const checkMethod = (methods: METHODS[], error: string): Node => {
@@ -385,8 +402,11 @@ export class HTTP {
 
     // Just a performance optimization, split the node so that the fast case
     // remains in `header_field_general`
+    const onHeaderFieldComplete = p.invoke(this.callback.onHeaderFieldComplete);
+    onHeaderFieldComplete.otherwise(n('header_value_discard_ws'));
+
     n('header_field_general_otherwise')
-      .peek(':', span.headerField.end().skipTo(n('header_value_discard_ws')))
+      .peek(':', span.headerField.end().skipTo(onHeaderFieldComplete))
       .otherwise(p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header token'));
   }
 
@@ -552,9 +572,12 @@ export class HTTP {
       .otherwise(p.error(ERROR.LF_EXPECTED,
         'Missing expected LF after header value'));
 
+    const onHeaderValueComplete = p.invoke(this.callback.onHeaderValueComplete);
+    onHeaderValueComplete.otherwise(n('header_field_start'));
+
     n('header_value_lws')
       .peek([ ' ', '\t' ], span.headerValue.start(n('header_value_start')))
-      .otherwise(this.setHeaderFlags('header_field_start'));
+      .otherwise(this.setHeaderFlags(onHeaderValueComplete));
 
     const checkTrailing = this.testFlags(FLAGS.TRAILING, {
       1: this.invokePausable('on_chunk_complete',

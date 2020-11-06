@@ -10,6 +10,14 @@ int llhttp__on_url(llparse_t* s, const char* p, const char* endp) {
 }
 
 
+int llhttp__on_url_complete(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  // llparse__print(p, endp, "url complete");
+  return 0;
+}
+
+
 int llhttp__on_url_schema(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
@@ -75,6 +83,14 @@ int llhttp__on_status(llparse_t* s, const char* p, const char* endp) {
 }
 
 
+int llhttp__on_status_complete(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  // llparse__print(p, endp, "status complete");
+  return 0;
+}
+
+
 int llhttp__on_header_field(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
@@ -82,10 +98,26 @@ int llhttp__on_header_field(llparse_t* s, const char* p, const char* endp) {
 }
 
 
+int llhttp__on_header_field_complete(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  // llparse__print(p, endp, "header_field complete");
+  return 0;
+}
+
+
 int llhttp__on_header_value(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
   return llparse__print_span("header_value", p, endp);
+}
+
+
+int llhttp__on_header_value_complete(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  // llparse__print(p, endp, "header_value complete");
+  return 0;
 }
 
 
