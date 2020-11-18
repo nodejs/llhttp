@@ -156,7 +156,20 @@ const char* llhttp_method_name(llhttp_method_t method);
  *
  * **(USE AT YOUR OWN RISK)**
  */
-void llhttp_set_lenient(llhttp_t* parser, int enabled);
+void llhttp_set_lenient_headers(llhttp_t* parser, int enabled);
+
+
+/* Enables/disables lenient handling of conflicting `Transfer-Encoding` and
+ * `Content-Length` headers (disabled by default).
+ *
+ * Normally `llhttp` would error when `Transfer-Encoding` is present in
+ * conjunction with `Content-Length`. This error is important to prevent HTTP
+ * request smuggling, but may be less desirable for small number of cases
+ * involving legacy servers.
+ *
+ * **(USE AT YOUR OWN RISK)**
+ */
+void llhttp_set_lenient_chunked_length(llhttp_t* parser, int enabled);
 
 #ifdef __cplusplus
 }  /* extern "C" */

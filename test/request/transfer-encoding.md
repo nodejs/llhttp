@@ -253,7 +253,7 @@ off=112 len=1 span[header_value]="5"
 off=117 error code=4 reason="Content-Length can't be present with Transfer-Encoding"
 ```
 
-## POST with `Transfer-Encoding` (that is not chunked) and `Content-Length` (lenient)
+## POST with `Transfer-Encoding` and `Content-Length` (lenient)
 
 TODO(indutny): should we allow it even in lenient mode? (Consider disabling
 this).
@@ -261,7 +261,7 @@ this).
 NOTE: `Content-Length` is ignored when `Transfer-Encoding` is present. Messages
 (in lenient mode) are read until EOF.
 
-<!-- meta={"type": "request-lenient"} -->
+<!-- meta={"type": "request-lenient-chunked-length"} -->
 ```http
 POST /post_identity_body_world?q=search#hey HTTP/1.1
 Accept: */*
@@ -280,7 +280,7 @@ off=67 len=17 span[header_field]="Transfer-Encoding"
 off=86 len=8 span[header_value]="identity"
 off=96 len=14 span[header_field]="Content-Length"
 off=112 len=1 span[header_value]="1"
-off=117 headers complete method=3 v=1/1 flags=320 content_length=1
+off=117 headers complete method=3 v=1/1 flags=220 content_length=1
 off=117 len=5 span[body]="World"
 ```
 
@@ -311,7 +311,7 @@ off=106 error code=15 reason="Request has invalid `Transfer-Encoding`"
 TODO(indutny): should we allow it even in lenient mode? (Consider disabling
 this).
 
-<!-- meta={"type": "request-lenient"} -->
+<!-- meta={"type": "request-lenient-chunked-length"} -->
 ```http
 POST /post_identity_body_world?q=search#hey HTTP/1.1
 Accept: */*
@@ -327,7 +327,7 @@ off=54 len=6 span[header_field]="Accept"
 off=62 len=3 span[header_value]="*/*"
 off=67 len=17 span[header_field]="Transfer-Encoding"
 off=86 len=16 span[header_value]="chunked, deflate"
-off=106 headers complete method=3 v=1/1 flags=300 content_length=0
+off=106 headers complete method=3 v=1/1 flags=200 content_length=0
 off=106 len=5 span[body]="World"
 ```
 

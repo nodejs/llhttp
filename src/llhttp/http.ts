@@ -9,6 +9,7 @@ import {
   CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, H_METHOD_MAP, HEADER_CHARS,
   HEADER_STATE, HEX_MAP,
   HTTPMode,
+  LENIENT_FLAGS,
   MAJOR, METHOD_MAP, METHODS, METHODS_HTTP, METHODS_ICE, METHODS_RTSP,
   MINOR, NUM_MAP, SPECIAL_HEADERS, STRICT_TOKEN,
   TOKEN, TYPE,
@@ -181,10 +182,11 @@ export class HTTP {
     p.property('i8', 'http_major');
     p.property('i8', 'http_minor');
     p.property('i8', 'header_state');
-    p.property('i16', 'flags');
+    p.property('i8', 'lenient_flags');
     p.property('i8', 'upgrade');
-    p.property('i16', 'status_code');
     p.property('i8', 'finish');
+    p.property('i16', 'flags');
+    p.property('i16', 'status_code');
 
     // Verify defaults
     assert.strictEqual(FINISH.SAFE, 0);
@@ -533,7 +535,7 @@ export class HTTP {
       .match(HEADER_CHARS, n('header_value'))
       .otherwise(n('header_value_otherwise'));
 
-    const checkLenient = this.testFlags(FLAGS.LENIENT, {
+    const checkLenient = this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
       1: n('header_value_lenient'),
     }, p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char'));
 
@@ -589,23 +591,16 @@ export class HTTP {
      * (Note our emphasis on **ought to be handled as an error**
      */
 
-    const LENIENT_ENCODING_CONFLICT = FLAGS.CHUNKED | FLAGS.CONTENT_LENGTH;
-    const checkLenientEncConflict = this.testFlags(LENIENT_ENCODING_CONFLICT, {
-      1: p.error(ERROR.UNEXPECTED_CONTENT_LENGTH,
-        'Content-Length can\'t be present with chunked encoding'),
-    }).otherwise(beforeHeadersComplete);
-
     const ENCODING_CONFLICT = FLAGS.TRANSFER_ENCODING | FLAGS.CONTENT_LENGTH;
 
-    const onEncodingConflict = this.testFlags(FLAGS.LENIENT, {
-      0: p.error(ERROR.UNEXPECTED_CONTENT_LENGTH,
-        'Content-Length can\'t be present with Transfer-Encoding'),
+    const onEncodingConflict =
+      this.testLenientFlags(LENIENT_FLAGS.CHUNKED_LENGTH, {
+        0: p.error(ERROR.UNEXPECTED_CONTENT_LENGTH,
+          'Content-Length can\'t be present with Transfer-Encoding'),
 
-      // For LENIENT mode fall back to past behavior:
-      // Ignore `Transfer-Encoding` unless it is `chunked` and `Content-Length`
-      // is present.
-      1: checkLenientEncConflict,
-    }).otherwise(beforeHeadersComplete);
+        // For LENIENT mode fall back to past behavior:
+        // Ignore `Transfer-Encoding` when `Content-Length` is present.
+      }).otherwise(beforeHeadersComplete);
 
     const checkEncConflict = this.testFlags(ENCODING_CONFLICT, {
       1: onEncodingConflict,
@@ -827,6 +822,16 @@ export class HTTP {
                     next?: string | Node): Node {
     const p = this.llparse;
     const res = p.invoke(p.code.test('flags', flag), map);
+    if (next !== undefined) {
+      res.otherwise(this.node(next));
+    }
+    return res;
+  }
+
+  private testLenientFlags(flag: LENIENT_FLAGS, map: { [key: number]: Node },
+                           next?: string | Node): Node {
+    const p = this.llparse;
+    const res = p.invoke(p.code.test('lenient_flags', flag), map);
     if (next !== undefined) {
       res.otherwise(this.node(next));
     }

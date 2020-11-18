@@ -57,9 +57,14 @@ void llhttp__test_init_response(llparse_t* s) {
 }
 
 
-void llhttp__test_init_request_lenient(llparse_t* s) {
+void llhttp__test_init_request_lenient_headers(llparse_t* s) {
   llhttp__test_init_request(s);
-  s->flags |= F_LENIENT;
+  s->lenient_flags |= LENIENT_HEADERS;
+}
+
+void llhttp__test_init_request_lenient_chunked_length(llparse_t* s) {
+  llhttp__test_init_request(s);
+  s->lenient_flags |= LENIENT_CHUNKED_LENGTH;
 }
 
 

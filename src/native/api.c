@@ -127,11 +127,19 @@ const char* llhttp_method_name(llhttp_method_t method) {
 }
 
 
-void llhttp_set_lenient(llhttp_t* parser, int enabled) {
+void llhttp_set_lenient_headers(llhttp_t* parser, int enabled) {
   if (enabled) {
-    parser->flags |= F_LENIENT;
+    parser->lenient_flags |= LENIENT_HEADERS;
   } else {
-    parser->flags &= ~F_LENIENT;
+    parser->lenient_flags &= ~LENIENT_HEADERS;
+  }
+}
+
+void llhttp_set_lenient_chunked_length(llhttp_t* parser, int enabled) {
+  if (enabled) {
+    parser->lenient_flags |= LENIENT_CHUNKED_LENGTH;
+  } else {
+    parser->lenient_flags &= ~LENIENT_CHUNKED_LENGTH;
   }
 }
 
