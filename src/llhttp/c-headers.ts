@@ -24,6 +24,9 @@ export class CHeaders {
     res += this.buildEnum('llhttp_flags', 'F', enumToMap(constants.FLAGS),
       'hex');
     res += '\n';
+    res += this.buildEnum('llhttp_lenient_flags', 'LENIENT',
+      enumToMap(constants.LENIENT_FLAGS), 'hex');
+    res += '\n';
     res += this.buildEnum('llhttp_type', 'HTTP',
       enumToMap(constants.TYPE));
     res += '\n';
