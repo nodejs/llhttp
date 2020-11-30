@@ -127,11 +127,19 @@ const char* llhttp_method_name(llhttp_method_t method) {
 }
 
 
-void llhttp_set_lenient(llhttp_t* parser, int enabled) {
+void llhttp_set_lenient_headers(llhttp_t* parser, int enabled) {
   if (enabled) {
-    parser->flags |= F_LENIENT;
+    parser->lenient_flags |= LENIENT_HEADERS;
   } else {
-    parser->flags &= ~F_LENIENT;
+    parser->lenient_flags &= ~LENIENT_HEADERS;
+  }
+}
+
+void llhttp_set_lenient_chunked_length(llhttp_t* parser, int enabled) {
+  if (enabled) {
+    parser->lenient_flags |= LENIENT_CHUNKED_LENGTH;
+  } else {
+    parser->lenient_flags &= ~LENIENT_CHUNKED_LENGTH;
   }
 }
 
@@ -153,9 +161,23 @@ int llhttp__on_url(llhttp_t* s, const char* p, const char* endp) {
 }
 
 
+int llhttp__on_url_complete(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  CALLBACK_MAYBE(s, on_url_complete, s);
+  return err;
+}
+
+
 int llhttp__on_status(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_status, s, p, endp - p);
+  return err;
+}
+
+
+int llhttp__on_status_complete(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  CALLBACK_MAYBE(s, on_status_complete, s);
   return err;
 }
 
@@ -167,9 +189,23 @@ int llhttp__on_header_field(llhttp_t* s, const char* p, const char* endp) {
 }
 
 
+int llhttp__on_header_field_complete(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  CALLBACK_MAYBE(s, on_header_field_complete, s);
+  return err;
+}
+
+
 int llhttp__on_header_value(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_header_value, s, p, endp - p);
+  return err;
+}
+
+
+int llhttp__on_header_value_complete(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  CALLBACK_MAYBE(s, on_header_value_complete, s);
   return err;
 }
 
