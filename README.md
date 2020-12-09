@@ -92,6 +92,11 @@ if (err == HPE_OK) {
 
 ---
 
+### Bindings to other languages
+
+* Python: [pallas/pyllhttp][8]
+* Ruby: [metabahn/llhttp][9]
+
 #### LICENSE
 
 This software is licensed under the MIT License.
@@ -125,3 +130,5 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 [5]: https://llvm.org/docs/LangRef.html#call-instruction
 [6]: https://clang.llvm.org/
 [7]: https://github.com/nodejs/node
+[8]: https://github.com/pallas/pyllhttp
+[9]: https://github.com/metabahn/llhttp
