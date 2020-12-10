@@ -6,8 +6,8 @@
 
 #define CALLBACK_MAYBE(PARSER, NAME, ...)                                     \
   do {                                                                        \
-    llhttp_settings_t* settings;                                              \
-    settings = (llhttp_settings_t*) (PARSER)->settings;                       \
+    const llhttp_settings_t* settings;                                        \
+    settings = (const llhttp_settings_t*) (PARSER)->settings;                 \
     if (settings == NULL || settings->NAME == NULL) {                         \
       err = 0;                                                                \
       break;                                                                  \
