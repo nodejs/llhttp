@@ -321,8 +321,5 @@ SM
 ```log
 off=0 message begin
 off=4 len=1 span[url]="*"
-off=18 headers complete method=34 v=1/1 flags=0 content_length=0
-off=18 message complete
-off=18 message begin
-off=19 error code=6 reason="Invalid method encountered"
+off=24 error code=22 reason="Pause on PRI/Upgrade"
 ```
