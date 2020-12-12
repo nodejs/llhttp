@@ -43,6 +43,9 @@ const NODES: ReadonlyArray<string> = [
   'req_http_dot',
   'req_http_minor',
   'req_http_end',
+  'req_http_complete',
+
+  'req_pri_upgrade',
 
   'header_field_start',
   'header_field',
@@ -363,9 +366,17 @@ export class HTTP {
       .select(MINOR, this.store('http_minor', 'req_http_end'))
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Invalid minor version'));
 
-    n('req_http_end')
+    n('req_http_end').otherwise(this.load('method', {
+      [METHODS.PRI]: n('req_pri_upgrade'),
+    }, n('req_http_complete')));
+
+    n('req_http_complete')
       .match([ '\r\n', '\n' ], n('header_field_start'))
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected CRLF after version'));
+
+    n('req_pri_upgrade')
+      .match('\r\n\r\nSM\r\n\r\n', p.error(ERROR.PAUSED_UPGRADE, 'Pause on PRI/Upgrade'))
+      .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected HTTP/2 Connection Preface'));
   }
 
   private buildHeaders(): void {
