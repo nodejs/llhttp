@@ -16,8 +16,11 @@ Transfer-Encoding: chunked
 ```log
 off=0 message begin
 off=4 len=4 span[url]="/url"
+off=9 url complete
 off=19 len=17 span[header_field]="Transfer-Encoding"
+off=37 header_field complete
 off=38 len=7 span[header_value]="chunked"
+off=47 header_value complete
 off=49 headers complete method=4 v=1/1 flags=208 content_length=0
 ```
 
@@ -38,8 +41,11 @@ a
 ```log
 off=0 message begin
 off=4 len=4 span[url]="/url"
+off=9 url complete
 off=19 len=17 span[header_field]="Transfer-Encoding"
+off=37 header_field complete
 off=38 len=7 span[header_value]="chunked"
+off=47 header_value complete
 off=49 headers complete method=4 v=1/1 flags=208 content_length=0
 off=52 chunk header len=10
 off=52 len=10 span[body]="0123456789"
@@ -66,8 +72,11 @@ A
 ```log
 off=0 message begin
 off=4 len=4 span[url]="/url"
+off=9 url complete
 off=19 len=17 span[header_field]="Transfer-Encoding"
+off=37 header_field complete
 off=38 len=7 span[header_value]="chunked"
+off=47 header_value complete
 off=49 headers complete method=4 v=1/1 flags=208 content_length=0
 off=52 chunk header len=10
 off=52 len=10 span[body]="0123456789"
@@ -94,8 +103,11 @@ all your base are belong to us
 ```log
 off=0 message begin
 off=5 len=27 span[url]="/post_chunked_all_your_base"
+off=33 url complete
 off=43 len=17 span[header_field]="Transfer-Encoding"
+off=61 header_field complete
 off=62 len=7 span[header_value]="chunked"
+off=71 header_value complete
 off=73 headers complete method=3 v=1/1 flags=208 content_length=0
 off=77 chunk header len=30
 off=77 len=30 span[body]="all your base are belong to us"
@@ -124,8 +136,11 @@ hello
 ```log
 off=0 message begin
 off=5 len=25 span[url]="/two_chunks_mult_zero_end"
+off=31 url complete
 off=41 len=17 span[header_field]="Transfer-Encoding"
+off=59 header_field complete
 off=60 len=7 span[header_value]="chunked"
+off=69 header_value complete
 off=71 headers complete method=3 v=1/1 flags=208 content_length=0
 off=74 chunk header len=5
 off=74 len=5 span[body]="hello"
@@ -159,8 +174,11 @@ Content-Type: text/plain
 ```log
 off=0 message begin
 off=5 len=27 span[url]="/chunked_w_trailing_headers"
+off=33 url complete
 off=43 len=17 span[header_field]="Transfer-Encoding"
+off=61 header_field complete
 off=62 len=7 span[header_value]="chunked"
+off=71 header_value complete
 off=73 headers complete method=3 v=1/1 flags=208 content_length=0
 off=76 chunk header len=5
 off=76 len=5 span[body]="hello"
@@ -170,9 +188,13 @@ off=86 len=6 span[body]=" world"
 off=94 chunk complete
 off=97 chunk header len=0
 off=97 len=4 span[header_field]="Vary"
+off=102 header_field complete
 off=103 len=1 span[header_value]="*"
+off=106 header_value complete
 off=106 len=12 span[header_field]="Content-Type"
+off=119 header_field complete
 off=120 len=10 span[header_value]="text/plain"
+off=132 header_value complete
 off=134 chunk complete
 off=134 message complete
 ```
@@ -195,8 +217,11 @@ hello
 ```log
 off=0 message begin
 off=5 len=32 span[url]="/chunked_w_unicorns_after_length"
+off=38 url complete
 off=48 len=17 span[header_field]="Transfer-Encoding"
+off=66 header_field complete
 off=67 len=7 span[header_value]="chunked"
+off=76 header_value complete
 off=78 headers complete method=3 v=1/1 flags=208 content_length=0
 off=123 chunk header len=5
 off=123 len=5 span[body]="hello"
@@ -223,8 +248,11 @@ Transfer-Encoding: pigeons
 ```log
 off=0 message begin
 off=4 len=4 span[url]="/url"
+off=9 url complete
 off=19 len=17 span[header_field]="Transfer-Encoding"
+off=37 header_field complete
 off=38 len=7 span[header_value]="pigeons"
+off=47 header_value complete
 off=49 headers complete method=4 v=1/1 flags=200 content_length=0
 off=49 error code=15 reason="Request has invalid `Transfer-Encoding`"
 ```
@@ -244,12 +272,19 @@ World
 ```log
 off=0 message begin
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 url complete
 off=54 len=6 span[header_field]="Accept"
+off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
+off=67 header_value complete
 off=67 len=17 span[header_field]="Transfer-Encoding"
+off=85 header_field complete
 off=86 len=8 span[header_value]="identity"
+off=96 header_value complete
 off=96 len=14 span[header_field]="Content-Length"
+off=111 header_field complete
 off=112 len=1 span[header_value]="5"
+off=115 header_value complete
 off=117 error code=4 reason="Content-Length can't be present with Transfer-Encoding"
 ```
 
@@ -274,12 +309,19 @@ World
 ```log
 off=0 message begin
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 url complete
 off=54 len=6 span[header_field]="Accept"
+off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
+off=67 header_value complete
 off=67 len=17 span[header_field]="Transfer-Encoding"
+off=85 header_field complete
 off=86 len=8 span[header_value]="identity"
+off=96 header_value complete
 off=96 len=14 span[header_field]="Content-Length"
+off=111 header_field complete
 off=112 len=1 span[header_value]="1"
+off=115 header_value complete
 off=117 headers complete method=3 v=1/1 flags=220 content_length=1
 off=117 len=5 span[body]="World"
 ```
@@ -298,10 +340,15 @@ World
 ```log
 off=0 message begin
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 url complete
 off=54 len=6 span[header_field]="Accept"
+off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
+off=67 header_value complete
 off=67 len=17 span[header_field]="Transfer-Encoding"
+off=85 header_field complete
 off=86 len=16 span[header_value]="chunked, deflate"
+off=104 header_value complete
 off=106 headers complete method=3 v=1/1 flags=200 content_length=0
 off=106 error code=15 reason="Request has invalid `Transfer-Encoding`"
 ```
@@ -323,10 +370,15 @@ World
 ```log
 off=0 message begin
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 url complete
 off=54 len=6 span[header_field]="Accept"
+off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
+off=67 header_value complete
 off=67 len=17 span[header_field]="Transfer-Encoding"
+off=85 header_field complete
 off=86 len=16 span[header_value]="chunked, deflate"
+off=104 header_value complete
 off=106 headers complete method=3 v=1/1 flags=200 content_length=0
 off=106 len=5 span[body]="World"
 ```
@@ -349,10 +401,15 @@ World
 ```log
 off=0 message begin
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 url complete
 off=54 len=6 span[header_field]="Accept"
+off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
+off=67 header_value complete
 off=67 len=17 span[header_field]="Transfer-Encoding"
+off=85 header_field complete
 off=86 len=16 span[header_value]="deflate, chunked"
+off=104 header_value complete
 off=106 headers complete method=3 v=1/1 flags=208 content_length=0
 off=109 chunk header len=5
 off=109 len=5 span[body]="World"
@@ -378,8 +435,11 @@ foo
 ```log
 off=0 message begin
 off=4 len=4 span[url]="/url"
+off=9 url complete
 off=19 len=17 span[header_field]="Transfer-Encoding"
+off=37 header_field complete
 off=38 len=7 span[header_value]="chunked"
+off=47 header_value complete
 off=49 headers complete method=4 v=1/1 flags=208 content_length=0
 off=52 chunk header len=3
 off=52 len=3 span[body]="foo"
