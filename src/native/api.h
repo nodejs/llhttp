@@ -58,6 +58,11 @@ struct llhttp_settings_s {
 void llhttp_init(llhttp_t* parser, llhttp_type_t type,
                  const llhttp_settings_t* settings);
 
+/* Reset an already initialized parser back to the start state, preserving the
+ * existing parser type, callback settings, user data, and lenient flags.
+ */
+void llhttp_reset(llhttp_t* parser);
+
 /* Initialize the settings object */
 void llhttp_settings_init(llhttp_settings_t* settings);
 
