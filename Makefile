@@ -1,7 +1,7 @@
 CLANG ?= clang
 CFLAGS ?=
 
-CFLAGS += -Os -g3 -Wall -Wextra -Wno-unused-parameter
+CFLAGS += -Os -g3 -Wall -Wextra -Wno-unused-parameter -fPIC
 INCLUDES += -Ibuild/
 
 INSTALL ?= install
@@ -9,11 +9,15 @@ PREFIX ?= /usr/local
 LIBDIR = $(PREFIX)/lib
 INCLUDEDIR = $(PREFIX)/include
 
-all: build/libllhttp.a
+all: build/libllhttp.a build/libllhttp.so
 
 clean:
 	rm -rf release/
 	rm -rf build/
+
+build/libllhttp.so: build/c/llhttp.o build/native/api.o \
+		build/native/http.o
+	$(CLANG) -shared $^ -o $@
 
 build/libllhttp.a: build/c/llhttp.o build/native/api.o \
 		build/native/http.o
@@ -57,8 +61,9 @@ postversion: release
 generate:
 	npx ts-node bin/generate.ts
 
-install: build/libllhttp.a
+install: build/libllhttp.a build/libllhttp.so
 	$(INSTALL) build/llhttp.h $(DESTDIR)$(INCLUDEDIR)/llhttp.h
 	$(INSTALL) build/libllhttp.a $(DESTDIR)$(LIBDIR)/libllhttp.a
+	$(INSTALL) build/libllhttp.so $(DESTDIR)$(LIBDIR)/libllhttp.so
 
 .PHONY: all generate clean release
