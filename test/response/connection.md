@@ -17,14 +17,23 @@ hello world
 ```log
 off=0 message begin
 off=13 len=2 span[status]="OK"
+off=17 status complete
 off=17 len=12 span[header_field]="Content-Type"
+off=30 header_field complete
 off=31 len=24 span[header_value]="text/html; charset=UTF-8"
+off=57 header_value complete
 off=57 len=14 span[header_field]="Content-Length"
+off=72 header_field complete
 off=73 len=2 span[header_value]="11"
+off=77 header_value complete
 off=77 len=16 span[header_field]="Proxy-Connection"
+off=94 header_field complete
 off=95 len=5 span[header_value]="close"
+off=102 header_value complete
 off=102 len=4 span[header_field]="Date"
+off=107 header_field complete
 off=108 len=31 span[header_value]="Thu, 31 Dec 2009 20:55:48 +0000"
+off=141 header_value complete
 off=143 headers complete status=200 v=1/1 flags=22 content_length=11
 off=143 len=11 span[body]="hello world"
 off=154 message complete
@@ -46,8 +55,11 @@ HTTP/1.0 200 OK
 ```log
 off=0 message begin
 off=13 len=2 span[status]="OK"
+off=17 status complete
 off=17 len=10 span[header_field]="Connection"
+off=28 header_field complete
 off=29 len=10 span[header_value]="keep-alive"
+off=41 header_value complete
 off=43 headers complete status=200 v=1/0 flags=1 content_length=0
 off=43 len=15 span[body]="HTTP/1.0 200 OK"
 ```
@@ -67,8 +79,11 @@ HTTP/1.0 200 OK
 ```log
 off=0 message begin
 off=13 len=10 span[status]="No content"
+off=25 status complete
 off=25 len=10 span[header_field]="Connection"
+off=36 header_field complete
 off=37 len=10 span[header_value]="keep-alive"
+off=49 header_value complete
 off=51 headers complete status=204 v=1/0 flags=1 content_length=0
 off=51 message complete
 off=51 message begin
@@ -90,6 +105,7 @@ HTTP/1.1 200 OK
 ```log
 off=0 message begin
 off=13 len=2 span[status]="OK"
+off=17 status complete
 off=19 headers complete status=200 v=1/1 flags=0 content_length=0
 off=19 len=15 span[body]="HTTP/1.1 200 OK"
 ```
@@ -108,6 +124,7 @@ HTTP/1.1 200 OK
 ```log
 off=0 message begin
 off=13 len=10 span[status]="No content"
+off=25 status complete
 off=27 headers complete status=204 v=1/1 flags=0 content_length=0
 off=27 message complete
 off=27 message begin
@@ -127,8 +144,11 @@ HTTP/1.1 200 OK
 ```log
 off=0 message begin
 off=13 len=10 span[status]="No content"
+off=25 status complete
 off=25 len=10 span[header_field]="Connection"
+off=36 header_field complete
 off=37 len=5 span[header_value]="close"
+off=44 header_value complete
 off=46 headers complete status=204 v=1/1 flags=2 content_length=0
 off=46 message complete
 off=47 error code=5 reason="Data after `Connection: close`"
@@ -147,8 +167,11 @@ HTTP/1.1 200 OK
 ```log
 off=0 message begin
 off=13 len=10 span[status]="No content"
+off=25 status complete
 off=25 len=10 span[header_field]="Connection"
+off=36 header_field complete
 off=37 len=5 span[header_value]="close"
+off=44 header_value complete
 off=46 headers complete status=204 v=1/1 flags=2 content_length=0
 off=46 message complete
 off=46 message begin
@@ -171,12 +194,19 @@ proto
 ```log
 off=0 message begin
 off=13 len=19 span[status]="Switching Protocols"
+off=34 status complete
 off=34 len=10 span[header_field]="Connection"
+off=45 header_field complete
 off=46 len=7 span[header_value]="upgrade"
+off=55 header_value complete
 off=55 len=7 span[header_field]="Upgrade"
+off=63 header_field complete
 off=64 len=3 span[header_value]="h2c"
+off=69 header_value complete
 off=69 len=14 span[header_field]="Content-Length"
+off=84 header_field complete
 off=85 len=1 span[header_value]="4"
+off=88 header_value complete
 off=90 headers complete status=101 v=1/1 flags=34 content_length=4
 off=90 len=4 span[body]="body"
 off=94 message complete
@@ -204,12 +234,19 @@ proto
 ```log
 off=0 message begin
 off=13 len=19 span[status]="Switching Protocols"
+off=34 status complete
 off=34 len=10 span[header_field]="Connection"
+off=45 header_field complete
 off=46 len=7 span[header_value]="upgrade"
+off=55 header_value complete
 off=55 len=7 span[header_field]="Upgrade"
+off=63 header_field complete
 off=64 len=3 span[header_value]="h2c"
+off=69 header_value complete
 off=69 len=17 span[header_field]="Transfer-Encoding"
+off=87 header_field complete
 off=88 len=7 span[header_value]="chunked"
+off=97 header_value complete
 off=99 headers complete status=101 v=1/1 flags=21c content_length=0
 off=102 chunk header len=2
 off=102 len=2 span[body]="bo"
@@ -237,10 +274,15 @@ body
 ```log
 off=0 message begin
 off=13 len=2 span[status]="OK"
+off=17 status complete
 off=17 len=10 span[header_field]="Connection"
+off=28 header_field complete
 off=29 len=7 span[header_value]="upgrade"
+off=38 header_value complete
 off=38 len=7 span[header_field]="Upgrade"
+off=46 header_field complete
 off=47 len=3 span[header_value]="h2c"
+off=52 header_value complete
 off=54 headers complete status=200 v=1/1 flags=14 content_length=0
 off=54 len=4 span[body]="body"
 ```
@@ -260,12 +302,19 @@ body
 ```log
 off=0 message begin
 off=13 len=2 span[status]="OK"
+off=17 status complete
 off=17 len=10 span[header_field]="Connection"
+off=28 header_field complete
 off=29 len=7 span[header_value]="upgrade"
+off=38 header_value complete
 off=38 len=7 span[header_field]="Upgrade"
+off=46 header_field complete
 off=47 len=3 span[header_value]="h2c"
+off=52 header_value complete
 off=52 len=14 span[header_field]="Content-Length"
+off=67 header_field complete
 off=68 len=1 span[header_value]="4"
+off=71 header_value complete
 off=73 headers complete status=200 v=1/1 flags=34 content_length=4
 off=73 len=4 span[body]="body"
 off=77 message complete
@@ -292,12 +341,19 @@ dy
 ```log
 off=0 message begin
 off=13 len=2 span[status]="OK"
+off=17 status complete
 off=17 len=10 span[header_field]="Connection"
+off=28 header_field complete
 off=29 len=7 span[header_value]="upgrade"
+off=38 header_value complete
 off=38 len=7 span[header_field]="Upgrade"
+off=46 header_field complete
 off=47 len=3 span[header_value]="h2c"
+off=52 header_value complete
 off=52 len=17 span[header_field]="Transfer-Encoding"
+off=70 header_field complete
 off=71 len=7 span[header_value]="chunked"
+off=80 header_value complete
 off=82 headers complete status=200 v=1/1 flags=21c content_length=0
 off=85 chunk header len=2
 off=85 len=2 span[body]="bo"

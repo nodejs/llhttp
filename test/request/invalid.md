@@ -14,6 +14,7 @@ Host: example.com
 ```log
 off=0 message begin
 off=4 len=18 span[url]="/music/sweet/music"
+off=23 url complete
 off=27 error code=8 reason="Expected SOURCE method for ICE/x.x request"
 ```
 
@@ -30,6 +31,7 @@ Host: example.com
 ```log
 off=0 message begin
 off=4 len=18 span[url]="/music/sweet/music"
+off=23 url complete
 off=24 error code=8 reason="Expected HTTP/"
 ```
 
@@ -46,6 +48,7 @@ Host: example.com
 ```log
 off=0 message begin
 off=4 len=18 span[url]="/music/sweet/music"
+off=23 url complete
 off=28 error code=8 reason="Invalid method for RTSP/x.x request"
 ```
 
@@ -62,6 +65,7 @@ Host: example.com
 ```log
 off=0 message begin
 off=9 len=18 span[url]="/music/sweet/music"
+off=28 url complete
 off=33 error code=8 reason="Invalid method for HTTP/x.x request"
 ```
 
@@ -78,7 +82,9 @@ Foo: 1\rBar: 2
 ```log
 off=0 message begin
 off=4 len=1 span[url]="/"
+off=6 url complete
 off=16 len=3 span[header_field]="Foo"
+off=20 header_field complete
 off=21 len=1 span[header_value]="1"
 off=23 error code=3 reason="Missing expected LF after header value"
 ```
@@ -96,6 +102,7 @@ Fo@: Failure
 ```log
 off=0 message begin
 off=4 len=1 span[url]="/"
+off=6 url complete
 off=18 error code=10 reason="Invalid header token"
 ```
 
@@ -112,6 +119,7 @@ Foo\01\test: Bar
 ```log
 off=0 message begin
 off=4 len=1 span[url]="/"
+off=6 url complete
 off=19 error code=10 reason="Invalid header token"
 ```
 
@@ -143,6 +151,7 @@ name
 ```log
 off=0 message begin
 off=4 len=1 span[url]="/"
+off=6 url complete
 off=20 error code=10 reason="Invalid header token"
 ```
 
@@ -161,8 +170,11 @@ Accept-Encoding: gzip
 ```log
 off=0 message begin
 off=4 len=1 span[url]="/"
+off=6 url complete
 off=16 len=4 span[header_field]="Host"
+off=21 header_field complete
 off=22 len=15 span[header_value]="www.example.com"
+off=39 header_value complete
 off=49 error code=10 reason="Invalid header token"
 ```
 
@@ -181,7 +193,10 @@ Accept-Encoding: gzip
 ```log
 off=0 message begin
 off=4 len=1 span[url]="/"
+off=6 url complete
 off=16 len=4 span[header_field]="Host"
+off=21 header_field complete
 off=22 len=15 span[header_value]="www.example.com"
+off=39 header_value complete
 off=52 error code=10 reason="Invalid header token"
 ```

@@ -402,9 +402,12 @@ export class HTTP {
       .select(SPECIAL_HEADERS, this.store('header_state', 'header_field_colon'))
       .otherwise(this.resetHeaderState('header_field_general'));
 
+    const onHeaderFieldComplete = p.invoke(this.callback.onHeaderFieldComplete);
+    onHeaderFieldComplete.otherwise(n('header_value_discard_ws'));
+
     n('header_field_colon')
       .match(' ', n('header_field_colon'))
-      .peek(':', span.headerField.end().skipTo(n('header_value_discard_ws')))
+      .peek(':', span.headerField.end().skipTo(onHeaderFieldComplete))
       // Fallback to general header, there're additional characters:
       // `Connection-Duration` instead of `Connection` and so on.
       .otherwise(this.resetHeaderState('header_field_general'));
@@ -415,9 +418,6 @@ export class HTTP {
 
     // Just a performance optimization, split the node so that the fast case
     // remains in `header_field_general`
-    const onHeaderFieldComplete = p.invoke(this.callback.onHeaderFieldComplete);
-    onHeaderFieldComplete.otherwise(n('header_value_discard_ws'));
-
     n('header_field_general_otherwise')
       .peek(':', span.headerField.end().skipTo(onHeaderFieldComplete))
       .otherwise(p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header token'));
@@ -446,12 +446,15 @@ export class HTTP {
         n('header_value_discard_lws'));
     }
 
+    const onHeaderValueComplete = p.invoke(this.callback.onHeaderValueComplete);
+    onHeaderValueComplete.otherwise(n('header_field_start'));
+
     const emptyContentLengthError = p.error(
       ERROR.INVALID_CONTENT_LENGTH, 'Empty Content-Length');
     const checkContentLengthEmptiness = this.load('header_state', {
       [HEADER_STATE.CONTENT_LENGTH]: emptyContentLengthError,
     }, this.setHeaderFlags(
-      this.emptySpan(span.headerValue, 'header_field_start')));
+      this.emptySpan(span.headerValue, onHeaderValueComplete)));
 
     n('header_value_discard_lws')
       .match([ ' ', '\t' ], n('header_value_discard_ws'))
@@ -584,9 +587,6 @@ export class HTTP {
       .match('\n', n('header_value_lws'))
       .otherwise(p.error(ERROR.LF_EXPECTED,
         'Missing expected LF after header value'));
-
-    const onHeaderValueComplete = p.invoke(this.callback.onHeaderValueComplete);
-    onHeaderValueComplete.otherwise(n('header_field_start'));
 
     n('header_value_lws')
       .peek([ ' ', '\t' ], span.headerValue.start(n('header_value_start')))
