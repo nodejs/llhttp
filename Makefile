@@ -1,7 +1,13 @@
 CLANG ?= clang
 CFLAGS ?=
+OS ?=
 
-CFLAGS += -Os -g3 -Wall -Wextra -Wno-unused-parameter -fPIC
+CFLAGS += -Os -g3 -Wall -Wextra -Wno-unused-parameter
+ifneq ($(OS),Windows_NT) 
+	# NOTE: clang on windows does not support fPIC
+	CFLAGS += -fPIC
+endif
+
 INCLUDES += -Ibuild/
 
 INSTALL ?= install
