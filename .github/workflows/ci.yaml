@@ -23,7 +23,7 @@ jobs:
           scoop install llvm --global
 
           # Scoop modifies the PATH so we make the modified PATH global.
-          echo "::set-env name=PATH::$env:PATH"
+          echo $env:PATH >> $env:GITHUB_PATH
 
       - name: Fetch code
         uses: actions/checkout@v2
@@ -45,7 +45,8 @@ jobs:
 
       - name: Build libllhttp.a
         shell: bash
-        run: make build/libllhttp.a
+        run: |
+          make build/libllhttp.a
 
   test:
     name: Run tests
@@ -64,7 +65,7 @@ jobs:
           scoop install llvm --global
 
           # Scoop modifies the PATH so we make the modified PATH global.
-          echo "::set-env name=PATH::$env:PATH"
+          echo $env:PATH >> $env:GITHUB_PATH
 
       - name: Fetch code
         uses: actions/checkout@v2
