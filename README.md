@@ -1,4 +1,5 @@
 # llhttp
+![CI](https://github.com/nodejs/llhttp/workflows/CI/badge.svg)
 
 Port of [http_parser][0] to [llparse][1].
 
