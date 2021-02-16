@@ -45,7 +45,7 @@ release: generate
 
 postversion: release
 	git push
-	git checkout release
+	git checkout release --
 	cp -rf release/* ./
 	rm -rf release
 	git add include src *.gyp *.gypi README.md LICENSE-MIT
