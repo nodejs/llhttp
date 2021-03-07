@@ -26,23 +26,28 @@ void llhttp_init(llhttp_t* parser, llhttp_type_t type,
 
 #if defined(__wasm__)
 
+extern int wasm_on_message_begin(llhttp_t * p);
 extern int wasm_on_url(llhttp_t* p, const char* at, size_t length);
 extern int wasm_on_status(llhttp_t* p, const char* at, size_t length);
 extern int wasm_on_header_field(llhttp_t* p, const char* at, size_t length);
 extern int wasm_on_header_value(llhttp_t* p, const char* at, size_t length);
+extern int wasm_on_headers_complete(llhttp_t * p);
 extern int wasm_on_body(llhttp_t* p, const char* at, size_t length);
+extern int wasm_on_message_complete(llhttp_t * p);
+
 const llhttp_settings_t wasm_settings = {
-  NULL,
+  wasm_on_message_begin,
   wasm_on_url,
   wasm_on_status,
   wasm_on_header_field,
   wasm_on_header_value,
-  NULL,
+  wasm_on_headers_complete,
   wasm_on_body,
-  NULL,
+  wasm_on_message_complete,
   NULL,
   NULL,
 };
+
 
 llhttp_t* llhttp_alloc(llhttp_type_t type) {
   llhttp_t* parser = malloc(sizeof(llhttp_t));
@@ -52,6 +57,32 @@ llhttp_t* llhttp_alloc(llhttp_type_t type) {
 
 void llhttp_free(llhttp_t* parser) {
   free(parser);
+}
+
+/* Some getters required to get stuff from the parser */
+
+uint8_t llhttp_get_type(llhttp_t* parser) {
+  return parser->type;
+}
+
+uint8_t llhttp_get_http_major(llhttp_t* parser) {
+  return parser->http_major;
+}
+
+uint8_t llhttp_get_http_minor(llhttp_t* parser) {
+  return parser->http_minor;
+}
+
+uint8_t llhttp_get_method(llhttp_t* parser) {
+  return parser->method;
+}
+
+int llhttp_get_status_code(llhttp_t* parser) {
+  return parser->status_code;
+}
+
+uint8_t llhttp_get_upgrade(llhttp_t* parser) {
+  return parser->upgrade;
 }
 
 #endif  // defined(__wasm__)
@@ -293,7 +324,7 @@ int llhttp__on_chunk_complete(llhttp_t* s, const char* p, const char* endp) {
 }
 
 
-/* Private */
+/* Private https://github.com/dnlup/llhttp/blob/undici_wasm/wasm.js*/
 
 
 void llhttp__debug(llhttp_t* s, const char* p, const char* endp,
