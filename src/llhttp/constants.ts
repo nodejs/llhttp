@@ -56,6 +56,7 @@ export enum FLAGS {
 export enum LENIENT_FLAGS {
   HEADERS = 1 << 0,
   CHUNKED_LENGTH = 1 << 1,
+  KEEP_ALIVE = 1 << 2,
 }
 
 export enum METHODS {

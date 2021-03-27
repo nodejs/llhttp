@@ -154,9 +154,102 @@ off=46 message complete
 off=47 error code=5 reason="Data after `Connection: close`"
 ```
 
-## HTTP/1.1 with keep-alive disabled and 204 status in loose mode
+## HTTP/1.1 with keep-alive disabled, content-length, and in loose mode
+
+Parser should discard extra request in loose mode.
 
 <!-- meta={"type": "response", "mode": "loose"} -->
+```http
+HTTP/1.1 200 No content
+Content-Length: 5
+Connection: close
+
+2ad731e3-4dcd-4f70-b871-0ad284b29ffc
+```
+
+```log
+off=0 message begin
+off=13 len=10 span[status]="No content"
+off=25 status complete
+off=25 len=14 span[header_field]="Content-Length"
+off=40 header_field complete
+off=41 len=1 span[header_value]="5"
+off=44 header_value complete
+off=44 len=10 span[header_field]="Connection"
+off=55 header_field complete
+off=56 len=5 span[header_value]="close"
+off=63 header_value complete
+off=65 headers complete status=200 v=1/1 flags=22 content_length=5
+off=65 len=5 span[body]="2ad73"
+off=70 message complete
+```
+
+## HTTP/1.1 with keep-alive disabled, content-length, and in strict mode
+
+Parser should discard extra request in strict mode.
+
+<!-- meta={"type": "response", "mode": "strict"} -->
+```http
+HTTP/1.1 200 No content
+Content-Length: 5
+Connection: close
+
+2ad731e3-4dcd-4f70-b871-0ad284b29ffc
+```
+
+```log
+off=0 message begin
+off=13 len=10 span[status]="No content"
+off=25 status complete
+off=25 len=14 span[header_field]="Content-Length"
+off=40 header_field complete
+off=41 len=1 span[header_value]="5"
+off=44 header_value complete
+off=44 len=10 span[header_field]="Connection"
+off=55 header_field complete
+off=56 len=5 span[header_value]="close"
+off=63 header_value complete
+off=65 headers complete status=200 v=1/1 flags=22 content_length=5
+off=65 len=5 span[body]="2ad73"
+off=70 message complete
+off=71 error code=5 reason="Data after `Connection: close`"
+```
+
+## HTTP/1.1 with keep-alive disabled, content-length, and in lenient mode
+
+Parser should process extra request in lenient mode.
+
+<!-- meta={"type": "response-lenient-keep-alive"} -->
+```http
+HTTP/1.1 200 No content
+Content-Length: 5
+Connection: close
+
+2ad73HTTP/1.1 200 OK
+```
+
+```log
+off=0 message begin
+off=13 len=10 span[status]="No content"
+off=25 status complete
+off=25 len=14 span[header_field]="Content-Length"
+off=40 header_field complete
+off=41 len=1 span[header_value]="5"
+off=44 header_value complete
+off=44 len=10 span[header_field]="Connection"
+off=55 header_field complete
+off=56 len=5 span[header_value]="close"
+off=63 header_value complete
+off=65 headers complete status=200 v=1/1 flags=22 content_length=5
+off=65 len=5 span[body]="2ad73"
+off=70 message complete
+off=70 message begin
+off=83 len=2 span[status]="OK"
+```
+
+## HTTP/1.1 with keep-alive disabled and 204 status in lenient mode
+
+<!-- meta={"type": "response-lenient-keep-alive"} -->
 ```http
 HTTP/1.1 204 No content
 Connection: close

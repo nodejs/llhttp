@@ -181,6 +181,20 @@ void llhttp_set_lenient_headers(llhttp_t* parser, int enabled);
  */
 void llhttp_set_lenient_chunked_length(llhttp_t* parser, int enabled);
 
+
+/* Enables/disables lenient handling of `Connection: close` and HTTP/1.0
+ * requests responses.
+ *
+ * Normally `llhttp` would error on (in strict mode) or discard (in loose mode)
+ * the HTTP request/response after the request/response with `Connection: close`
+ * and `Content-Length`. This is important to prevent cache poisoning attacks,
+ * but might interact badly with outdated and insecure clients. With this flag
+ * the extra request/response will be parsed normally.
+ *
+ * **(USE AT YOUR OWN RISK)**
+ */
+void llhttp_set_lenient_keep_alive(llhttp_t* parser, int enabled);
+
 #ifdef __cplusplus
 }  /* extern "C" */
 #endif

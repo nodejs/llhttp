@@ -79,12 +79,12 @@ off=21 message complete
 off=22 error code=5 reason="Data after `Connection: close`"
 ```
 
-### Resetting flags when keep-alive is off (1.0) and parser is in loose mode
+### Resetting flags when keep-alive is off (1.0) and parser is in lenient mode
 
 Even though we allow restarts in loose mode, the flags should be still set to
 `0` upon restart.
 
-<!-- meta={"type": "request", "mode": "loose"} -->
+<!-- meta={"type": "request-lenient-keep-alive"} -->
 ```http
 PUT /url HTTP/1.0
 Content-Length: 0
@@ -242,11 +242,11 @@ off=133 message complete
 off=138 error code=5 reason="Data after `Connection: close`"
 ```
 
-### CRLF between requests, explicit `close` (loose mode)
+### CRLF between requests, explicit `close` (lenient mode)
 
 Loose mode is more lenient, and allows further requests.
 
-<!-- meta={"type": "request", "mode": "loose"} -->
+<!-- meta={"type": "request-lenient-keep-alive"} -->
 ```http
 POST / HTTP/1.1
 Host: www.example.com
