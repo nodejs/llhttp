@@ -82,8 +82,12 @@ const http: IFixtureMap = {
     'request-lenient-chunked-length':
       buildMode('loose', 'request-lenient-chunked-length'),
     'request-lenient-headers': buildMode('loose', 'request-lenient-headers'),
+    'request-lenient-keep-alive': buildMode(
+      'loose', 'request-lenient-keep-alive'),
     'response': buildMode('loose', 'response'),
     'response-finish': buildMode('loose', 'response-finish'),
+    'response-lenient-keep-alive': buildMode(
+      'loose', 'response-lenient-keep-alive'),
     'url': buildMode('loose', 'url'),
   },
   strict: {
@@ -93,8 +97,12 @@ const http: IFixtureMap = {
     'request-lenient-chunked-length':
       buildMode('strict', 'request-lenient-chunked-length'),
     'request-lenient-headers': buildMode('strict', 'request-lenient-headers'),
+    'request-lenient-keep-alive': buildMode(
+      'strict', 'request-lenient-keep-alive'),
     'response': buildMode('strict', 'response'),
     'response-finish': buildMode('strict', 'response-finish'),
+    'response-lenient-keep-alive': buildMode(
+      'strict', 'response-lenient-keep-alive'),
     'url': buildMode('strict', 'url'),
   },
 };
@@ -155,6 +163,10 @@ function run(name: string): void {
           types = [ 'request-lenient-headers' ];
         } else if (meta.type === 'request-lenient-chunked-length') {
           types = [ 'request-lenient-chunked-length' ];
+        } else if (meta.type === 'request-lenient-keep-alive') {
+          types = [ 'request-lenient-keep-alive' ];
+        } else if (meta.type === 'response-lenient-keep-alive') {
+          types = [ 'response-lenient-keep-alive' ];
         } else if (meta.type === 'response-only') {
           types = [ 'response' ];
         } else if (meta.type === 'request-finish') {

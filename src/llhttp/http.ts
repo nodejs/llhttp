@@ -787,21 +787,26 @@ export class HTTP {
       .otherwise(this.invokePausable('on_message_complete',
         ERROR.CB_MESSAGE_COMPLETE, upgradeAfterDone));
 
-    // Check if we'd like to keep-alive
-    if (this.mode === 'strict') {
-      n('cleanup')
-        .otherwise(p.invoke(callback.afterMessageComplete, {
-          1: n('restart'),
-        }, this.update('finish', FINISH.SAFE, n('closed'))));
-    } else {
-      n('cleanup')
-        .otherwise(p.invoke(callback.afterMessageComplete, n('restart')));
-    }
+    const lenientClose = this.testLenientFlags(LENIENT_FLAGS.KEEP_ALIVE, {
+      1: n('restart'),
+    }, n('closed'));
 
-    n('closed')
-      .match([ '\r', '\n' ], n('closed'))
-      .skipTo(p.error(ERROR.CLOSED_CONNECTION,
-        'Data after `Connection: close`'));
+    // Check if we'd like to keep-alive
+    n('cleanup')
+      .otherwise(p.invoke(callback.afterMessageComplete, {
+        1: n('restart'),
+      }, this.update('finish', FINISH.SAFE, lenientClose)));
+
+    if (this.mode === 'strict') {
+      // Error on extra data after `Connection: close`
+      n('closed')
+        .match([ '\r', '\n' ], n('closed'))
+        .skipTo(p.error(ERROR.CLOSED_CONNECTION,
+          'Data after `Connection: close`'));
+    } else {
+      // Discard all data after `Connection: close`
+      n('closed').skipTo(n('closed'));
+    }
 
     n('restart')
       .otherwise(this.update('finish', FINISH.SAFE, n('start')));
