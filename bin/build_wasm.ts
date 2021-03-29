@@ -1,14 +1,16 @@
-'use strict'
+import { mkdirSync, writeFileSync } from 'fs'
+import { execSync } from 'child_process'
+import { join, resolve } from 'path'
+import { stringify } from 'javascript-stringify'
+import { constants } from '..'
 
-const { mkdirSync, writeFileSync } = require('fs')
-const { execSync } = require('child_process')
-const { join } = require('path')
-const js = require('javascript-stringify')
 const { WASI_ROOT } = process.env
+const WASM_OUT = resolve(__dirname, '../build/wasm')
+const WASM_SRC = resolve(__dirname, '../')
 
 if (process.argv[2] === '--setup') {
   try {
-    mkdirSync(join(__dirname, 'build'))
+    mkdirSync(join(WASM_SRC, 'build'))
     process.exit(0);
   } catch (error) {
     if (error.code !== 'EEXIST') {
@@ -19,12 +21,16 @@ if (process.argv[2] === '--setup') {
 }
 
 if (process.argv[2] === '--docker') {
-  let cmd = 'docker run --rm -it'; 
+  let cmd = 'docker run --rm -it';
+  // Try to avoid root permission problems on compiled assets
+  // when running on linux.
+  // It will work flawessly if uid === gid === 1000
+  // there will be some warnings otherwise.
   if (process.platform === 'linux') {
     cmd += ` --user ${process.getuid()}:${process.getegid()}`;
   }
-  cmd += ` --mount type=bind,source=${__dirname}/build,target=/home/node/llhttp/build llhttp_wasm_builder node build_wasm.js`;
-  execSync(cmd, { stdio: 'inherit' });
+  cmd += ` --mount type=bind,source=${WASM_SRC}/build,target=/home/node/llhttp/build llhttp_wasm_builder node build_wasm.js`;
+  execSync(cmd, { cwd: WASM_SRC, stdio: 'inherit' });
   process.exit(0);
 }
 
@@ -32,7 +38,6 @@ if (!WASI_ROOT) {
   throw new Error('Please setup the WASI_ROOT env variable.')
 }
 
-const WASM_OUT = join(__dirname, 'build', 'wasm')
 
 try {
   mkdirSync(WASM_OUT)
@@ -43,7 +48,7 @@ try {
 }
 
 // Build ts
-execSync('npm run build', { stdio: 'inherit' })
+execSync('npm run build', { cwd: WASM_SRC, stdio: 'inherit' })
 
 // Build wasm binary
 execSync(`${WASI_ROOT}/bin/clang \
@@ -62,12 +67,11 @@ execSync(`${WASI_ROOT}/bin/clang \
  -Wl,--export-table \
  -Wl,--export=malloc \
  -Wl,--export=free \
- ${join(__dirname, 'build', 'c')}/*.c \
- ${join(__dirname, 'src', 'native')}/*.c \
- -I${join(__dirname, 'build')} \
+ ${join(WASM_SRC, 'build', 'c')}/*.c \
+ ${join(WASM_SRC, 'src', 'native')}/*.c \
+ -I${join(WASM_SRC, 'build')} \
  -o ${join(WASM_OUT, 'llhttp.wasm')}`, { stdio: 'inherit' })
 
 // Build `constants.js` file
-const { constants } = require('.')
-const data = `module.exports = ${js.stringify(constants)}`
+const data = `module.exports = ${stringify(constants)}`
 writeFileSync(join(WASM_OUT, 'constants.js'), data, 'utf8')
