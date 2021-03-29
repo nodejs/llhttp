@@ -192,13 +192,14 @@ HTTPParser.kOnExecute = kOnExecute;
 {
   const p = new HTTPParser(HTTPParser.REQUEST);
 
-  p.execute(Buffer.from(`\
-POST /owo HTTP/1.1\r
-X: Y\r
-Content-Length: 9\r
-\r
-uh, meow?\r
-`));
+  p.execute(Buffer.from([
+    'POST /owo HTTP/1.1',
+    'X: Y',
+    'Content-Length: 9',
+    '',
+    'uh, meow?',
+    '',
+  ].join('\r\n')));
 
   console.log(p);
 
