@@ -17,7 +17,7 @@ const kOnBody = 3;
 const kOnMessageComplete = 4;
 const kOnExecute = 5;
 
-const kPtr = Symbol('kPrt');
+const kPtr = Symbol('kPtr');
 const kUrl = Symbol('kUrl');
 const kStatusMessage = Symbol('kStatusMessage');
 const kHeadersFields = Symbol('kHeadersFields');
