@@ -235,13 +235,13 @@ class HTTPParser {
 {
   const p = new HTTPParser(HTTPParser.RESPONSE);
 
-  p.execute(Buffer.from(`\
-HTTP/1.1 200 OK\r
-X: Y\r
-Content-Length: 9\r
-\r
-uh, meow?\r
-`));
+  p.execute(Buffer.from([
+    'HTTP/1.1 200 OK',
+    'X: Y',
+    'Content-Length: 9',
+    '',
+    'uh, meow?'
+  ].join('\r\n')));
 
   console.log(p);
 
