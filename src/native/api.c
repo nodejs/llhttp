@@ -324,7 +324,7 @@ int llhttp__on_chunk_complete(llhttp_t* s, const char* p, const char* endp) {
 }
 
 
-/* Private https://github.com/dnlup/llhttp/blob/undici_wasm/wasm.js*/
+/* Private */
 
 
 void llhttp__debug(llhttp_t* s, const char* p, const char* endp,
