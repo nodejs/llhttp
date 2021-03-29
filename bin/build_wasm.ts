@@ -1,20 +1,20 @@
-import { mkdirSync, writeFileSync } from 'fs'
-import { execSync } from 'child_process'
-import { join, resolve } from 'path'
-import { stringify } from 'javascript-stringify'
-import { constants } from '..'
+import { execSync } from 'child_process';
+import { mkdirSync, writeFileSync } from 'fs';
+import { stringify } from 'javascript-stringify';
+import { join, resolve } from 'path';
+import { constants } from '..';
 
-const { WASI_ROOT } = process.env
-const WASM_OUT = resolve(__dirname, '../build/wasm')
-const WASM_SRC = resolve(__dirname, '../')
+const { WASI_ROOT } = process.env;
+const WASM_OUT = resolve(__dirname, '../build/wasm');
+const WASM_SRC = resolve(__dirname, '../');
 
 if (process.argv[2] === '--setup') {
   try {
-    mkdirSync(join(WASM_SRC, 'build'))
+    mkdirSync(join(WASM_SRC, 'build'));
     process.exit(0);
   } catch (error) {
     if (error.code !== 'EEXIST') {
-      throw error
+      throw error;
     }
     process.exit(0);
   }
@@ -35,20 +35,19 @@ if (process.argv[2] === '--docker') {
 }
 
 if (!WASI_ROOT) {
-  throw new Error('Please setup the WASI_ROOT env variable.')
+  throw new Error('Please setup the WASI_ROOT env variable.');
 }
 
-
 try {
-  mkdirSync(WASM_OUT)
+  mkdirSync(WASM_OUT);
 } catch (error) {
   if (error.code !== 'EEXIST') {
-    throw error
+    throw error;
   }
 }
 
 // Build ts
-execSync('npm run build', { cwd: WASM_SRC, stdio: 'inherit' })
+execSync('npm run build', { cwd: WASM_SRC, stdio: 'inherit' });
 
 // Build wasm binary
 execSync(`${WASI_ROOT}/bin/clang \
@@ -70,8 +69,8 @@ execSync(`${WASI_ROOT}/bin/clang \
  ${join(WASM_SRC, 'build', 'c')}/*.c \
  ${join(WASM_SRC, 'src', 'native')}/*.c \
  -I${join(WASM_SRC, 'build')} \
- -o ${join(WASM_OUT, 'llhttp.wasm')}`, { stdio: 'inherit' })
+ -o ${join(WASM_OUT, 'llhttp.wasm')}`, { stdio: 'inherit' });
 
 // Build `constants.js` file
-const data = `module.exports = ${stringify(constants)}`
-writeFileSync(join(WASM_OUT, 'constants.js'), data, 'utf8')
+const data = `module.exports = ${stringify(constants)}`;
+writeFileSync(join(WASM_OUT, 'constants.js'), data, 'utf8');
