@@ -1,5 +1,5 @@
 import { execSync } from 'child_process';
-import { mkdirSync, writeFileSync } from 'fs';
+import { copyFileSync, mkdirSync, writeFileSync } from 'fs';
 import { stringify } from 'javascript-stringify';
 import { join, resolve } from 'path';
 import { constants } from '..';
@@ -29,7 +29,7 @@ if (process.argv[2] === '--docker') {
   if (process.platform === 'linux') {
     cmd += ` --user ${process.getuid()}:${process.getegid()}`;
   }
-  cmd += ` --mount type=bind,source=${WASM_SRC}/build,target=/home/node/llhttp/build llhttp_wasm_builder node build_wasm.js`;
+  cmd += ` --mount type=bind,source=${WASM_SRC}/build,target=/home/node/llhttp/build llhttp_wasm_builder npm run wasm`;
   execSync(cmd, { cwd: WASM_SRC, stdio: 'inherit' });
   process.exit(0);
 }
@@ -71,6 +71,10 @@ execSync(`${WASI_ROOT}/bin/clang \
  -I${join(WASM_SRC, 'build')} \
  -o ${join(WASM_OUT, 'llhttp.wasm')}`, { stdio: 'inherit' });
 
-// Build `constants.js` file
-const data = `module.exports = ${stringify(constants)}`;
-writeFileSync(join(WASM_OUT, 'constants.js'), data, 'utf8');
+// Copy constants for `.js` and `.ts` users.
+copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'constants.js'), join(WASM_OUT, 'constants.js'));
+copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'constants.js.map'), join(WASM_OUT, 'constants.js.map'));
+copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'constants.d.ts'), join(WASM_OUT, 'constants.d.ts'));
+copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'utils.js'), join(WASM_OUT, 'utils.js'));
+copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'utils.js.map'), join(WASM_OUT, 'utils.js.map'));
+copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'utils.d.ts'), join(WASM_OUT, 'utils.d.ts'));

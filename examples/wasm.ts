@@ -7,7 +7,7 @@
  */
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import constants from '../build/wasm/constants.js';
+import * as constants from '../build/wasm/constants';
 
 const bin = readFileSync(resolve(__dirname, '../build/wasm/llhttp.wasm'));
 const mod = new WebAssembly.Module(bin);
@@ -29,7 +29,6 @@ const kHeadersValues = Symbol('kHeadersValues');
 const kBody = Symbol('kBody');
 const kReset = Symbol('kReset');
 const kCheckErr = Symbol('kCheckErr');
-
 
 const cstr = (ptr: number, len: number): string =>
   Buffer.from(memory.buffer, ptr, len).toString();
@@ -64,6 +63,7 @@ const wasm_on_header_value = (p: number, at: number, length: number) => {
 
 const wasm_on_headers_complete = (p: number) => {
   const i = instMap.get(p);
+  console.log(get_type);
   const type = get_type(p);
   const versionMajor = get_version_major(p);
   const versionMinor = get_version_minor(p);
@@ -119,7 +119,7 @@ const memory = inst.exports.memory as any;
 const alloc = inst.exports.llhttp_alloc as CallableFunction;
 const malloc = inst.exports.malloc as CallableFunction;
 const execute = inst.exports.llhttp_execute as CallableFunction;
-const get_type = inst.exports.get_type as CallableFunction;
+const get_type = inst.exports.llhttp_get_type as CallableFunction;
 const get_upgrade = inst.exports.llhttp_get_upgrade as CallableFunction;
 const should_keep_alive = inst.exports.llhttp_should_keep_alive as CallableFunction;
 const get_method = inst.exports.llhttp_get_method as CallableFunction;
@@ -149,7 +149,7 @@ class HTTPParser {
   [kHeadersValues]: []|[string];
   [kBody]: null|Buffer;
 
-  constructor(type: string|number) {
+  constructor(type: constants.TYPE) {
     this[kPtr] = alloc(constants.TYPE[type]);
     instMap.set(this[kPtr], this);
 
