@@ -2,7 +2,7 @@
  * A minimal Parser that mimicks a small fraction of the Node.js parser
  * API.
  * To run:
- * - `npm run build`
+ * - `npm run build-wasm`
  * - `npx ts-node examples/wasm.ts`
  */
 import { readFileSync } from 'fs';
@@ -63,7 +63,6 @@ const wasm_on_header_value = (p: number, at: number, length: number) => {
 
 const wasm_on_headers_complete = (p: number) => {
   const i = instMap.get(p);
-  console.log(get_type);
   const type = get_type(p);
   const versionMajor = get_version_major(p);
   const versionMinor = get_version_minor(p);
