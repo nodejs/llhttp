@@ -375,8 +375,10 @@ export class HTTP {
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected CRLF after version'));
 
     n('req_pri_upgrade')
-      .match('\r\n\r\nSM\r\n\r\n', p.error(ERROR.PAUSED_UPGRADE, 'Pause on PRI/Upgrade'))
-      .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected HTTP/2 Connection Preface'));
+      .match('\r\n\r\nSM\r\n\r\n',
+        p.error(ERROR.PAUSED_H2_UPGRADE, 'Pause on PRI/Upgrade'))
+      .otherwise(
+        p.error(ERROR.INVALID_VERSION, 'Expected HTTP/2 Connection Preface'));
   }
 
   private buildHeaders(): void {

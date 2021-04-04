@@ -386,5 +386,5 @@ SM
 off=0 message begin
 off=4 len=1 span[url]="*"
 off=6 url complete
-off=24 error code=22 reason="Pause on PRI/Upgrade"
+off=24 error code=23 reason="Pause on PRI/Upgrade"
 ```
