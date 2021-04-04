@@ -30,6 +30,7 @@ export enum ERROR {
 
   PAUSED,
   PAUSED_UPGRADE,
+  PAUSED_H2_UPGRADE,
 
   USER,
 }
