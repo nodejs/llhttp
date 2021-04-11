@@ -90,7 +90,7 @@ if (err == HPE_OK) {
           parser.reason);
 }
 ```
-For more information on API usage, please refer to https://github.com/nodejs/llhttp/blob/master/src/native/api.h
+For more information on API usage, please refer to [src/native/api.h](https://github.com/nodejs/llhttp/blob/master/src/native/api.h).
 
 ---
 
