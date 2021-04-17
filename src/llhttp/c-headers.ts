@@ -18,6 +18,8 @@ export class CHeaders {
 
     const errorMap = enumToMap(constants.ERROR);
     const methodMap = enumToMap(constants.METHODS);
+    const httpMethodMap = enumToMap(constants.METHODS, constants.METHODS_HTTP);
+    const rtspMethodMap = enumToMap(constants.METHODS, constants.METHODS_RTSP);
 
     res += this.buildEnum('llhttp_errno', 'HPE', errorMap);
     res += '\n';
@@ -39,8 +41,11 @@ export class CHeaders {
 
     res += this.buildMap('HTTP_ERRNO', errorMap);
     res += '\n';
-    res += this.buildMap('HTTP_METHOD', methodMap);
+    res += this.buildMap('HTTP_METHOD', httpMethodMap);
     res += '\n';
+    res += this.buildMap('RTSP_METHOD', rtspMethodMap);
+    res += '\n';
+    res += this.buildMap('HTTP_ALL_METHOD', methodMap);
 
     res += '\n';
 
