@@ -18,7 +18,9 @@ export class CHeaders {
 
     const errorMap = enumToMap(constants.ERROR);
     const methodMap = enumToMap(constants.METHODS);
-    const httpMethodMap = enumToMap(constants.METHODS, constants.METHODS_HTTP);
+    const httpMethodMap = enumToMap(constants.METHODS, constants.METHODS_HTTP, [
+      constants.METHODS.PRI,
+    ]);
     const rtspMethodMap = enumToMap(constants.METHODS, constants.METHODS_RTSP);
 
     res += this.buildEnum('llhttp_errno', 'HPE', errorMap);
