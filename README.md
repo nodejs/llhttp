@@ -99,6 +99,15 @@ For more information on API usage, please refer to [src/native/api.h](https://gi
 * Python: [pallas/pyllhttp][8]
 * Ruby: [metabahn/llhttp][9]
 
+## Generating on Windows
+
+* choco install git
+* choco install node
+* choco install llvm
+* Open git Bash
+  * npm install
+  * npm run build
+
 #### LICENSE
 
 This software is licensed under the MIT License.
