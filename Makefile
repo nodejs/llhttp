@@ -59,7 +59,7 @@ postversion: release
 	git checkout release --
 	cp -rf release/* ./
 	rm -rf release
-	git add include src *.gyp *.gypi README.md LICENSE-MIT
+	git add include src *.gyp *.gypi CMakeLists.txt README.md LICENSE-MIT
 	git commit -a -m "release: $(TAG)"
 	git tag "release/v$(TAG)"
 	git push && git push --tags
