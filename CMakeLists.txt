@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.5.1)
+cmake_policy(SET CMP0069 NEW)
 
-project(llhttp C ASM)
+project(llhttp C)
 
 set(CMAKE_C_STANDARD 99)
 
@@ -37,7 +38,7 @@ target_include_directories(llhttp PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
-set_target_properties(llhttp PROPERTIES PUBLIC_HEADER "include/llhttp.h")
+set_target_properties(llhttp PROPERTIES PUBLIC_HEADER ${LLHTTP_HEADERS})
 
 install(TARGETS llhttp
         EXPORT llhttp
