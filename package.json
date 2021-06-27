@@ -1,6 +1,6 @@
 {
   "name": "llhttp",
-  "version": "6.0.3",
+  "version": "6.0.4",
   "description": "HTTP parser in LLVM IR",
   "main": "lib/llhttp.js",
   "types": "lib/llhttp.d.ts",
