@@ -702,10 +702,11 @@ export class HTTP {
       .otherwise(p.error(ERROR.INVALID_CHUNK_SIZE,
         'Invalid character in chunk size'));
 
-    // just ignore this.
     n('chunk_parameters')
       .match('\r', n('chunk_size_almost_done'))
-      .skipTo(n('chunk_parameters'));
+      .match(HEADER_CHARS, n('chunk_parameters'))
+      .otherwise(p.error(ERROR.STRICT,
+        'Invalid character in chunk parameters'));
 
     if (this.mode === 'strict') {
       n('chunk_size_almost_done')
