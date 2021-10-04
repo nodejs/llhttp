@@ -63,7 +63,7 @@ postversion: release
 	git commit -a -m "release: $(TAG)"
 	git tag "release/v$(TAG)"
 	git push && git push --tags
-	git checkout master
+	git checkout main
 
 generate:
 	npx ts-node bin/generate.ts
