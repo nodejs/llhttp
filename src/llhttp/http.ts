@@ -50,6 +50,7 @@ const NODES: ReadonlyArray<string> = [
   'header_field_start',
   'header_field',
   'header_field_colon',
+  'header_field_colon_discard_ws',
   'header_field_general',
   'header_field_general_otherwise',
   'header_value_discard_ws',
@@ -407,12 +408,31 @@ export class HTTP {
     const onHeaderFieldComplete = p.invoke(this.callback.onHeaderFieldComplete);
     onHeaderFieldComplete.otherwise(n('header_value_discard_ws'));
 
+    const onInvalidHeaderFieldChar =
+      p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header field char');
+
+    const checkLenientFlagsOnColon =
+      this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
+        1: n('header_field_colon_discard_ws'),
+      }, span.headerField.end().skipTo(onInvalidHeaderFieldChar));
+
     n('header_field_colon')
-      .match(' ', n('header_field_colon'))
+      // https://datatracker.ietf.org/doc/html/rfc7230#section-3.2.4
+      // Whitespace character is not allowed between the header field-name
+      // and colon. If the next token matches whitespace then throw an error.
+      //
+      // Add a check for the lenient flag. If the lenient flag is set, the
+      // whitespace token is allowed to support legacy code not following
+      // http specs.
+      .peek(' ', checkLenientFlagsOnColon)
       .peek(':', span.headerField.end().skipTo(onHeaderFieldComplete))
       // Fallback to general header, there're additional characters:
       // `Connection-Duration` instead of `Connection` and so on.
       .otherwise(this.resetHeaderState('header_field_general'));
+
+    n('header_field_colon_discard_ws')
+      .match(' ', n('header_field_colon_discard_ws'))
+      .otherwise(n('header_field_colon'));
 
     n('header_field_general')
       .match(this.TOKEN, n('header_field_general'))
@@ -733,10 +753,11 @@ export class HTTP {
       .otherwise(p.error(ERROR.INVALID_CHUNK_SIZE,
         'Invalid character in chunk size'));
 
-    // just ignore this.
     n('chunk_parameters')
       .match('\r', n('chunk_size_almost_done'))
-      .skipTo(n('chunk_parameters'));
+      .match(HEADER_CHARS, n('chunk_parameters'))
+      .otherwise(p.error(ERROR.STRICT,
+        'Invalid character in chunk parameters'));
 
     if (this.mode === 'strict') {
       n('chunk_size_almost_done')

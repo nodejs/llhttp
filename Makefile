@@ -50,6 +50,8 @@ release: generate
 	cp -rf src/native/*.c release/src/
 	cp -rf src/llhttp.gyp release/
 	cp -rf src/common.gypi release/
+	cp -rf CMakeLists.txt release/
+	cp -rf libllhttp.pc.in release/
 	cp -rf README.md release/
 	cp -rf LICENSE-MIT release/
 
@@ -58,11 +60,11 @@ postversion: release
 	git checkout release --
 	cp -rf release/* ./
 	rm -rf release
-	git add include src *.gyp *.gypi README.md LICENSE-MIT
+	git add include src *.gyp *.gypi CMakeLists.txt README.md LICENSE-MIT
 	git commit -a -m "release: $(TAG)"
 	git tag "release/v$(TAG)"
 	git push && git push --tags
-	git checkout master
+	git checkout main
 
 generate:
 	npx ts-node bin/generate.ts
