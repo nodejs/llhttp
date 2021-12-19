@@ -92,7 +92,7 @@ if (err == HPE_OK) {
 ```
 For more information on API usage, please refer to [src/native/api.h](https://github.com/nodejs/llhttp/blob/main/src/native/api.h).
 
-## Installation
+## Build Instructions
 
 Make sure you have [Node.js](https://nodejs.org/), npm and npx installed. Then under project directory run:
 
