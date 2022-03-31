@@ -490,11 +490,27 @@ export class HTTP {
       FLAGS.CHUNKED,
       'header_value_te_chunked');
 
+    // Once chunked has been selected, no other encoding is possible in requests
+    // https://datatracker.ietf.org/doc/html/rfc7230#section-3.3.1
+    const forbidAfterChunkedInRequest = (otherwise: Node) => {
+      return this.load('type', {
+        [TYPE.REQUEST]: this.testLenientFlags(LENIENT_FLAGS.TRANSFER_ENCODING, {
+          0: span.headerValue.end().skipTo(
+            p.error(ERROR.INVALID_TRANSFER_ENCODING, 'Invalid `Transfer-Encoding` header value'),
+          ),
+        }).otherwise(otherwise),
+      }, otherwise);
+    };
+
     n('header_value_start')
       .otherwise(this.load('header_state', {
         [HEADER_STATE.UPGRADE]: this.setFlag(FLAGS.UPGRADE, fallback),
-        [HEADER_STATE.TRANSFER_ENCODING]: this.setFlag(
-          FLAGS.TRANSFER_ENCODING, toTransferEncoding),
+        [HEADER_STATE.TRANSFER_ENCODING]: this.testFlags(
+          FLAGS.CHUNKED,
+          {
+            1: forbidAfterChunkedInRequest(this.setFlag(FLAGS.TRANSFER_ENCODING, toTransferEncoding)),
+          },
+          this.setFlag(FLAGS.TRANSFER_ENCODING, toTransferEncoding)),
         [HEADER_STATE.CONTENT_LENGTH]: n('header_value_content_length_once'),
         [HEADER_STATE.CONNECTION]: n('header_value_connection'),
       }, 'header_value'));
@@ -513,9 +529,12 @@ export class HTTP {
 
     n('header_value_te_chunked_last')
       .match(' ', n('header_value_te_chunked_last'))
+      // Make sure a chunked word repeated more than once does not enable chunked encoding
+      .match('chunked', n('header_value_te_token'))
       .peek([ '\r', '\n' ], this.update('header_state',
         HEADER_STATE.TRANSFER_ENCODING_CHUNKED,
         'header_value_otherwise'))
+      .peek(',', forbidAfterChunkedInRequest(n('header_value_te_chunked')))
       .otherwise(n('header_value_te_chunked'));
 
     n('header_value_te_token')

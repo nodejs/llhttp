@@ -84,6 +84,8 @@ const http: IFixtureMap = {
     'request-lenient-headers': buildMode('loose', 'request-lenient-headers'),
     'request-lenient-keep-alive': buildMode(
       'loose', 'request-lenient-keep-alive'),
+    'request-lenient-transfer-encoding':
+      buildMode('loose', 'request-lenient-transfer-encoding'),
     'response': buildMode('loose', 'response'),
     'response-finish': buildMode('loose', 'response-finish'),
     'response-lenient-keep-alive': buildMode(
@@ -99,6 +101,8 @@ const http: IFixtureMap = {
     'request-lenient-headers': buildMode('strict', 'request-lenient-headers'),
     'request-lenient-keep-alive': buildMode(
       'strict', 'request-lenient-keep-alive'),
+    'request-lenient-transfer-encoding':
+      buildMode('loose', 'request-lenient-transfer-encoding'),
     'response': buildMode('strict', 'response'),
     'response-finish': buildMode('strict', 'response-finish'),
     'response-lenient-keep-alive': buildMode(
@@ -165,6 +169,8 @@ function run(name: string): void {
           types = [ 'request-lenient-chunked-length' ];
         } else if (meta.type === 'request-lenient-keep-alive') {
           types = [ 'request-lenient-keep-alive' ];
+        } else if (meta.type === 'request-lenient-transfer-encoding') {
+          types = [ 'request-lenient-transfer-encoding' ];
         } else if (meta.type === 'response-lenient-keep-alive') {
           types = [ 'response-lenient-keep-alive' ];
         } else if (meta.type === 'response-only') {

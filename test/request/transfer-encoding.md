@@ -347,10 +347,8 @@ off=62 len=3 span[header_value]="*/*"
 off=67 header_value complete
 off=67 len=17 span[header_field]="Transfer-Encoding"
 off=85 header_field complete
-off=86 len=16 span[header_value]="chunked, deflate"
-off=104 header_value complete
-off=106 headers complete method=3 v=1/1 flags=200 content_length=0
-off=106 error code=15 reason="Request has invalid `Transfer-Encoding`"
+off=86 len=7 span[header_value]="chunked"
+off=94 error code=15 reason="Invalid `Transfer-Encoding` header value"
 ```
 
 ## POST with `chunked` and duplicate transfer-encoding
@@ -379,18 +377,13 @@ off=86 len=7 span[header_value]="chunked"
 off=95 header_value complete
 off=95 len=17 span[header_field]="Transfer-Encoding"
 off=113 header_field complete
-off=114 len=7 span[header_value]="deflate"
-off=123 header_value complete
-off=125 headers complete method=3 v=1/1 flags=200 content_length=0
-off=125 error code=15 reason="Request has invalid `Transfer-Encoding`"
+off=114 len=0 span[header_value]=""
+off=115 error code=15 reason="Invalid `Transfer-Encoding` header value"
 ```
 
 ## POST with `chunked` before other transfer-coding (lenient)
 
-TODO(indutny): should we allow it even in lenient mode? (Consider disabling
-this).
-
-<!-- meta={"type": "request-lenient-chunked-length"} -->
+<!-- meta={"type": "request-lenient-transfer-encoding"} -->
 ```http
 POST /post_identity_body_world?q=search#hey HTTP/1.1
 Accept: */*
@@ -415,7 +408,39 @@ off=106 headers complete method=3 v=1/1 flags=200 content_length=0
 off=106 len=5 span[body]="World"
 ```
 
-## POST with `chunked` as last transfer-coding
+## POST with `chunked` and duplicate transfer-encoding (lenient)
+
+<!-- meta={"type": "request-lenient-transfer-encoding"} -->
+```http
+POST /post_identity_body_world?q=search#hey HTTP/1.1
+Accept: */*
+Transfer-Encoding: chunked
+Transfer-Encoding: deflate
+
+World
+```
+
+```log
+off=0 message begin
+off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 url complete
+off=54 len=6 span[header_field]="Accept"
+off=61 header_field complete
+off=62 len=3 span[header_value]="*/*"
+off=67 header_value complete
+off=67 len=17 span[header_field]="Transfer-Encoding"
+off=85 header_field complete
+off=86 len=7 span[header_value]="chunked"
+off=95 header_value complete
+off=95 len=17 span[header_field]="Transfer-Encoding"
+off=113 header_field complete
+off=114 len=7 span[header_value]="deflate"
+off=123 header_value complete
+off=125 headers complete method=3 v=1/1 flags=200 content_length=0
+off=125 len=5 span[body]="World"
+```
+
+## POST with `chunked` as last transfer-encoding
 
 <!-- meta={"type": "request"} -->
 ```http
@@ -449,6 +474,78 @@ off=116 chunk complete
 off=119 chunk header len=0
 off=121 chunk complete
 off=121 message complete
+```
+
+## POST with `chunked` as last transfer-encoding (multiple headers)
+
+<!-- meta={"type": "request"} -->
+```http
+POST /post_identity_body_world?q=search#hey HTTP/1.1
+Accept: */*
+Transfer-Encoding: deflate
+Transfer-Encoding: chunked
+
+5
+World
+0
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 url complete
+off=54 len=6 span[header_field]="Accept"
+off=61 header_field complete
+off=62 len=3 span[header_value]="*/*"
+off=67 header_value complete
+off=67 len=17 span[header_field]="Transfer-Encoding"
+off=85 header_field complete
+off=86 len=7 span[header_value]="deflate"
+off=95 header_value complete
+off=95 len=17 span[header_field]="Transfer-Encoding"
+off=113 header_field complete
+off=114 len=7 span[header_value]="chunked"
+off=123 header_value complete
+off=125 headers complete method=3 v=1/1 flags=208 content_length=0
+off=128 chunk header len=5
+off=128 len=5 span[body]="World"
+off=135 chunk complete
+off=138 chunk header len=0
+off=140 chunk complete
+off=140 message complete
+```
+
+## POST with `chunkedchunked` as transfer-encoding
+
+<!-- meta={"type": "request"} -->
+```http
+POST /post_identity_body_world?q=search#hey HTTP/1.1
+Accept: */*
+Transfer-Encoding: chunkedchunked
+
+5
+World
+0
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 url complete
+off=54 len=6 span[header_field]="Accept"
+off=61 header_field complete
+off=62 len=3 span[header_value]="*/*"
+off=67 header_value complete
+off=67 len=17 span[header_field]="Transfer-Encoding"
+off=85 header_field complete
+off=86 len=14 span[header_value]="chunkedchunked"
+off=102 header_value complete
+off=104 headers complete method=3 v=1/1 flags=200 content_length=0
+off=104 error code=15 reason="Request has invalid `Transfer-Encoding`"
 ```
 
 ## Missing last-chunk
