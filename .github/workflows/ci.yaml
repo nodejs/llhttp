@@ -19,7 +19,8 @@ jobs:
       - name: Install clang for Windows
         if: runner.os == 'Windows'
         run: |
-          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+          iwr -useb get.scoop.sh -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
           scoop install llvm --global
 
           # Scoop modifies the PATH so we make the modified PATH global.
@@ -60,7 +61,8 @@ jobs:
       - name: Install clang for Windows
         if: runner.os == 'Windows'
         run: |
-          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+          iwr -useb get.scoop.sh -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
           scoop install llvm --global
 
           # Scoop modifies the PATH so we make the modified PATH global.
