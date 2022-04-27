@@ -624,12 +624,16 @@ export class HTTP {
 
     n('header_value_otherwise')
       .peek('\r', span.headerValue.end().skipTo(n('header_value_almost_done')))
-      .peek('\n', span.headerValue.end(n('header_value_almost_done')))
+      .peek('\n', span.headerValue.end().skipTo(
+        p.error(ERROR.CR_EXPECTED, 'Missing expected CR after header value')),
+      )
       .otherwise(checkLenient);
 
     n('header_value_lenient')
       .peek('\r', span.headerValue.end().skipTo(n('header_value_almost_done')))
-      .peek('\n', span.headerValue.end(n('header_value_almost_done')))
+      .peek('\n', span.headerValue.end().skipTo(
+        p.error(ERROR.CR_EXPECTED, 'Missing expected CR after header value')),
+      )
       .skipTo(n('header_value_lenient'));
 
     n('header_value_almost_done')
