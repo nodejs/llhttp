@@ -201,7 +201,7 @@ off=39 header_value complete
 off=52 error code=10 reason="Invalid header token"
 ```
 
-### Missing CR after header value
+### Missing CR between headers
 
 <!-- meta={"type": "request", "noScan": true} -->
  
