@@ -535,7 +535,7 @@ export class HTTP {
         HEADER_STATE.TRANSFER_ENCODING_CHUNKED,
         'header_value_otherwise'))
       .peek(',', forbidAfterChunkedInRequest(n('header_value_te_chunked')))
-      .otherwise(n('header_value_te_chunked'));
+      .otherwise(n('header_value_te_token'));
 
     n('header_value_te_token')
       .match(',', n('header_value_te_token_ows'))
