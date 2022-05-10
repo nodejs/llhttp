@@ -60,6 +60,7 @@ const NODES: ReadonlyArray<string> = [
   'header_value',
   'header_value_otherwise',
   'header_value_lenient',
+  'header_value_lenient_failed',
   'header_value_lws',
   'header_value_te_chunked',
   'header_value_te_chunked_last',
@@ -620,21 +621,22 @@ export class HTTP {
 
     const checkLenient = this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
       1: n('header_value_lenient'),
-    }, p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char'));
+    }, n('header_value_lenient_failed'));
 
     n('header_value_otherwise')
       .peek('\r', span.headerValue.end().skipTo(n('header_value_almost_done')))
-      .peek('\n', span.headerValue.end().skipTo(
-        p.error(ERROR.CR_EXPECTED, 'Missing expected CR after header value')),
-      )
       .otherwise(checkLenient);
 
     n('header_value_lenient')
       .peek('\r', span.headerValue.end().skipTo(n('header_value_almost_done')))
+      .peek('\n', span.headerValue.end(n('header_value_almost_done')))
+      .skipTo(n('header_value_lenient'));
+
+    n('header_value_lenient_failed')
       .peek('\n', span.headerValue.end().skipTo(
         p.error(ERROR.CR_EXPECTED, 'Missing expected CR after header value')),
       )
-      .skipTo(n('header_value_lenient'));
+      .otherwise(p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char'));
 
     n('header_value_almost_done')
       .match('\n', n('header_value_lws'))
