@@ -531,7 +531,6 @@ export class HTTP {
     n('header_value_te_chunked_last')
       .match(' ', n('header_value_te_chunked_last'))
       // Make sure a chunked word repeated more than once does not enable chunked encoding
-      .match('chunked', n('header_value_te_token'))
       .peek([ '\r', '\n' ], this.update('header_state',
         HEADER_STATE.TRANSFER_ENCODING_CHUNKED,
         'header_value_otherwise'))
