@@ -70,8 +70,10 @@ generate:
 	npx ts-node bin/generate.ts
 
 install: build/libllhttp.a build/libllhttp.so
-	$(INSTALL) build/llhttp.h $(DESTDIR)$(INCLUDEDIR)/llhttp.h
-	$(INSTALL) build/libllhttp.a $(DESTDIR)$(LIBDIR)/libllhttp.a
+	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)
+	$(INSTALL) -d $(DESTDIR)$(LIBDIR)
+	$(INSTALL) -C build/llhttp.h $(DESTDIR)$(INCLUDEDIR)/llhttp.h
+	$(INSTALL) -C build/libllhttp.a $(DESTDIR)$(LIBDIR)/libllhttp.a
 	$(INSTALL) build/libllhttp.so $(DESTDIR)$(LIBDIR)/libllhttp.so
 
 .PHONY: all generate clean release
