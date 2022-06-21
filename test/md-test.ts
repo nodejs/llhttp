@@ -102,7 +102,7 @@ const http: IFixtureMap = {
     'request-lenient-keep-alive': buildMode(
       'strict', 'request-lenient-keep-alive'),
     'request-lenient-transfer-encoding':
-      buildMode('loose', 'request-lenient-transfer-encoding'),
+      buildMode('strict', 'request-lenient-transfer-encoding'),
     'response': buildMode('strict', 'response'),
     'response-finish': buildMode('strict', 'response-finish'),
     'response-lenient-keep-alive': buildMode(
