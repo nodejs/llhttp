@@ -246,6 +246,19 @@ void llhttp_set_lenient_chunked_length(llhttp_t* parser, int enabled);
  */
 void llhttp_set_lenient_keep_alive(llhttp_t* parser, int enabled);
 
+/* Enables/disables lenient handling of `Transfer-Encoding` header.
+ *
+ * Normally `llhttp` would error when a `Transfer-Encoding` has `chunked` value
+ * and another value after it (either in a single header or in multiple
+ * headers whose value are internally joined using `, `).
+ * This is mandated by the spec to reliably determine request body size and thus
+ * avoid request smuggling.
+ * With this flag the extra value will be parsed normally.
+ *
+ * **(USE AT YOUR OWN RISK)**
+ */
+void llhttp_set_lenient_transfer_encoding(llhttp_t* parser, int enabled);
+
 #ifdef __cplusplus
 }  /* extern "C" */
 #endif

@@ -82,6 +82,11 @@ void llhttp__test_init_request_lenient_keep_alive(llparse_t* s) {
   s->lenient_flags |= LENIENT_KEEP_ALIVE;
 }
 
+void llhttp__test_init_request_lenient_transfer_encoding(llparse_t* s) {
+  llhttp__test_init_request(s);
+  s->lenient_flags |= LENIENT_TRANSFER_ENCODING;
+}
+
 
 void llhttp__test_init_response_lenient_keep_alive(llparse_t* s) {
   llhttp__test_init_response(s);

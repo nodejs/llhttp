@@ -9,8 +9,9 @@ import * as path from 'path';
 import * as llhttp from '../../src/llhttp';
 
 export type TestType = 'request' | 'response' | 'request-lenient-headers' |
-  'request-lenient-chunked-length' | 'request-lenient-keep-alive' |
-  'response-lenient-keep-alive' | 'request-finish' | 'response-finish' |
+  'request-lenient-chunked-length' | 'request-lenient-transfer-encoding' |
+  'request-lenient-keep-alive' | 'response-lenient-keep-alive' |
+  'request-finish' | 'response-finish' |
   'none' | 'url';
 
 export { FixtureResult };
@@ -63,6 +64,7 @@ export async function build(
   if (ty === 'request' || ty === 'response' ||
       ty === 'request-lenient-headers' ||
       ty === 'request-lenient-chunked-length' ||
+      ty === 'request-lenient-transfer-encoding' ||
       ty === 'request-lenient-keep-alive' ||
       ty === 'response-lenient-keep-alive') {
     extra.push(

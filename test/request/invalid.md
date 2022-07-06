@@ -200,3 +200,33 @@ off=22 len=15 span[header_value]="www.example.com"
 off=39 header_value complete
 off=52 error code=10 reason="Invalid header token"
 ```
+
+### Missing CR between headers
+
+<!-- meta={"type": "request", "noScan": true} -->
+ 
+```http
+GET / HTTP/1.1
+Host: localhost
+Dummy: x\nContent-Length: 23
+
+GET / HTTP/1.1
+Dummy: GET /admin HTTP/1.1
+Host: localhost
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=1 span[url]="/"
+off=6 url complete
+off=16 len=4 span[header_field]="Host"
+off=21 header_field complete
+off=22 len=9 span[header_value]="localhost"
+off=33 header_value complete
+off=33 len=5 span[header_field]="Dummy"
+off=39 header_field complete
+off=40 len=1 span[header_value]="x"
+off=42 error code=25 reason="Missing expected CR after header value"
+```
