@@ -37,18 +37,18 @@
   "homepage": "https://github.com/nodejs/llhttp#readme",
   "devDependencies": {
     "@types/mocha": "^5.2.7",
-    "@types/node": "^10.17.27",
+    "@types/node": "^10.17.60",
     "llparse-dot": "^1.0.1",
-    "llparse-test-fixture": "^5.0.1",
+    "llparse-test-fixture": "^5.0.2",
     "mdgator": "^1.1.2",
     "mocha": "^7.2.0",
     "ts-node": "^7.0.1",
     "tslint": "^5.20.1",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.10"
   },
   "dependencies": {
     "@types/semver": "^5.5.0",
-    "llparse": "^7.0.0",
+    "llparse": "^7.1.1",
     "semver": "^5.7.1"
   }
 }
