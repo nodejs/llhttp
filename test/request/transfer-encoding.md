@@ -513,3 +513,31 @@ off=38 len=7 span[header_value]="chunked"
 off=49 headers complete method=4 v=1/1 flags=208 content_length=0
 off=51 error code=2 reason="Invalid character in chunk parameters"
 ```
+
+## Invalid OBS fold after chunked value
+
+<!-- meta={"type": "request", "mode": "strict"} -->
+```http
+PUT /url HTTP/1.1
+Transfer-Encoding: chunked
+  abc
+
+5
+World
+0
+
+
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=9 url complete
+off=19 len=17 span[header_field]="Transfer-Encoding"
+off=37 header_field complete
+off=38 len=7 span[header_value]="chunked"
+off=47 len=5 span[header_value]="  abc"
+off=54 header_value complete
+off=56 headers complete method=4 v=1/1 flags=200 content_length=0
+off=56 error code=15 reason="Request has invalid `Transfer-Encoding`"
+```

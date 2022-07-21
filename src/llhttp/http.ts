@@ -593,7 +593,11 @@ export class HTTP {
         'Missing expected LF after header value'));
 
     n('header_value_lws')
-      .peek([ ' ', '\t' ], span.headerValue.start(n('header_value_start')))
+      .peek([ ' ', '\t' ],
+        this.load('header_state', {
+          [HEADER_STATE.TRANSFER_ENCODING_CHUNKED]:
+            this.resetHeaderState(span.headerValue.start(n('header_value_start'))),
+        }, span.headerValue.start(n('header_value_start'))))
       .otherwise(this.setHeaderFlags('header_field_start'));
 
     const checkTrailing = this.testFlags(FLAGS.TRAILING, {
