@@ -106,3 +106,17 @@ off=21 header_field complete
 off=22 len=1 span[header_value]="1"
 off=24 error code=3 reason="Missing expected LF after header value"
 ```
+
+### Invalid HTTP version
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/5.6 200 OK
+
+
+```
+
+```log
+off=0 message begin
+off=8 error code=9 reason="Invalid HTTP version"
+```
