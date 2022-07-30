@@ -51,6 +51,7 @@ release: generate
 	cp -rf src/llhttp.gyp release/
 	cp -rf src/common.gypi release/
 	cp -rf CMakeLists.txt release/
+	sed -i s/_TAG_/$(TAG)/ release/CMakeLists.txt
 	cp -rf libllhttp.pc.in release/
 	cp -rf README.md release/
 	cp -rf LICENSE-MIT release/
@@ -60,7 +61,7 @@ postversion: release
 	git checkout release --
 	cp -rf release/* ./
 	rm -rf release
-	git add include src *.gyp *.gypi CMakeLists.txt README.md LICENSE-MIT
+	git add include src *.gyp *.gypi CMakeLists.txt README.md LICENSE-MIT libllhttp.pc.in
 	git commit -a -m "release: $(TAG)"
 	git tag "release/v$(TAG)"
 	git push && git push --tags
