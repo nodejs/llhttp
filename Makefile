@@ -57,6 +57,7 @@ release: generate
 	cp -rf LICENSE-MIT release/
 
 postversion: release
+	git fetch origin
 	git push
 	git checkout release --
 	cp -rf release/* ./
