@@ -60,6 +60,7 @@ export enum LENIENT_FLAGS {
   CHUNKED_LENGTH = 1 << 1,
   KEEP_ALIVE = 1 << 2,
   TRANSFER_ENCODING = 1 << 3,
+  VERSION = 1 << 4,
 }
 
 export enum METHODS {

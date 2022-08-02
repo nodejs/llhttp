@@ -244,8 +244,27 @@ export class HTTP {
       .match('HTTP/', this.update('type', TYPE.RESPONSE, 'res_http_major'))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Invalid word encountered'));
 
-    // Response
+    const checkVersion = (destination: string): Node => {
+      return this.testLenientFlags(LENIENT_FLAGS.VERSION,
+        {
+          1: n(destination),
+        },
+        this.load('http_major', {
+          0: this.load('http_minor', {
+            9: n(destination),
+          }, p.error(ERROR.INVALID_VERSION, 'Invalid HTTP version')),
+          1: this.load('http_minor', {
+            0: n(destination),
+            1: n(destination),
+          }, p.error(ERROR.INVALID_VERSION, 'Invalid HTTP version')),
+          2: this.load('http_minor', {
+            0: n(destination),
+          }, p.error(ERROR.INVALID_VERSION, 'Invalid HTTP version')),
+        }, p.error(ERROR.INVALID_VERSION, 'Invalid HTTP version')),
+      );
+    };
 
+    // Response
     n('start_res')
       .match('HTTP/', n('res_http_major'))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
@@ -259,7 +278,7 @@ export class HTTP {
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected dot'));
 
     n('res_http_minor')
-      .select(MINOR, this.store('http_minor', 'res_http_end'))
+      .select(MINOR, this.store('http_minor', checkVersion('res_http_end')))
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Invalid minor version'));
 
     n('res_http_end')
@@ -365,7 +384,7 @@ export class HTTP {
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected dot'));
 
     n('req_http_minor')
-      .select(MINOR, this.store('http_minor', 'req_http_end'))
+      .select(MINOR, this.store('http_minor', checkVersion('req_http_end')))
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Invalid minor version'));
 
     n('req_http_end').otherwise(this.load('method', {

@@ -230,3 +230,17 @@ off=39 header_field complete
 off=40 len=1 span[header_value]="x"
 off=42 error code=25 reason="Missing expected CR after header value"
 ```
+
+### Invalid HTTP version
+
+<!-- meta={"type": "request", "noScan": true} -->
+```http
+GET / HTTP/5.6
+```
+
+```log
+off=0 message begin
+off=4 len=1 span[url]="/"
+off=6 url complete
+off=14 error code=9 reason="Invalid HTTP version"
+```

@@ -79,34 +79,30 @@ const http: IFixtureMap = {
     'none': buildMode('loose', 'none'),
     'request': buildMode('loose', 'request'),
     'request-finish': buildMode('loose', 'request-finish'),
-    'request-lenient-chunked-length':
-      buildMode('loose', 'request-lenient-chunked-length'),
+    'request-lenient-chunked-length': buildMode('loose', 'request-lenient-chunked-length'),
     'request-lenient-headers': buildMode('loose', 'request-lenient-headers'),
-    'request-lenient-keep-alive': buildMode(
-      'loose', 'request-lenient-keep-alive'),
-    'request-lenient-transfer-encoding':
-      buildMode('loose', 'request-lenient-transfer-encoding'),
+    'request-lenient-keep-alive': buildMode( 'loose', 'request-lenient-keep-alive'),
+    'request-lenient-transfer-encoding': buildMode('loose', 'request-lenient-transfer-encoding'),
+    'request-lenient-version': buildMode( 'loose', 'request-lenient-version'),
     'response': buildMode('loose', 'response'),
     'response-finish': buildMode('loose', 'response-finish'),
-    'response-lenient-keep-alive': buildMode(
-      'loose', 'response-lenient-keep-alive'),
+    'response-lenient-keep-alive': buildMode( 'loose', 'response-lenient-keep-alive'),
+    'response-lenient-version': buildMode( 'loose', 'response-lenient-version'),
     'url': buildMode('loose', 'url'),
   },
   strict: {
     'none': buildMode('strict', 'none'),
     'request': buildMode('strict', 'request'),
     'request-finish': buildMode('strict', 'request-finish'),
-    'request-lenient-chunked-length':
-      buildMode('strict', 'request-lenient-chunked-length'),
+    'request-lenient-chunked-length': buildMode('strict', 'request-lenient-chunked-length'),
     'request-lenient-headers': buildMode('strict', 'request-lenient-headers'),
-    'request-lenient-keep-alive': buildMode(
-      'strict', 'request-lenient-keep-alive'),
-    'request-lenient-transfer-encoding':
-      buildMode('strict', 'request-lenient-transfer-encoding'),
+    'request-lenient-keep-alive': buildMode( 'strict', 'request-lenient-keep-alive'),
+    'request-lenient-transfer-encoding': buildMode('strict', 'request-lenient-transfer-encoding'),
+    'request-lenient-version': buildMode( 'strict', 'request-lenient-version'),
     'response': buildMode('strict', 'response'),
     'response-finish': buildMode('strict', 'response-finish'),
-    'response-lenient-keep-alive': buildMode(
-      'strict', 'response-lenient-keep-alive'),
+    'response-lenient-keep-alive': buildMode('strict', 'response-lenient-keep-alive'),
+    'response-lenient-version': buildMode( 'strict', 'response-lenient-version'),
     'url': buildMode('strict', 'url'),
   },
 };
@@ -171,8 +167,12 @@ function run(name: string): void {
           types = [ 'request-lenient-keep-alive' ];
         } else if (meta.type === 'request-lenient-transfer-encoding') {
           types = [ 'request-lenient-transfer-encoding' ];
+        } else if (meta.type === 'request-lenient-version') {
+          types = [ 'request-lenient-version' ];
         } else if (meta.type === 'response-lenient-keep-alive') {
           types = [ 'response-lenient-keep-alive' ];
+        } else if (meta.type === 'response-lenient-version') {
+          types = [ 'response-lenient-version' ];
         } else if (meta.type === 'response-only') {
           types = [ 'response' ];
         } else if (meta.type === 'request-finish') {
@@ -278,6 +278,7 @@ function run(name: string): void {
 
 run('request/sample');
 run('request/lenient-headers');
+run('request/lenient-version');
 run('request/method');
 run('request/uri');
 run('request/connection');
@@ -292,5 +293,5 @@ run('response/content-length');
 run('response/transfer-encoding');
 run('response/invalid');
 run('response/finish');
-
+run('request/lenient-version');
 run('url');
