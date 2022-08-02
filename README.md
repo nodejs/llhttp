@@ -107,6 +107,7 @@ make
 
 * Python: [pallas/pyllhttp][8]
 * Ruby: [metabahn/llhttp][9]
+* Rust: [JackLiar/rust-llhttp][10]
 
 ### Using with CMake
 
@@ -178,3 +179,4 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 [7]: https://github.com/nodejs/node
 [8]: https://github.com/pallas/pyllhttp
 [9]: https://github.com/metabahn/llhttp
+[10]: https://github.com/JackLiar/rust-llhttp
