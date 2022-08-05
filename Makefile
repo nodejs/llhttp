@@ -56,6 +56,17 @@ release: generate
 	cp -rf README.md release/
 	cp -rf LICENSE-MIT release/
 
+github-release:
+	@echo "${RELEASE}" | grep -q -e "^v" || { echo "Please make sure version starts with \"v\"."; exit 1; }
+	gh release create -d --generate-notes ${RELEASE}
+	@sleep 5
+	gh release view ${RELEASE} -t "{{.body}}" --json body > RELEASE_NOTES
+	gh release delete ${RELEASE} -y
+	gh release create -F RELEASE_NOTES -d --title ${RELEASE} --target release release/${RELEASE}
+	@sleep 5
+	rm -rf RELEASE_NOTES
+	open $$(gh release view release/${RELEASE} --json url -t "{{.url}}")
+
 postversion: release
 	git fetch origin
 	git push
@@ -78,4 +89,4 @@ install: build/libllhttp.a build/libllhttp.so
 	$(INSTALL) -C build/libllhttp.a $(DESTDIR)$(LIBDIR)/libllhttp.a
 	$(INSTALL) build/libllhttp.so $(DESTDIR)$(LIBDIR)/libllhttp.so
 
-.PHONY: all generate clean release
+.PHONY: all generate clean release postversion github-release
