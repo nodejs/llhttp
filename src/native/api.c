@@ -80,6 +80,8 @@ void llhttp_free(llhttp_t* parser) {
   free(parser);
 }
 
+#endif  // defined(__wasm__)
+
 /* Some getters required to get stuff from the parser */
 
 uint8_t llhttp_get_type(llhttp_t* parser) {
@@ -105,8 +107,6 @@ int llhttp_get_status_code(llhttp_t* parser) {
 uint8_t llhttp_get_upgrade(llhttp_t* parser) {
   return parser->upgrade;
 }
-
-#endif  // defined(__wasm__)
 
 
 void llhttp_reset(llhttp_t* parser) {
