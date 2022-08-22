@@ -27,13 +27,13 @@ jobs:
           echo $env:PATH >> $env:GITHUB_PATH
 
       - name: Fetch code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 1
 
       # Skip macOS & Windows, cache there is slower
       - name: Restore node_modules cache for Linux
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         if: runner.os == 'Linux'
         with:
           path: ~/.npm
@@ -70,13 +70,13 @@ jobs:
           echo $env:PATH >> $env:GITHUB_PATH
 
       - name: Fetch code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 1
 
       # Skip macOS & Windows, cache there is slower
       - name: Restore node_modules cache for Linux
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         if: runner.os == 'Linux'
         with:
           path: ~/.npm
@@ -98,12 +98,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fetch code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 1
 
       - name: Restore node_modules cache
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
