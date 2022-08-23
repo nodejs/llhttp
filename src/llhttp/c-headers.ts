@@ -65,8 +65,10 @@ export class CHeaders {
 
     res += `enum ${name} {\n`;
     const keys = Object.keys(map);
-    keys.forEach((key, i) => {
-      const isLast = i === keys.length - 1;
+    const keysLength = keys.length;
+    for (let i = 0; i < keysLength; i++) {
+      const key = keys[i];
+      const isLast = i === keysLength - 1;
 
       let value: number | string = map[key];
 
@@ -78,7 +80,7 @@ export class CHeaders {
       if (!isLast) {
         res += ',\n';
       }
-    });
+    }
     res += '\n};\n';
     res += `typedef enum ${name} ${name}_t;\n`;
 
@@ -89,9 +91,9 @@ export class CHeaders {
     let res = '';
 
     res += `#define ${name}_MAP(XX) \\\n`;
-    Object.keys(map).forEach((key) => {
-      res += `  XX(${map[key]!}, ${key.replace(/-/g, '')}, ${key}) \\\n`;
-    });
+    for (const [key, value] of Object.entries(map)) {
+      res += `  XX(${value!}, ${key.replace(/-/g, '')}, ${key}) \\\n`;
+    }
     res += '\n';
 
     return res;

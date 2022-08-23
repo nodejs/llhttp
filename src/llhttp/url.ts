@@ -98,10 +98,7 @@ export class URL {
       .match('//', this.spanStart('host', server))
       .otherwise(p.error(ERROR.INVALID_URL, 'Unexpected char in url schema'));
 
-    [
-      server,
-      serverWithAt,
-    ].forEach((node) => {
+    for (const node of [server, serverWithAt]) {
       node
         .peek('/', this.spanEnd('host', this.spanStart('path').skipTo(path)))
         .match('?', this.spanEnd('host', this.spanStart('query', query)))
@@ -112,7 +109,7 @@ export class URL {
       if (node !== serverWithAt) {
         node.match('@', serverWithAt);
       }
-    });
+    }
 
     serverWithAt
       .match('@', p.error(ERROR.INVALID_URL, 'Double @ in url'));
@@ -142,10 +139,10 @@ export class URL {
       .otherwise(
         p.error(ERROR.INVALID_URL, 'Invalid char in url fragment start'));
 
-    [ start, schema, schemaDelim ].forEach((node) => {
+    for (const node of [ start, schema, schemaDelim ]) {
       /* No whitespace allowed here */
       node.match([ ' ', '\r', '\n' ], this.errorInvalid);
-    });
+    }
 
     // Adaptors
     const toHTTP = this.node('to_http');
@@ -161,10 +158,7 @@ export class URL {
       .match('\r\n', toHTTP09)
       .otherwise(p.error(ERROR.INVALID_URL, 'Expected CRLF'));
 
-    [
-      server, serverWithAt, queryOrFragment, queryStart, query,
-      fragment,
-    ].forEach((node) => {
+    for (const node of [server, serverWithAt, queryOrFragment, queryStart, query, fragment]) {
       let spanName: SpanName | undefined;
 
       if (node === server || node === serverWithAt) {
@@ -187,7 +181,7 @@ export class URL {
 
       node.peek('\r', endTo(skipCRLF));
       node.peek('\n', endTo(skipToHTTP09));
-    });
+    }
 
     return {
       entry,

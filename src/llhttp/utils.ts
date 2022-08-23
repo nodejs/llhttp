@@ -9,19 +9,19 @@ export function enumToMap(
 ): IEnumMap {
   const res: IEnumMap = {};
 
-  Object.keys(obj).forEach((key) => {
+  for (const key of Object.keys(obj)) {
     const value = obj[key];
     if (typeof value !== 'number') {
-      return;
+      continue;
     }
     if (filter && !filter.includes(value)) {
-      return;
+      continue;
     }
     if (exceptions && exceptions.includes(value)) {
-      return;
+      continue;
     }
     res[key] = value;
-  });
+  }
 
   return res;
 }

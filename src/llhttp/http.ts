@@ -183,7 +183,9 @@ export class HTTP {
     };
     /* tslint:enable:object-literal-sort-keys */
 
-    NODES.forEach((name) => this.nodes.set(name, p.node(name) as Match));
+    for (const name of NODES) {
+      this.nodes.set(name, p.node(name) as Match);
+    }
   }
 
   public build(): IHTTPResult {
@@ -338,14 +340,16 @@ export class HTTP {
         notEqual: url.entry.normal,
       }));
 
-    const onUrlCompleteHTTP = p.invoke(this.callback.onUrlComplete);
-    onUrlCompleteHTTP.otherwise(n('req_http_start'));
+    const onUrlCompleteHTTP = this.invokePausable(
+      'on_url_complete', ERROR.CB_URL_COMPLETE, n('req_http_start'),
+    );
 
     url.exit.toHTTP
       .otherwise(onUrlCompleteHTTP);
 
-    const onUrlCompleteHTTP09 = p.invoke(this.callback.onUrlComplete);
-    onUrlCompleteHTTP09.otherwise(n('header_field_start'));
+    const onUrlCompleteHTTP09 = this.invokePausable(
+      'on_url_complete', ERROR.CB_URL_COMPLETE, n('header_field_start'),
+    );
 
     url.exit.toHTTP09
       .otherwise(
@@ -425,8 +429,9 @@ export class HTTP {
       .select(SPECIAL_HEADERS, this.store('header_state', 'header_field_colon'))
       .otherwise(this.resetHeaderState('header_field_general'));
 
-    const onHeaderFieldComplete = p.invoke(this.callback.onHeaderFieldComplete);
-    onHeaderFieldComplete.otherwise(n('header_value_discard_ws'));
+    const onHeaderFieldComplete = this.invokePausable(
+      'on_header_field_complete', ERROR.CB_HEADER_FIELD_COMPLETE, n('header_value_discard_ws'),
+    );
 
     const onInvalidHeaderFieldChar =
       p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header field char');
@@ -488,8 +493,9 @@ export class HTTP {
         n('header_value_discard_lws'));
     }
 
-    const onHeaderValueComplete = p.invoke(this.callback.onHeaderValueComplete);
-    onHeaderValueComplete.otherwise(n('header_field_start'));
+    const onHeaderValueComplete = this.invokePausable(
+      'on_header_value_complete', ERROR.CB_HEADER_VALUE_COMPLETE, n('header_field_start'),
+    );
 
     const emptyContentLengthError = p.error(
       ERROR.INVALID_CONTENT_LENGTH, 'Empty Content-Length');
@@ -1000,16 +1006,34 @@ export class HTTP {
   private invokePausable(name: string, errorCode: ERROR, next: string | Node)
     : Node {
     let cb;
-    if (name === 'on_message_begin') {
-      cb = this.callback.onMessageBegin;
-    } else if (name === 'on_message_complete') {
-      cb = this.callback.onMessageComplete;
-    } else if (name === 'on_chunk_header') {
-      cb = this.callback.onChunkHeader;
-    } else if (name === 'on_chunk_complete') {
-      cb = this.callback.onChunkComplete;
-    } else {
-      throw new Error('Unknown callback: ' + name);
+
+    switch (name) {
+      case 'on_message_begin':
+        cb = this.callback.onMessageBegin;
+        break;
+      case 'on_url_complete':
+        cb = this.callback.onUrlComplete;
+        break;
+      case 'on_status_complete':
+        cb = this.callback.onStatusComplete;
+        break;
+      case 'on_header_field_complete':
+        cb = this.callback.onHeaderFieldComplete;
+        break;
+      case 'on_header_value_complete':
+        cb = this.callback.onHeaderValueComplete;
+        break;
+      case 'on_message_complete':
+        cb = this.callback.onMessageComplete;
+        break;
+      case 'on_chunk_header':
+        cb = this.callback.onChunkHeader;
+        break;
+      case 'on_chunk_complete':
+        cb = this.callback.onChunkComplete;
+        break;
+      default:
+        throw new Error('Unknown callback: ' + name);
     }
 
     const p = this.llparse;

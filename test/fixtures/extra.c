@@ -13,14 +13,21 @@ int llhttp__on_url(llparse_t* s, const char* p, const char* endp) {
 int llhttp__on_url_complete(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   llparse__print(p, endp, "url complete");
-  return 0;
+
+  #ifdef LLHTTP__TEST_PAUSE_ON_URL_COMPLETE
+    return LLPARSE__ERROR_PAUSE;
+  #else
+    return 0;
+  #endif
 }
 
 
 int llhttp__on_url_schema(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   return llparse__print_span("url.schema", p, endp);
 }
 
@@ -28,6 +35,7 @@ int llhttp__on_url_schema(llparse_t* s, const char* p, const char* endp) {
 int llhttp__on_url_host(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   return llparse__print_span("url.host", p, endp);
 }
 
@@ -35,6 +43,7 @@ int llhttp__on_url_host(llparse_t* s, const char* p, const char* endp) {
 int llhttp__on_url_path(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   return llparse__print_span("url.path", p, endp);
 }
 
@@ -42,6 +51,7 @@ int llhttp__on_url_path(llparse_t* s, const char* p, const char* endp) {
 int llhttp__on_url_query(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   return llparse__print_span("url.query", p, endp);
 }
 
@@ -49,6 +59,7 @@ int llhttp__on_url_query(llparse_t* s, const char* p, const char* endp) {
 int llhttp__on_url_fragment(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   return llparse__print_span("url.fragment", p, endp);
 }
 
@@ -110,9 +121,38 @@ void llhttp__test_finish(llparse_t* s) {
 }
 
 
+int llhttp__on_message_begin(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+
+  llparse__print(p, endp, "message begin");
+
+  #ifdef LLHTTP__TEST_PAUSE_ON_MESSAGE_BEGIN
+    return LLPARSE__ERROR_PAUSE;
+  #else
+    return 0;
+  #endif
+}
+
+
+int llhttp__on_message_complete(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+
+  llparse__print(p, endp, "message complete");
+
+  #ifdef LLHTTP__TEST_PAUSE_ON_MESSAGE_COMPLETE
+    return LLPARSE__ERROR_PAUSE;
+  #else
+    return 0;
+  #endif
+}
+
+
 int llhttp__on_status(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   return llparse__print_span("status", p, endp);
 }
 
@@ -120,14 +160,21 @@ int llhttp__on_status(llparse_t* s, const char* p, const char* endp) {
 int llhttp__on_status_complete(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   llparse__print(p, endp, "status complete");
-  return 0;
+
+  #ifdef LLHTTP__TEST_PAUSE_ON_STATUS_COMPLETE
+    return LLPARSE__ERROR_PAUSE;
+  #else
+    return 0;
+  #endif
 }
 
 
 int llhttp__on_header_field(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   return llparse__print_span("header_field", p, endp);
 }
 
@@ -135,14 +182,21 @@ int llhttp__on_header_field(llparse_t* s, const char* p, const char* endp) {
 int llhttp__on_header_field_complete(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   llparse__print(p, endp, "header_field complete");
-  return 0;
+
+  #ifdef LLHTTP__TEST_PAUSE_ON_HEADER_FIELD_COMPLETE
+    return LLPARSE__ERROR_PAUSE;
+  #else
+    return 0;
+  #endif
 }
 
 
 int llhttp__on_header_value(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   return llparse__print_span("header_value", p, endp);
 }
 
@@ -150,8 +204,14 @@ int llhttp__on_header_value(llparse_t* s, const char* p, const char* endp) {
 int llhttp__on_header_value_complete(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   llparse__print(p, endp, "header_value complete");
-  return 0;
+
+  #ifdef LLHTTP__TEST_PAUSE_ON_HEADER_VALUE_COMPLETE
+    return LLPARSE__ERROR_PAUSE;
+  #else
+    return 0;
+  #endif
 }
 
 
@@ -171,29 +231,19 @@ int llhttp__on_headers_complete(llparse_t* s, const char* p, const char* endp) {
   } else {
     llparse__print(p, endp, "invalid headers complete");
   }
-  return 0;
-}
 
-
-int llhttp__on_message_begin(llparse_t* s, const char* p, const char* endp) {
-  if (llparse__in_bench)
+  #ifdef LLHTTP__TEST_PAUSE_ON_HEADERS_COMPLETE
+    return LLPARSE__ERROR_PAUSE;
+  #else
     return 0;
-  llparse__print(p, endp, "message begin");
-  return 0;
-}
-
-
-int llhttp__on_message_complete(llparse_t* s, const char* p, const char* endp) {
-  if (llparse__in_bench)
-    return 0;
-  llparse__print(p, endp, "message complete");
-  return 0;
+  #endif
 }
 
 
 int llhttp__on_body(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   return llparse__print_span("body", p, endp);
 }
 
@@ -201,16 +251,28 @@ int llhttp__on_body(llparse_t* s, const char* p, const char* endp) {
 int llhttp__on_chunk_header(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   llparse__print(p, endp, "chunk header len=%d", (int) s->content_length);
-  return 0;
+
+  #ifdef LLHTTP__TEST_PAUSE_ON_CHUNK_HEADER
+    return LLPARSE__ERROR_PAUSE;
+  #else
+    return 0;
+  #endif
 }
 
 
 int llhttp__on_chunk_complete(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
+
   llparse__print(p, endp, "chunk complete");
-  return 0;
+
+  #ifdef LLHTTP__TEST_PAUSE_ON_CHUNK_COMPLETE
+    return LLPARSE__ERROR_PAUSE;
+  #else
+    return 0;
+  #endif
 }
 
 #endif  /* LLHTTP__TEST_HTTP */

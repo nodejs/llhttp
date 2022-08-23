@@ -34,6 +34,11 @@ export enum ERROR {
   PAUSED_H2_UPGRADE = 23,
 
   USER = 24,
+
+  CB_URL_COMPLETE = 25,
+  CB_STATUS_COMPLETE = 26,
+  CB_HEADER_FIELD_COMPLETE = 27,
+  CB_HEADER_VALUE_COMPLETE = 28,
 }
 
 export enum TYPE {
@@ -189,11 +194,11 @@ export const METHODS_RTSP = [
 export const METHOD_MAP = enumToMap(METHODS);
 export const H_METHOD_MAP: IEnumMap = {};
 
-Object.keys(METHOD_MAP).forEach((key) => {
+for (const key of Object.keys(METHOD_MAP)) {
   if (/^H/.test(key)) {
     H_METHOD_MAP[key] = METHOD_MAP[key];
   }
-});
+}
 
 export enum FINISH {
   SAFE = 0,
