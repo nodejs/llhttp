@@ -244,3 +244,18 @@ off=4 len=1 span[url]="/"
 off=6 url complete
 off=14 error code=9 reason="Invalid HTTP version"
 ```
+
+## Invalid space after start line
+
+<!-- meta={"type": "request"} -->
+```http
+GET / HTTP/1.1
+ Host: foo
+```
+
+```log
+off=0 message begin
+off=4 len=1 span[url]="/"
+off=6 url complete
+off=17 error code=30 reason="Unexpected space after start line"
+```

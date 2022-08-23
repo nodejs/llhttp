@@ -120,3 +120,18 @@ HTTP/5.6 200 OK
 off=0 message begin
 off=8 error code=9 reason="Invalid HTTP version"
 ```
+
+## Invalid space after start line
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK
+ Host: foo
+```
+
+```log
+off=0 message begin
+off=13 len=2 span[status]="OK"
+off=17 status complete
+off=18 error code=30 reason="Unexpected space after start line"
+```

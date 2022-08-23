@@ -47,6 +47,7 @@ const NODES: ReadonlyArray<string> = [
 
   'req_pri_upgrade',
 
+  'headers_start',
   'header_field_start',
   'header_field',
   'header_field_colon',
@@ -301,7 +302,7 @@ export class HTTP {
       .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid response status'));
 
     const onStatusComplete = p.invoke(this.callback.onStatusComplete);
-    onStatusComplete.otherwise(n('header_field_start'));
+    onStatusComplete.otherwise(n('headers_start'));
 
     n('res_status_start')
       .match('\r', n('res_line_almost_done'))
@@ -348,7 +349,7 @@ export class HTTP {
       .otherwise(onUrlCompleteHTTP);
 
     const onUrlCompleteHTTP09 = this.invokePausable(
-      'on_url_complete', ERROR.CB_URL_COMPLETE, n('header_field_start'),
+      'on_url_complete', ERROR.CB_URL_COMPLETE, n('headers_start'),
     );
 
     url.exit.toHTTP09
@@ -396,7 +397,7 @@ export class HTTP {
     }, n('req_http_complete')));
 
     n('req_http_complete')
-      .match([ '\r\n', '\n' ], n('header_field_start'))
+      .match([ '\r\n', '\n' ], n('headers_start'))
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected CRLF after version'));
 
     n('req_pri_upgrade')
@@ -415,6 +416,14 @@ export class HTTP {
     const p = this.llparse;
     const span = this.span;
     const n = (name: string): Match => this.node<Match>(name);
+
+    n('headers_start')
+      .match(' ',
+        this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
+          1: n('header_field_start'),
+        }, p.error(ERROR.UNEXPECTED_SPACE, 'Unexpected space after start line')),
+      )
+      .otherwise(n('header_field_start'));
 
     n('header_field_start')
       .match('\r', n('headers_almost_done'))
