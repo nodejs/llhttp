@@ -205,6 +205,9 @@ const char* llhttp_errno_name(llhttp_errno_t err);
 LLHTTP_EXPORT
 const char* llhttp_method_name(llhttp_method_t method);
 
+/* Returns textual name of HTTP status */
+LLHTTP_EXPORT
+const char* llhttp_status_name(llhttp_status_t status);
 
 /* Enables/disables lenient header value parsing (disabled by default).
  *

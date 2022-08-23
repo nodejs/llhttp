@@ -226,6 +226,15 @@ const char* llhttp_method_name(llhttp_method_t method) {
 #undef HTTP_METHOD_GEN
 }
 
+const char* llhttp_status_name(llhttp_status_t status) {
+#define HTTP_STATUS_GEN(NUM, NAME, STRING) case HTTP_STATUS_##NAME: return #STRING;
+  switch (status) {
+    HTTP_STATUS_MAP(HTTP_STATUS_GEN)
+    default: abort();
+  }
+#undef HTTP_STATUS_GEN
+}
+
 
 void llhttp_set_lenient_headers(llhttp_t* parser, int enabled) {
   if (enabled) {
