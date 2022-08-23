@@ -797,7 +797,7 @@ export class HTTP {
 
     n('chunk_size_otherwise')
       .match('\r', n('chunk_size_almost_done'))
-      .match([ ';', ' ' ], n('chunk_parameters'))
+      .match('; ', n('chunk_parameters'))
       .otherwise(p.error(ERROR.INVALID_CHUNK_SIZE,
         'Invalid character in chunk size'));
 
