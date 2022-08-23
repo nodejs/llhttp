@@ -6,6 +6,8 @@ import * as path from 'path';
 import * as vm from 'vm';
 
 import * as llhttp from '../src/llhttp';
+import {IHTTPResult} from '../src/llhttp/http';
+import {IURLResult} from '../src/llhttp/url';
 import { build, FixtureResult, TestType } from './fixtures';
 
 //
@@ -13,19 +15,42 @@ import { build, FixtureResult, TestType } from './fixtures';
 // (different types of tests will re-use them)
 //
 
+interface INodeCacheEntry {
+  llparse: LLParse;
+  entry: IHTTPResult['entry'];
+}
+
+interface IUrlCacheEntry {
+  llparse: LLParse;
+  entry: IURLResult['entry']['normal'];
+}
+
+const nodeCache = new Map<llhttp.HTTPMode, INodeCacheEntry>();
+const urlCache = new Map<llhttp.HTTPMode, IUrlCacheEntry>();
+const modeCache = new Map<string, FixtureResult>();
+
 function buildNode(mode: llhttp.HTTPMode) {
+  let entry = nodeCache.get(mode);
+
+  if (entry) {
+    return entry;
+  }
+
   const p = new LLParse();
   const instance = new llhttp.HTTP(p, mode);
 
-  return { llparse: p, entry: instance.build().entry };
+  entry = { llparse: p, entry: instance.build().entry };
+  nodeCache.set(mode, entry);
+  return entry;
 }
 
-const httpNode = {
-  loose: buildNode('loose'),
-  strict: buildNode('strict'),
-};
-
 function buildURL(mode: llhttp.HTTPMode) {
+  let entry = urlCache.get(mode);
+
+  if (entry) {
+    return entry;
+  }
+
   const p = new LLParse();
   const instance = new llhttp.URL(p, mode, true);
 
@@ -35,29 +60,34 @@ function buildURL(mode: llhttp.HTTPMode) {
   node.exit.toHTTP.otherwise(node.entry.normal);
   node.exit.toHTTP09.otherwise(node.entry.normal);
 
-  return { llparse: p, entry: node.entry.normal };
+  entry = { llparse: p, entry: node.entry.normal };
+  urlCache.set(mode, entry);
+  return entry;
 }
-
-const urlNode = {
-  loose: buildURL('loose'),
-  strict: buildURL('strict'),
-};
 
 //
 // Build binaries using cached nodes/llparse
 //
 
-async function buildMode(mode: llhttp.HTTPMode, ty: TestType)
+async function buildMode(mode: llhttp.HTTPMode, ty: TestType, meta: any)
     : Promise<FixtureResult> {
+
+  const cacheKey = `${mode}:${ty}:${JSON.stringify(meta || {})}`;
+  let entry = modeCache.get(cacheKey);
+
+  if (entry) {
+    return entry;
+  }
+
   let node;
   let prefix: string;
-  let extra: ReadonlyArray<string>;
+  let extra: string[];
   if (ty === 'url') {
-    node = urlNode[mode];
+    node = buildURL(mode);
     prefix = 'url';
     extra = [];
   } else {
-    node = httpNode[mode];
+    node = buildNode(mode);
     prefix = 'http';
     extra = [
       '-DLLHTTP__TEST_HTTP',
@@ -65,47 +95,21 @@ async function buildMode(mode: llhttp.HTTPMode, ty: TestType)
     ];
   }
 
-  return await build(node.llparse, node.entry, `${prefix}-${mode}-${ty}`, {
+  if (meta.pause) {
+    extra.push(`-DLLHTTP__TEST_PAUSE_${meta.pause.toUpperCase()}=1`);
+  }
+
+  entry = await build(node.llparse, node.entry, `${prefix}-${mode}-${ty}`, {
     extra,
   }, ty);
+
+  modeCache.set(cacheKey, entry);
+  return entry;
 }
 
 interface IFixtureMap {
   [key: string]: { [key: string]: Promise<FixtureResult> };
 }
-
-const http: IFixtureMap = {
-  loose: {
-    'none': buildMode('loose', 'none'),
-    'request': buildMode('loose', 'request'),
-    'request-finish': buildMode('loose', 'request-finish'),
-    'request-lenient-chunked-length': buildMode('loose', 'request-lenient-chunked-length'),
-    'request-lenient-headers': buildMode('loose', 'request-lenient-headers'),
-    'request-lenient-keep-alive': buildMode( 'loose', 'request-lenient-keep-alive'),
-    'request-lenient-transfer-encoding': buildMode('loose', 'request-lenient-transfer-encoding'),
-    'request-lenient-version': buildMode( 'loose', 'request-lenient-version'),
-    'response': buildMode('loose', 'response'),
-    'response-finish': buildMode('loose', 'response-finish'),
-    'response-lenient-keep-alive': buildMode( 'loose', 'response-lenient-keep-alive'),
-    'response-lenient-version': buildMode( 'loose', 'response-lenient-version'),
-    'url': buildMode('loose', 'url'),
-  },
-  strict: {
-    'none': buildMode('strict', 'none'),
-    'request': buildMode('strict', 'request'),
-    'request-finish': buildMode('strict', 'request-finish'),
-    'request-lenient-chunked-length': buildMode('strict', 'request-lenient-chunked-length'),
-    'request-lenient-headers': buildMode('strict', 'request-lenient-headers'),
-    'request-lenient-keep-alive': buildMode( 'strict', 'request-lenient-keep-alive'),
-    'request-lenient-transfer-encoding': buildMode('strict', 'request-lenient-transfer-encoding'),
-    'request-lenient-version': buildMode( 'strict', 'request-lenient-version'),
-    'response': buildMode('strict', 'response'),
-    'response-finish': buildMode('strict', 'response-finish'),
-    'response-lenient-keep-alive': buildMode('strict', 'response-lenient-keep-alive'),
-    'response-lenient-version': buildMode( 'strict', 'response-lenient-version'),
-    'url': buildMode('strict', 'url'),
-  },
-};
 
 //
 // Run test suite
@@ -121,7 +125,7 @@ function run(name: string): void {
                          input: string,
                          expected: ReadonlyArray<string | RegExp>): void {
     it(`should pass in mode="${mode}" and for type="${ty}"`, async () => {
-      const binary = await http[mode][ty];
+      const binary = await buildMode(mode, ty, meta);
       await binary.check(input, expected, {
         noScan: meta.noScan === true,
       });
@@ -255,11 +259,11 @@ function run(name: string): void {
         }
       });
 
-      modes.forEach((mode) => {
-        types.forEach((ty) => {
+      for (const mode of modes) {
+        for (const ty of types) {
           runSingleTest(mode, ty, meta, input, fullExpected);
-        });
-      });
+        }
+      }
     });
   }
 
@@ -267,13 +271,19 @@ function run(name: string): void {
     describe(group.name + ` at ${name}.md:${group.line + 1}`, function() {
       this.timeout(60000);
 
-      group.children.forEach((child) => runGroup(child));
+      for (const child of group.children) {
+        runGroup(child);
+      }
 
-      group.tests.forEach((test) => runTest(test));
+      for (const test of group.tests) {
+        runTest(test);
+      }
     });
   }
 
-  groups.forEach((group) => runGroup(group));
+  for (const group of groups) {
+    runGroup(group);
+  }
 }
 
 run('request/sample');
@@ -286,6 +296,7 @@ run('request/content-length');
 run('request/transfer-encoding');
 run('request/invalid');
 run('request/finish');
+run('request/pausing');
 
 run('response/sample');
 run('response/connection');
@@ -294,4 +305,6 @@ run('response/transfer-encoding');
 run('response/invalid');
 run('response/finish');
 run('request/lenient-version');
+run('response/pausing');
+
 run('url');

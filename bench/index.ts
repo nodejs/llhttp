@@ -65,7 +65,7 @@ if (isURL) {
 }
 
 if (isHTTP) {
-  requests.forEach((request, name) => {
+  for(const [request, name] of requests) {
     console.log('http loose: "%s" (C)', name);
 
     spawnSync('./test/tmp/http-loose-request-c', [
@@ -79,5 +79,5 @@ if (isHTTP) {
       'bench',
       request
     ], { stdio: 'inherit' });
-  });
+  }
 }
