@@ -86,6 +86,7 @@ off=37 len=10 span[header_value]="keep-alive"
 off=49 header_value complete
 off=51 headers complete status=204 v=1/0 flags=1 content_length=0
 off=51 message complete
+off=51 reset
 off=51 message begin
 off=64 len=2 span[status]="OK"
 ```
@@ -127,6 +128,7 @@ off=13 len=10 span[status]="No content"
 off=25 status complete
 off=27 headers complete status=204 v=1/1 flags=0 content_length=0
 off=27 message complete
+off=27 reset
 off=27 message begin
 off=40 len=2 span[status]="OK"
 ```
@@ -243,6 +245,7 @@ off=63 header_value complete
 off=65 headers complete status=200 v=1/1 flags=22 content_length=5
 off=65 len=5 span[body]="2ad73"
 off=70 message complete
+off=70 reset
 off=70 message begin
 off=83 len=2 span[status]="OK"
 ```
@@ -267,6 +270,7 @@ off=37 len=5 span[header_value]="close"
 off=44 header_value complete
 off=46 headers complete status=204 v=1/1 flags=2 content_length=0
 off=46 message complete
+off=46 reset
 off=46 message begin
 off=59 len=2 span[status]="OK"
 ```

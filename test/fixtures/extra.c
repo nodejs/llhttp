@@ -275,4 +275,17 @@ int llhttp__on_chunk_complete(llparse_t* s, const char* p, const char* endp) {
   #endif
 }
 
+int llhttp__on_reset(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+
+  llparse__print(p, endp, "reset");
+
+  #ifdef LLHTTP__TEST_PAUSE_ON_RESET
+    return LLPARSE__ERROR_PAUSE;
+  #else
+    return 0;
+  #endif
+}
+
 #endif  /* LLHTTP__TEST_HTTP */

@@ -54,6 +54,7 @@ struct llhttp_settings_s {
    */
   llhttp_cb      on_chunk_header;
   llhttp_cb      on_chunk_complete;
+  llhttp_cb      on_reset;
 };
 
 /* Initialize the parser with specific type and user settings.

@@ -40,6 +40,7 @@ export enum ERROR {
   CB_STATUS_COMPLETE = 27,
   CB_HEADER_FIELD_COMPLETE = 28,
   CB_HEADER_VALUE_COMPLETE = 29,
+  CB_RESET = 31,
 }
 
 export enum TYPE {
