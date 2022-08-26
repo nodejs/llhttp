@@ -232,6 +232,37 @@ off=157 chunk complete
 off=160 chunk header len=0
 ```
 
+### No semicolon before chunk parameters
+
+<!-- meta={"type": "request"} -->
+```http
+POST /chunked_w_unicorns_after_length HTTP/1.1
+Host: localhost
+Transfer-encoding: chunked
+
+2 erfrferferf
+aa
+0 rrrr
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=32 span[url]="/chunked_w_unicorns_after_length"
+off=38 url complete
+off=48 len=4 span[header_field]="Host"
+off=53 header_field complete
+off=54 len=9 span[header_value]="localhost"
+off=65 header_value complete
+off=65 len=17 span[header_field]="Transfer-encoding"
+off=83 header_field complete
+off=84 len=7 span[header_value]="chunked"
+off=93 header_value complete
+off=95 headers complete method=3 v=1/1 flags=208 content_length=0
+off=96 error code=12 reason="Invalid character in chunk size"
+```
+
 ## Ignoring `pigeons`
 
 Requests cannot have invalid `Transfer-Encoding`. It is impossible to determine
@@ -598,5 +629,5 @@ off=37 header_field complete
 off=38 len=7 span[header_value]="chunked"
 off=47 header_value complete
 off=49 headers complete method=4 v=1/1 flags=208 content_length=0
-off=51 error code=2 reason="Invalid character in chunk parameters"
+off=50 error code=12 reason="Invalid character in chunk size"
 ```

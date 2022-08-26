@@ -33,19 +33,7 @@ off=61 header_field complete
 off=62 len=7 span[header_value]="chunked"
 off=71 header_value complete
 off=73 headers complete status=200 v=1/1 flags=208 content_length=0
-off=79 chunk header len=37
-off=79 len=35 span[body]="This is the data in the first chunk"
-off=114 len=1 span[body]=cr
-off=115 len=1 span[body]=lf
-off=118 chunk complete
-off=122 chunk header len=28
-off=122 len=26 span[body]="and this is the second one"
-off=148 len=1 span[body]=cr
-off=149 len=1 span[body]=lf
-off=152 chunk complete
-off=157 chunk header len=0
-off=159 chunk complete
-off=159 message complete
+off=75 error code=12 reason="Invalid character in chunk size"
 ```
 
 ### `chunked` before other transfer-encoding
@@ -149,3 +137,35 @@ off=76 len=1 span[body]=lf
 off=77 len=1 span[body]=cr
 off=78 len=1 span[body]=lf
 ```
+
+### No semicolon before chunk parameters
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK
+Host: localhost
+Transfer-encoding: chunked
+
+2 erfrferferf
+aa
+0 rrrr
+
+
+```
+
+```log
+off=0 message begin
+off=13 len=2 span[status]="OK"
+off=17 status complete
+off=17 len=4 span[header_field]="Host"
+off=22 header_field complete
+off=23 len=9 span[header_value]="localhost"
+off=34 header_value complete
+off=34 len=17 span[header_field]="Transfer-encoding"
+off=52 header_field complete
+off=53 len=7 span[header_value]="chunked"
+off=62 header_value complete
+off=64 headers complete status=200 v=1/1 flags=208 content_length=0
+off=65 error code=12 reason="Invalid character in chunk size"
+```
+
