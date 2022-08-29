@@ -171,6 +171,8 @@ function run(name: string): void {
           types = [ 'request-lenient-version' ];
         } else if (meta.type === 'response-lenient-keep-alive') {
           types = [ 'response-lenient-keep-alive' ];
+        } else if (meta.type === 'response-lenient-headers') {
+          types = [ 'response-lenient-headers' ];
         } else if (meta.type === 'response-lenient-version') {
           types = [ 'response-lenient-version' ];
         } else if (meta.type === 'response-only') {
