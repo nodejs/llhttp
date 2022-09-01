@@ -56,6 +56,7 @@ const NODES: ReadonlyArray<string> = [
   'header_value',
   'header_value_otherwise',
   'header_value_lenient',
+  'header_value_lenient_failed',
   'header_value_lws',
   'header_value_te_chunked',
   'header_value_te_chunked_last',
@@ -452,11 +453,27 @@ export class HTTP {
       FLAGS.CHUNKED,
       'header_value_te_chunked');
 
+    // Once chunked has been selected, no other encoding is possible in requests
+    // https://datatracker.ietf.org/doc/html/rfc7230#section-3.3.1
+    const forbidAfterChunkedInRequest = (otherwise: Node) => {
+      return this.load('type', {
+        [TYPE.REQUEST]: this.testFlags(FLAGS.LENIENT, {
+          0: span.headerValue.end().skipTo(
+            p.error(ERROR.INVALID_TRANSFER_ENCODING, 'Invalid `Transfer-Encoding` header value'),
+          ),
+        }).otherwise(otherwise),
+      }, otherwise);
+    };
+
     n('header_value_start')
       .otherwise(this.load('header_state', {
         [HEADER_STATE.UPGRADE]: this.setFlag(FLAGS.UPGRADE, fallback),
-        [HEADER_STATE.TRANSFER_ENCODING]: this.setFlag(
-          FLAGS.TRANSFER_ENCODING, toTransferEncoding),
+        [HEADER_STATE.TRANSFER_ENCODING]: this.testFlags(
+          FLAGS.CHUNKED,
+          {
+            1: forbidAfterChunkedInRequest(this.setFlag(FLAGS.TRANSFER_ENCODING, toTransferEncoding)),
+          },
+          this.setFlag(FLAGS.TRANSFER_ENCODING, toTransferEncoding)),
         [HEADER_STATE.CONTENT_LENGTH]: n('header_value_content_length_once'),
         [HEADER_STATE.CONNECTION]: n('header_value_connection'),
       }, 'header_value'));
@@ -478,7 +495,8 @@ export class HTTP {
       .peek([ '\r', '\n' ], this.update('header_state',
         HEADER_STATE.TRANSFER_ENCODING_CHUNKED,
         'header_value_otherwise'))
-      .otherwise(n('header_value_te_chunked'));
+      .peek(',', forbidAfterChunkedInRequest(n('header_value_te_chunked')))
+      .otherwise(n('header_value_te_token'));
 
     n('header_value_te_token')
       .match(',', n('header_value_te_token_ows'))
@@ -563,17 +581,22 @@ export class HTTP {
 
     const checkLenient = this.testFlags(FLAGS.LENIENT, {
       1: n('header_value_lenient'),
-    }, p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char'));
+    }, n('header_value_lenient_failed'));
 
     n('header_value_otherwise')
       .peek('\r', span.headerValue.end().skipTo(n('header_value_almost_done')))
-      .peek('\n', span.headerValue.end(n('header_value_almost_done')))
       .otherwise(checkLenient);
 
     n('header_value_lenient')
       .peek('\r', span.headerValue.end().skipTo(n('header_value_almost_done')))
       .peek('\n', span.headerValue.end(n('header_value_almost_done')))
       .skipTo(n('header_value_lenient'));
+
+    n('header_value_lenient_failed')
+      .peek('\n', span.headerValue.end().skipTo(
+        p.error(ERROR.CR_EXPECTED, 'Missing expected CR after header value')),
+      )
+      .otherwise(p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char'));
 
     n('header_value_almost_done')
       .match('\n', n('header_value_lws'))
