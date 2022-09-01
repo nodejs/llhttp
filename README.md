@@ -2,6 +2,8 @@
 
 Port of [http_parser][0] to [llparse][1].
 
+IMPORTANT: The 3.x series is discontinued and not maintained anymore. Update to the latest version of llhttp as soon as possible.
+
 ## Why?
 
 Let's face it, [http_parser][0] is practically unmaintainable. Even
