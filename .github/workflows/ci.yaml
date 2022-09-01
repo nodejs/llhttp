@@ -19,11 +19,12 @@ jobs:
       - name: Install clang for Windows
         if: runner.os == 'Windows'
         run: |
-          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+          iwr -useb get.scoop.sh -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
           scoop install llvm --global
 
           # Scoop modifies the PATH so we make the modified PATH global.
-          echo "::set-env name=PATH::$env:PATH"
+          echo $env:PATH >> $env:GITHUB_PATH
 
       - name: Fetch code
         uses: actions/checkout@v2
@@ -45,7 +46,8 @@ jobs:
 
       - name: Build libllhttp.a
         shell: bash
-        run: make build/libllhttp.a
+        run: |
+          make build/libllhttp.a
 
   test:
     name: Run tests
@@ -60,11 +62,12 @@ jobs:
       - name: Install clang for Windows
         if: runner.os == 'Windows'
         run: |
-          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+          iwr -useb get.scoop.sh -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
           scoop install llvm --global
 
           # Scoop modifies the PATH so we make the modified PATH global.
-          echo "::set-env name=PATH::$env:PATH"
+          echo $env:PATH >> $env:GITHUB_PATH
 
       - name: Fetch code
         uses: actions/checkout@v2

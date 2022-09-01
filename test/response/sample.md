@@ -225,10 +225,7 @@ off=0 message begin
 off=13 len=2 span[status]="OK"
 off=16 len=12 span[header_field]="Content-Type"
 off=30 len=24 span[header_value]="text/html; charset=utf-8"
-off=55 len=10 span[header_field]="Connection"
-off=67 len=5 span[header_value]="close"
-off=74 headers complete status=200 v=1/1 flags=2 content_length=0
-off=74 len=51 span[body]="these headers are from http://news.ycombinator.com/"
+off=55 error code=25 reason="Missing expected CR after header value"
 ```
 
 ## Underscore in header key

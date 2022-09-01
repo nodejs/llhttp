@@ -151,6 +151,54 @@ off=57 len=8 span[header_value]="identity"
 off=69 headers complete method=4 v=1/1 flags=320 content_length=1
 ```
 
+## Invalid whitespace token with `Content-Length` header field
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Connection: upgrade
+Content-Length : 4
+Upgrade: ws
+
+abcdefgh
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=19 len=10 span[header_field]="Connection"
+off=31 len=7 span[header_value]="upgrade"
+off=40 len=14 span[header_field]="Content-Length"
+off=55 error code=10 reason="Invalid header field char"
+```
+
+## Invalid whitespace token with `Content-Length` header field (lenient)
+
+<!-- meta={"type": "request-lenient"} -->
+```http
+PUT /url HTTP/1.1
+Connection: upgrade
+Content-Length : 4
+Upgrade: ws
+
+abcdefgh
+```
+
+```log
+off=0 message begin
+off=4 len=4 span[url]="/url"
+off=19 len=10 span[header_field]="Connection"
+off=31 len=7 span[header_value]="upgrade"
+off=40 len=15 span[header_field]="Content-Length "
+off=57 len=1 span[header_value]="4"
+off=60 len=7 span[header_field]="Upgrade"
+off=69 len=2 span[header_value]="ws"
+off=75 headers complete method=4 v=1/1 flags=134 content_length=4
+off=75 len=4 span[body]="abcd"
+off=79 message complete
+off=79 error code=22 reason="Pause on CONNECT/Upgrade"
+```
+
 ## Funky `Content-Length` with body
 
 <!-- meta={"type": "request"} -->

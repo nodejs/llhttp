@@ -2,6 +2,8 @@
 
 Port of [http_parser][0] to [llparse][1].
 
+**IMPORTANT: The 2.x series is discontinued and not maintained anymore. Update to the latest version of llhttp as soon as possible. The only exception is the 2.1.x series which will be supported until Node.js 14 goes End-Of-Life).**
+
 ## Why?
 
 Let's face it, [http_parser][0] is practically unmaintainable. Even
