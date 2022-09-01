@@ -66,5 +66,6 @@ Header1: \f
 off=0 message begin
 off=4 len=4 span[url]="/url"
 off=19 len=7 span[header_field]="Header1"
+off=28 len=0 span[header_value]=""
 off=28 error code=10 reason="Invalid header value char"
 ```

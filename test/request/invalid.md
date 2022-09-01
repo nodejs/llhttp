@@ -51,6 +51,53 @@ off=21 len=1 span[header_value]="1"
 off=23 error code=3 reason="Missing expected LF after header value"
 ```
 
+### Headers separated by LF
+
+<!-- meta={"type": "request"} -->
+```http
+POST / HTTP/1.1
+Host: localhost:5000
+x:x\nTransfer-Encoding: chunked
+
+1
+A
+0
+
+```
+
+```log
+off=0 message begin
+off=5 len=1 span[url]="/"
+off=17 len=4 span[header_field]="Host"
+off=23 len=14 span[header_value]="localhost:5000"
+off=39 len=1 span[header_field]="x"
+off=41 len=1 span[header_value]="x"
+off=42 error code=10 reason="Invalid header value char"
+```
+
+### Empty headers separated by LF
+
+<!-- meta={"type": "request"} -->
+```http
+POST / HTTP/1.1
+Host: localhost:5000
+x:\nTransfer-Encoding: chunked
+
+1
+A
+0
+
+```
+
+```log
+off=0 message begin
+off=5 len=1 span[url]="/"
+off=17 len=4 span[header_field]="Host"
+off=23 len=14 span[header_value]="localhost:5000"
+off=39 len=1 span[header_field]="x"
+off=42 error code=10 reason="Invalid header value char"
+```
+
 ### Invalid header token #1
 
 <!-- meta={"type": "request", "noScan": true} -->
@@ -174,5 +221,5 @@ off=16 len=4 span[header_field]="Host"
 off=22 len=9 span[header_value]="localhost"
 off=33 len=5 span[header_field]="Dummy"
 off=40 len=1 span[header_value]="x"
-off=42 error code=25 reason="Missing expected CR after header value"
+off=41 error code=10 reason="Invalid header value char"
 ```

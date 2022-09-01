@@ -128,37 +128,6 @@ off=77 len=1 span[body]=cr
 off=78 len=1 span[body]=lf
 ```
 
-### No semicolon before chunk parameters
-
-<!-- meta={"type": "response"} -->
-```http
-HTTP/1.1 200 OK
-Host: localhost
-Transfer-encoding: chunked
-
-2 erfrferferf
-aa
-0 rrrr
-
-
-```
-
-```log
-off=0 message begin
-off=13 len=2 span[status]="OK"
-off=17 status complete
-off=17 len=4 span[header_field]="Host"
-off=22 header_field complete
-off=23 len=9 span[header_value]="localhost"
-off=34 header_value complete
-off=34 len=17 span[header_field]="Transfer-encoding"
-off=52 header_field complete
-off=53 len=7 span[header_value]="chunked"
-off=62 header_value complete
-off=64 headers complete status=200 v=1/1 flags=208 content_length=0
-off=65 error code=12 reason="Invalid character in chunk size"
-```
-
 ## Invalid OBS fold after chunked value
 
 <!-- meta={"type": "response" } -->
@@ -177,12 +146,9 @@ World
 ```log
 off=0 message begin
 off=13 len=2 span[status]="OK"
-off=17 status complete
 off=17 len=17 span[header_field]="Transfer-Encoding"
-off=35 header_field complete
 off=36 len=7 span[header_value]="chunked"
 off=45 len=5 span[header_value]="  abc"
-off=52 header_value complete
 off=54 headers complete status=200 v=1/1 flags=200 content_length=0
 off=54 len=1 span[body]="5"
 off=55 len=1 span[body]=cr
