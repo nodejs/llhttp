@@ -63,6 +63,7 @@ abc
 off=0 message begin
 off=13 len=2 span[status]="OK"
 off=17 status complete
+off=17 pause
 off=17 len=14 span[header_field]="Content-Length"
 off=32 header_field complete
 off=33 len=1 span[header_value]="3"

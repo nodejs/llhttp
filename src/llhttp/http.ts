@@ -301,8 +301,9 @@ export class HTTP {
       .peek([ '\r', '\n' ], n('res_status_start'))
       .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid response status'));
 
-    const onStatusComplete = p.invoke(this.callback.onStatusComplete);
-    onStatusComplete.otherwise(n('headers_start'));
+    const onStatusComplete = this.invokePausable(
+      'on_status_complete', ERROR.CB_STATUS_COMPLETE, n('headers_start'),
+    );
 
     n('res_status_start')
       .match('\r', n('res_line_almost_done'))
