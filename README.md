@@ -105,6 +105,7 @@ make
 
 ### Bindings to other languages
 
+* Lua: [MunifTanjim/llhttp.lua][11]
 * Python: [pallas/pyllhttp][8]
 * Ruby: [metabahn/llhttp][9]
 * Rust: [JackLiar/rust-llhttp][10]
@@ -180,3 +181,4 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 [8]: https://github.com/pallas/pyllhttp
 [9]: https://github.com/metabahn/llhttp
 [10]: https://github.com/JackLiar/rust-llhttp
+[11]: https://github.com/MunifTanjim/llhttp.lua
