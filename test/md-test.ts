@@ -297,6 +297,7 @@ run('request/transfer-encoding');
 run('request/invalid');
 run('request/finish');
 run('request/pausing');
+run('request/pipelining');
 
 run('response/sample');
 run('response/connection');
@@ -306,5 +307,6 @@ run('response/invalid');
 run('response/finish');
 run('request/lenient-version');
 run('response/pausing');
+run('response/pipelining');
 
 run('url');

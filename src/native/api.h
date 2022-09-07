@@ -54,6 +54,7 @@ struct llhttp_settings_s {
    */
   llhttp_cb      on_chunk_header;
   llhttp_cb      on_chunk_complete;
+  llhttp_cb      on_reset;
 };
 
 /* Initialize the parser with specific type and user settings.
@@ -245,6 +246,7 @@ void llhttp_set_lenient_chunked_length(llhttp_t* parser, int enabled);
  *
  * **(USE AT YOUR OWN RISK)**
  */
+LLHTTP_EXPORT
 void llhttp_set_lenient_keep_alive(llhttp_t* parser, int enabled);
 
 /* Enables/disables lenient handling of `Transfer-Encoding` header.
@@ -258,6 +260,7 @@ void llhttp_set_lenient_keep_alive(llhttp_t* parser, int enabled);
  *
  * **(USE AT YOUR OWN RISK)**
  */
+LLHTTP_EXPORT
 void llhttp_set_lenient_transfer_encoding(llhttp_t* parser, int enabled);
 
 #ifdef __cplusplus

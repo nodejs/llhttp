@@ -48,6 +48,7 @@ off=31 len=10 span[header_value]="keep-alive"
 off=43 header_value complete
 off=45 headers complete method=4 v=1/1 flags=1 content_length=0
 off=45 message complete
+off=45 reset
 off=45 message begin
 off=49 len=4 span[url]="/url"
 off=54 url complete
@@ -105,6 +106,7 @@ off=35 len=1 span[header_value]="0"
 off=38 header_value complete
 off=40 headers complete method=4 v=1/0 flags=20 content_length=0
 off=40 message complete
+off=40 reset
 off=40 message begin
 off=44 len=4 span[url]="/url"
 off=49 url complete
@@ -149,6 +151,7 @@ off=108 header_value complete
 off=110 headers complete method=3 v=1/1 flags=20 content_length=4
 off=110 len=4 span[body]="q=42"
 off=114 message complete
+off=118 reset
 off=118 message begin
 off=122 len=1 span[url]="/"
 off=124 url complete
@@ -283,6 +286,7 @@ off=127 header_value complete
 off=129 headers complete method=3 v=1/1 flags=22 content_length=4
 off=129 len=4 span[body]="q=42"
 off=133 message complete
+off=137 reset
 off=137 message begin
 off=141 len=1 span[url]="/"
 off=143 url complete

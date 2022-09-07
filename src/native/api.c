@@ -67,6 +67,7 @@ const llhttp_settings_t wasm_settings = {
   wasm_on_message_complete,
   NULL,
   NULL,
+  NULL,
 };
 
 
@@ -367,6 +368,12 @@ int llhttp__on_chunk_header(llhttp_t* s, const char* p, const char* endp) {
 int llhttp__on_chunk_complete(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_chunk_complete);
+  return err;
+}
+
+int llhttp__on_reset(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  CALLBACK_MAYBE(s, on_reset);
   return err;
 }
 

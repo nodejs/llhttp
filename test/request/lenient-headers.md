@@ -49,6 +49,7 @@ off=28 len=4 span[header_value]="Okay"
 off=34 header_value complete
 off=36 headers complete method=1 v=1/1 flags=0 content_length=0
 off=36 message complete
+off=38 reset
 off=38 message begin
 off=42 len=4 span[url]="/url"
 off=47 url complete

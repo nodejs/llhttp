@@ -20,6 +20,7 @@ type MaybeNode = string | Match | Node;
 
 const NODES: ReadonlyArray<string> = [
   'start',
+  'after_start',
   'start_req',
   'start_res',
   'start_req_or_res',
@@ -120,6 +121,7 @@ interface ICallbackMap {
   readonly onStatusComplete: source.code.Code;
   readonly onHeaderFieldComplete: source.code.Code;
   readonly onHeaderValueComplete: source.code.Code;
+  readonly onReset: source.code.Code;
 }
 
 interface IMulTargets {
@@ -175,6 +177,7 @@ export class HTTP {
       onMessageComplete: p.code.match('llhttp__on_message_complete'),
       onChunkHeader: p.code.match('llhttp__on_chunk_header'),
       onChunkComplete: p.code.match('llhttp__on_chunk_complete'),
+      onReset: p.code.match('llhttp__on_reset'),
 
       // Internal callbacks `src/http.c`
       beforeHeadersComplete:
@@ -203,6 +206,7 @@ export class HTTP {
     p.property('i8', 'finish');
     p.property('i16', 'flags');
     p.property('i16', 'status_code');
+    p.property('i8', 'initial_message_completed');
 
     // Verify defaults
     assert.strictEqual(FINISH.SAFE, 0);
@@ -233,9 +237,19 @@ export class HTTP {
 
     n('start')
       .match([ '\r', '\n' ], n('start'))
-      .otherwise(this.update('finish', FINISH.UNSAFE,
-        this.invokePausable('on_message_begin',
-          ERROR.CB_MESSAGE_BEGIN, switchType)));
+      .otherwise(
+        this.load('initial_message_completed', {
+          1: this.invokePausable('on_reset', ERROR.CB_RESET, n('after_start')),
+        }, n('after_start')),
+      );
+
+    n('after_start').otherwise(
+      this.update(
+        'finish',
+        FINISH.UNSAFE,
+        this.invokePausable('on_message_begin', ERROR.CB_MESSAGE_BEGIN, switchType),
+      ),
+    );
 
     n('start_req_or_res')
       .peek('H', n('req_or_res_method'))
@@ -890,7 +904,9 @@ export class HTTP {
     }
 
     n('restart')
-      .otherwise(this.update('finish', FINISH.SAFE, n('start')));
+      .otherwise(
+        this.update('initial_message_completed', 1, this.update('finish', FINISH.SAFE, n('start')),
+      ));
   }
 
   private node<T extends Node>(name: string | T): T {
@@ -1041,6 +1057,9 @@ export class HTTP {
         break;
       case 'on_chunk_complete':
         cb = this.callback.onChunkComplete;
+        break;
+      case 'on_reset':
+        cb = this.callback.onReset;
         break;
       default:
         throw new Error('Unknown callback: ' + name);
