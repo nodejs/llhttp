@@ -319,7 +319,7 @@ int llhttp__on_status_complete(llhttp_t* s, const char* p, const char* endp) {
 
 int llhttp__on_method(llhttp_t* s, const char* p, const char* endp) {
   int err;
-  SPAN_CALLBACK_MAYBE(s, on_method p, endp - p);
+  SPAN_CALLBACK_MAYBE(s, on_method, p, endp - p);
   return err;
 }
 
