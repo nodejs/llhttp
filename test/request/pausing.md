@@ -14,8 +14,12 @@ abc
 ```log
 off=0 message begin
 off=0 pause
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=14 span[header_field]="Content-Length"
 off=32 header_field complete
 off=33 len=1 span[header_value]="3"
@@ -37,8 +41,12 @@ abc
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=14 span[header_field]="Content-Length"
 off=32 header_field complete
 off=33 len=1 span[header_value]="3"
@@ -47,6 +55,34 @@ off=38 headers complete method=3 v=1/1 flags=20 content_length=3
 off=38 len=3 span[body]="abc"
 off=41 message complete
 off=41 pause
+```
+
+### on_method_complete
+
+<!-- meta={"type": "request", "pause": "on_method_complete"} -->
+```http
+POST / HTTP/1.1
+Content-Length: 3
+
+abc
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
+off=4 pause
+off=5 len=1 span[url]="/"
+off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
+off=17 len=14 span[header_field]="Content-Length"
+off=32 header_field complete
+off=33 len=1 span[header_value]="3"
+off=36 header_value complete
+off=38 headers complete method=3 v=1/1 flags=20 content_length=3
+off=38 len=3 span[body]="abc"
+off=41 message complete
 ```
 
 ### on_url_complete
@@ -61,9 +97,41 @@ abc
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
 off=7 pause
+off=12 len=3 span[version]="1.1"
+off=15 version complete
+off=17 len=14 span[header_field]="Content-Length"
+off=32 header_field complete
+off=33 len=1 span[header_value]="3"
+off=36 header_value complete
+off=38 headers complete method=3 v=1/1 flags=20 content_length=3
+off=38 len=3 span[body]="abc"
+off=41 message complete
+```
+
+### on_version_complete
+
+<!-- meta={"type": "request", "pause": "on_version_complete"} -->
+```http
+POST / HTTP/1.1
+Content-Length: 3
+
+abc
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
+off=5 len=1 span[url]="/"
+off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
+off=15 pause
 off=17 len=14 span[header_field]="Content-Length"
 off=32 header_field complete
 off=33 len=1 span[header_value]="3"
@@ -85,8 +153,12 @@ abc
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=14 span[header_field]="Content-Length"
 off=32 header_field complete
 off=32 pause
@@ -109,8 +181,12 @@ abc
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=14 span[header_field]="Content-Length"
 off=32 header_field complete
 off=33 len=1 span[header_value]="3"
@@ -133,8 +209,12 @@ abc
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=14 span[header_field]="Content-Length"
 off=32 header_field complete
 off=33 len=1 span[header_value]="3"
@@ -161,8 +241,12 @@ a
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=16 len=17 span[header_field]="Transfer-Encoding"
 off=34 header_field complete
 off=35 len=7 span[header_value]="chunked"
@@ -194,8 +278,12 @@ a
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=16 len=17 span[header_field]="Transfer-Encoding"
 off=34 header_field complete
 off=35 len=7 span[header_value]="chunked"

@@ -15,8 +15,12 @@ Connection: keep-alive
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=10 span[header_field]="Connection"
 off=30 header_field complete
 off=31 len=10 span[header_value]="keep-alive"
@@ -40,8 +44,12 @@ Connection: keep-alive
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=10 span[header_field]="Connection"
 off=30 header_field complete
 off=31 len=10 span[header_value]="keep-alive"
@@ -50,8 +58,12 @@ off=45 headers complete method=4 v=1/1 flags=1 content_length=0
 off=45 message complete
 off=45 reset
 off=45 message begin
+off=45 len=3 span[method]="PUT"
+off=48 method complete
 off=49 len=4 span[url]="/url"
 off=54 url complete
+off=59 len=3 span[version]="1.1"
+off=62 version complete
 off=64 len=10 span[header_field]="Connection"
 off=75 header_field complete
 off=76 len=10 span[header_value]="keep-alive"
@@ -73,8 +85,12 @@ PUT /url HTTP/1.1
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.0"
+off=17 version complete
 off=21 headers complete method=4 v=1/0 flags=0 content_length=0
 off=21 message complete
 off=22 error code=5 reason="Data after `Connection: close`"
@@ -98,8 +114,12 @@ Transfer-Encoding: chunked
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.0"
+off=17 version complete
 off=19 len=14 span[header_field]="Content-Length"
 off=34 header_field complete
 off=35 len=1 span[header_value]="0"
@@ -108,8 +128,12 @@ off=40 headers complete method=4 v=1/0 flags=20 content_length=0
 off=40 message complete
 off=40 reset
 off=40 message begin
+off=40 len=3 span[method]="PUT"
+off=43 method complete
 off=44 len=4 span[url]="/url"
 off=49 url complete
+off=54 len=3 span[version]="1.1"
+off=57 version complete
 off=59 len=17 span[header_field]="Transfer-Encoding"
 off=77 header_field complete
 off=78 len=7 span[header_value]="chunked"
@@ -134,8 +158,12 @@ _Note the trailing CRLF above_
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=4 span[header_field]="Host"
 off=22 header_field complete
 off=23 len=15 span[header_value]="www.example.com"
@@ -153,8 +181,12 @@ off=110 len=4 span[body]="q=42"
 off=114 message complete
 off=118 reset
 off=118 message begin
+off=118 len=3 span[method]="GET"
+off=121 method complete
 off=122 len=1 span[url]="/"
 off=124 url complete
+off=129 len=3 span[version]="1.1"
+off=132 version complete
 ```
 
 ### Not treating `\r` as `-`
@@ -169,8 +201,12 @@ Connection: keep\ralive
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=10 span[header_field]="Connection"
 off=30 header_field complete
 off=31 len=4 span[header_value]="keep"
@@ -191,8 +227,12 @@ Connection: close
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=10 span[header_field]="Connection"
 off=30 header_field complete
 off=31 len=5 span[header_value]="close"
@@ -221,8 +261,12 @@ _Note the trailing CRLF above_
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=4 span[header_field]="Host"
 off=22 header_field complete
 off=23 len=15 span[header_value]="www.example.com"
@@ -265,8 +309,12 @@ _Note the trailing CRLF above_
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=4 span[header_field]="Host"
 off=22 header_field complete
 off=23 len=15 span[header_value]="www.example.com"
@@ -288,8 +336,12 @@ off=129 len=4 span[body]="q=42"
 off=133 message complete
 off=137 reset
 off=137 message begin
+off=137 len=3 span[method]="GET"
+off=140 method complete
 off=141 len=1 span[url]="/"
 off=143 url complete
+off=148 len=3 span[version]="1.1"
+off=151 version complete
 ```
 
 ## Parsing multiple tokens
@@ -306,8 +358,12 @@ Connection: close, token, upgrade, token, keep-alive
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=10 span[header_field]="Connection"
 off=30 header_field complete
 off=31 len=40 span[header_value]="close, token, upgrade, token, keep-alive"
@@ -335,8 +391,12 @@ Hot diggity dogg
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=5 span[url]="/demo"
 off=10 url complete
+off=15 len=3 span[version]="1.1"
+off=18 version complete
 off=20 len=4 span[header_field]="Host"
 off=25 header_field complete
 off=26 len=11 span[header_value]="example.com"
@@ -384,8 +444,12 @@ Hot diggity dogg
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=5 span[url]="/demo"
 off=10 url complete
+off=15 len=3 span[version]="1.1"
+off=18 version complete
 off=20 len=10 span[header_field]="Connection"
 off=31 header_field complete
 off=32 len=19 span[header_value]="keep-alive, upgrade"
@@ -412,8 +476,12 @@ Hot diggity dogg
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=5 span[url]="/demo"
 off=10 url complete
+off=15 len=3 span[version]="1.1"
+off=18 version complete
 off=20 len=10 span[header_field]="Connection"
 off=31 header_field complete
 off=32 len=12 span[header_value]="keep-alive, "
@@ -442,8 +510,12 @@ abcdefgh
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=10 span[header_field]="Connection"
 off=30 error code=10 reason="Invalid header field char"
 ```
@@ -462,8 +534,12 @@ abcdefgh
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=11 span[header_field]="Connection "
 off=31 header_field complete
 off=32 len=7 span[header_value]="upgrade"
@@ -497,8 +573,12 @@ Upgrade: ws
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=10 span[header_field]="Connection"
 off=30 header_field complete
 off=31 len=7 span[header_value]="upgrade"
@@ -526,8 +606,12 @@ abcdefgh
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=10 span[header_field]="Connection"
 off=30 header_field complete
 off=31 len=7 span[header_value]="upgrade"
@@ -564,8 +648,12 @@ Hot diggity dogg
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=5 span[url]="/demo"
 off=10 url complete
+off=15 len=3 span[version]="1.1"
+off=18 version complete
 off=20 len=4 span[header_field]="Host"
 off=25 header_field complete
 off=26 len=11 span[header_value]="example.com"
@@ -615,8 +703,12 @@ Hot diggity dogg
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=5 span[url]="/demo"
 off=11 url complete
+off=16 len=3 span[version]="1.1"
+off=19 version complete
 off=21 len=4 span[header_field]="Host"
 off=26 header_field complete
 off=27 len=11 span[header_value]="example.com"

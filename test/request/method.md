@@ -12,8 +12,12 @@ REPORT /test HTTP/1.1
 
 ```log
 off=0 message begin
+off=0 len=6 span[method]="REPORT"
+off=6 method complete
 off=7 len=5 span[url]="/test"
 off=13 url complete
+off=18 len=3 span[version]="1.1"
+off=21 version complete
 off=25 headers complete method=20 v=1/1 flags=0 content_length=0
 off=25 message complete
 ```
@@ -32,8 +36,12 @@ and yet even more data
 
 ```log
 off=0 message begin
+off=0 len=7 span[method]="CONNECT"
+off=7 method complete
 off=8 len=24 span[url]="0-home0.netscape.com:443"
 off=33 url complete
+off=38 len=3 span[version]="1.0"
+off=41 version complete
 off=43 len=10 span[header_field]="User-agent"
 off=54 header_field complete
 off=55 len=12 span[header_value]="Mozilla/1.1N"
@@ -60,8 +68,12 @@ Proxy-authorization: basic aGVsbG86d29ybGQ=
 
 ```log
 off=0 message begin
+off=0 len=7 span[method]="CONNECT"
+off=7 method complete
 off=8 len=22 span[url]="HOME0.NETSCAPE.COM:443"
 off=31 url complete
+off=36 len=3 span[version]="1.0"
+off=39 version complete
 off=41 len=10 span[header_field]="User-agent"
 off=52 header_field complete
 off=53 len=12 span[header_value]="Mozilla/1.1N"
@@ -89,8 +101,12 @@ blarfcicle"
 
 ```log
 off=0 message begin
+off=0 len=7 span[method]="CONNECT"
+off=7 method complete
 off=8 len=15 span[url]="foo.bar.com:443"
 off=24 url complete
+off=29 len=3 span[version]="1.0"
+off=32 version complete
 off=34 len=10 span[header_field]="User-agent"
 off=45 header_field complete
 off=46 len=12 span[header_value]="Mozilla/1.1N"
@@ -122,8 +138,12 @@ ST: "ssdp:all"
 
 ```log
 off=0 message begin
+off=0 len=8 span[method]="M-SEARCH"
+off=8 method complete
 off=9 len=1 span[url]="*"
 off=11 url complete
+off=16 len=3 span[version]="1.1"
+off=19 version complete
 off=21 len=4 span[header_field]="HOST"
 off=26 header_field complete
 off=27 len=20 span[header_value]="239.255.255.250:1900"
@@ -155,8 +175,12 @@ cccccccccc
 
 ```log
 off=0 message begin
+off=0 len=5 span[method]="PATCH"
+off=5 method complete
 off=6 len=9 span[url]="/file.txt"
 off=16 url complete
+off=21 len=3 span[version]="1.1"
+off=24 version complete
 off=26 len=4 span[header_field]="Host"
 off=31 header_field complete
 off=32 len=15 span[header_value]="www.example.com"
@@ -190,8 +214,12 @@ Host: www.example.com
 
 ```log
 off=0 message begin
+off=0 len=5 span[method]="PURGE"
+off=5 method complete
 off=6 len=9 span[url]="/file.txt"
 off=16 url complete
+off=21 len=3 span[version]="1.1"
+off=24 version complete
 off=26 len=4 span[header_field]="Host"
 off=31 header_field complete
 off=32 len=15 span[header_value]="www.example.com"
@@ -212,8 +240,12 @@ Host: www.example.com
 
 ```log
 off=0 message begin
+off=0 len=6 span[method]="SEARCH"
+off=6 method complete
 off=7 len=1 span[url]="/"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=4 span[header_field]="Host"
 off=24 header_field complete
 off=25 len=15 span[header_value]="www.example.com"
@@ -236,8 +268,12 @@ Link: <http://example.com/profiles/sally>; rel="tag"
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="LINK"
+off=4 method complete
 off=5 len=18 span[url]="/images/my_dog.jpg"
 off=24 url complete
+off=29 len=3 span[version]="1.1"
+off=32 version complete
 off=34 len=4 span[header_field]="Host"
 off=39 header_field complete
 off=40 len=11 span[header_value]="example.com"
@@ -267,8 +303,12 @@ Link: <http://example.com/profiles/sally>; rel="tag"
 
 ```log
 off=0 message begin
+off=0 len=6 span[method]="UNLINK"
+off=6 method complete
 off=7 len=18 span[url]="/images/my_dog.jpg"
 off=26 url complete
+off=31 len=3 span[version]="1.1"
+off=34 version complete
 off=36 len=4 span[header_field]="Host"
 off=41 header_field complete
 off=42 len=11 span[header_value]="example.com"
@@ -293,8 +333,12 @@ Host: example.com
 
 ```log
 off=0 message begin
+off=0 len=6 span[method]="SOURCE"
+off=6 method complete
 off=7 len=18 span[url]="/music/sweet/music"
 off=26 url complete
+off=31 len=3 span[version]="1.1"
+off=34 version complete
 off=36 len=4 span[header_field]="Host"
 off=41 header_field complete
 off=42 len=11 span[header_value]="example.com"
@@ -315,8 +359,12 @@ Host: example.com
 
 ```log
 off=0 message begin
+off=0 len=6 span[method]="SOURCE"
+off=6 method complete
 off=7 len=18 span[url]="/music/sweet/music"
 off=26 url complete
+off=30 len=3 span[version]="1.0"
+off=33 version complete
 off=35 len=4 span[header_field]="Host"
 off=40 header_field complete
 off=41 len=11 span[header_value]="example.com"
@@ -339,8 +387,12 @@ Host: example.com
 
 ```log
 off=0 message begin
+off=0 len=7 span[method]="OPTIONS"
+off=7 method complete
 off=8 len=18 span[url]="/music/sweet/music"
 off=27 url complete
+off=32 len=3 span[version]="1.0"
+off=35 version complete
 off=37 len=4 span[header_field]="Host"
 off=42 header_field complete
 off=43 len=11 span[header_value]="example.com"
@@ -361,8 +413,12 @@ Host: example.com
 
 ```log
 off=0 message begin
+off=0 len=8 span[method]="ANNOUNCE"
+off=8 method complete
 off=9 len=18 span[url]="/music/sweet/music"
 off=28 url complete
+off=33 len=3 span[version]="1.0"
+off=36 version complete
 off=38 len=4 span[header_field]="Host"
 off=43 header_field complete
 off=44 len=11 span[header_value]="example.com"
@@ -384,7 +440,11 @@ SM
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PRI"
+off=3 method complete
 off=4 len=1 span[url]="*"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=24 error code=23 reason="Pause on PRI/Upgrade"
 ```

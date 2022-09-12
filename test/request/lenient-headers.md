@@ -15,8 +15,12 @@ Header1: \f
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=7 span[header_field]="Header1"
 off=27 header_field complete
 off=28 len=1 span[header_value]="\f"
@@ -41,8 +45,12 @@ Header1: \f
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=7 span[header_field]="Header1"
 off=27 header_field complete
 off=28 len=4 span[header_value]="Okay"
@@ -51,8 +59,12 @@ off=36 headers complete method=1 v=1/1 flags=0 content_length=0
 off=36 message complete
 off=38 reset
 off=38 message begin
+off=38 len=3 span[method]="GET"
+off=41 method complete
 off=42 len=4 span[url]="/url"
 off=47 url complete
+off=52 len=3 span[version]="1.1"
+off=55 version complete
 off=57 len=7 span[header_field]="Header1"
 off=65 header_field complete
 off=66 len=1 span[header_value]="\f"
@@ -74,8 +86,12 @@ Header1: \f
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=7 span[header_field]="Header1"
 off=27 header_field complete
 off=28 error code=10 reason="Invalid header value char"

@@ -60,11 +60,19 @@ const llhttp_settings_t wasm_settings = {
   wasm_on_message_begin,
   wasm_on_url,
   wasm_on_status,
+  NULL,
+  NULL,
   wasm_on_header_field,
   wasm_on_header_value,
   wasm_on_headers_complete_wrap,
   wasm_on_body,
   wasm_on_message_complete,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
   NULL,
   NULL,
   NULL,
@@ -305,6 +313,34 @@ int llhttp__on_status(llhttp_t* s, const char* p, const char* endp) {
 int llhttp__on_status_complete(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_status_complete);
+  return err;
+}
+
+
+int llhttp__on_method(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  SPAN_CALLBACK_MAYBE(s, on_method p, endp - p);
+  return err;
+}
+
+
+int llhttp__on_method_complete(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  CALLBACK_MAYBE(s, on_method_complete);
+  return err;
+}
+
+
+int llhttp__on_version(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  SPAN_CALLBACK_MAYBE(s, on_version, p, endp - p);
+  return err;
+}
+
+
+int llhttp__on_version_complete(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  CALLBACK_MAYBE(s, on_version_complete);
   return err;
 }
 

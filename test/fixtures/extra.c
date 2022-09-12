@@ -171,6 +171,49 @@ int llhttp__on_status_complete(llparse_t* s, const char* p, const char* endp) {
 }
 
 
+int llhttp__on_method(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench || s->type != HTTP_REQUEST)
+    return 0;
+
+  return llparse__print_span("method", p, endp);
+}
+
+
+int llhttp__on_method_complete(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+
+  llparse__print(p, endp, "method complete");
+
+  #ifdef LLHTTP__TEST_PAUSE_ON_METHOD_COMPLETE
+    return LLPARSE__ERROR_PAUSE;
+  #else
+    return 0;
+  #endif
+}
+
+
+int llhttp__on_version(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+
+  return llparse__print_span("version", p, endp);
+}
+
+
+int llhttp__on_version_complete(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+
+  llparse__print(p, endp, "version complete");
+
+  #ifdef LLHTTP__TEST_PAUSE_ON_VERSION_COMPLETE
+    return LLPARSE__ERROR_PAUSE;
+  #else
+    return 0;
+  #endif
+}
+
 int llhttp__on_header_field(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;

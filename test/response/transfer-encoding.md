@@ -22,6 +22,8 @@ and this is the second one
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=12 span[header_field]="Content-Type"
@@ -49,6 +51,8 @@ World
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=6 span[header_field]="Accept"
@@ -77,6 +81,8 @@ World
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=6 span[header_field]="Accept"
@@ -114,6 +120,8 @@ OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=6 span[header_field]="Accept"
@@ -155,6 +163,8 @@ aa
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=4 span[header_field]="Host"

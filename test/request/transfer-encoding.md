@@ -15,8 +15,12 @@ Transfer-Encoding: chunked
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=17 span[header_field]="Transfer-Encoding"
 off=37 header_field complete
 off=38 len=7 span[header_value]="chunked"
@@ -40,8 +44,12 @@ a
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=17 span[header_field]="Transfer-Encoding"
 off=37 header_field complete
 off=38 len=7 span[header_value]="chunked"
@@ -71,8 +79,12 @@ A
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=17 span[header_field]="Transfer-Encoding"
 off=37 header_field complete
 off=38 len=7 span[header_value]="chunked"
@@ -102,8 +114,12 @@ all your base are belong to us
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=27 span[url]="/post_chunked_all_your_base"
 off=33 url complete
+off=38 len=3 span[version]="1.1"
+off=41 version complete
 off=43 len=17 span[header_field]="Transfer-Encoding"
 off=61 header_field complete
 off=62 len=7 span[header_value]="chunked"
@@ -135,8 +151,12 @@ hello
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=25 span[url]="/two_chunks_mult_zero_end"
 off=31 url complete
+off=36 len=3 span[version]="1.1"
+off=39 version complete
 off=41 len=17 span[header_field]="Transfer-Encoding"
 off=59 header_field complete
 off=60 len=7 span[header_value]="chunked"
@@ -173,8 +193,12 @@ Content-Type: text/plain
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=27 span[url]="/chunked_w_trailing_headers"
 off=33 url complete
+off=38 len=3 span[version]="1.1"
+off=41 version complete
 off=43 len=17 span[header_field]="Transfer-Encoding"
 off=61 header_field complete
 off=62 len=7 span[header_value]="chunked"
@@ -216,8 +240,12 @@ hello
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=32 span[url]="/chunked_w_unicorns_after_length"
 off=38 url complete
+off=43 len=3 span[version]="1.1"
+off=46 version complete
 off=48 len=17 span[header_field]="Transfer-Encoding"
 off=66 header_field complete
 off=67 len=7 span[header_value]="chunked"
@@ -249,8 +277,12 @@ aa
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=32 span[url]="/chunked_w_unicorns_after_length"
 off=38 url complete
+off=43 len=3 span[version]="1.1"
+off=46 version complete
 off=48 len=4 span[header_field]="Host"
 off=53 header_field complete
 off=54 len=9 span[header_value]="localhost"
@@ -278,8 +310,12 @@ Transfer-Encoding: pigeons
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=17 span[header_field]="Transfer-Encoding"
 off=37 header_field complete
 off=38 len=7 span[header_value]="pigeons"
@@ -302,8 +338,12 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
 off=44 url complete
+off=49 len=3 span[version]="1.1"
+off=52 version complete
 off=54 len=6 span[header_field]="Accept"
 off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
@@ -339,8 +379,12 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
 off=44 url complete
+off=49 len=3 span[version]="1.1"
+off=52 version complete
 off=54 len=6 span[header_field]="Accept"
 off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
@@ -370,8 +414,12 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
 off=44 url complete
+off=49 len=3 span[version]="1.1"
+off=52 version complete
 off=54 len=6 span[header_field]="Accept"
 off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
@@ -396,8 +444,12 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
 off=44 url complete
+off=49 len=3 span[version]="1.1"
+off=52 version complete
 off=54 len=6 span[header_field]="Accept"
 off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
@@ -425,8 +477,12 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
 off=44 url complete
+off=49 len=3 span[version]="1.1"
+off=52 version complete
 off=54 len=6 span[header_field]="Accept"
 off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
@@ -453,8 +509,12 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
 off=44 url complete
+off=49 len=3 span[version]="1.1"
+off=52 version complete
 off=54 len=6 span[header_field]="Accept"
 off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
@@ -488,8 +548,12 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
 off=44 url complete
+off=49 len=3 span[version]="1.1"
+off=52 version complete
 off=54 len=6 span[header_field]="Accept"
 off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
@@ -525,8 +589,12 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
 off=44 url complete
+off=49 len=3 span[version]="1.1"
+off=52 version complete
 off=54 len=6 span[header_field]="Accept"
 off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
@@ -565,8 +633,12 @@ World
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
 off=44 url complete
+off=49 len=3 span[version]="1.1"
+off=52 version complete
 off=54 len=6 span[header_field]="Accept"
 off=61 header_field complete
 off=62 len=3 span[header_value]="*/*"
@@ -594,8 +666,12 @@ foo
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=17 span[header_field]="Transfer-Encoding"
 off=37 header_field complete
 off=38 len=7 span[header_value]="chunked"
@@ -622,8 +698,12 @@ foo
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=17 span[header_field]="Transfer-Encoding"
 off=37 header_field complete
 off=38 len=7 span[header_value]="chunked"

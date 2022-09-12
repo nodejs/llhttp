@@ -13,8 +13,12 @@ abc
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=14 span[header_field]="Content-Length"
 off=34 header_field complete
 off=35 len=3 span[header_value]="003"
@@ -45,8 +49,12 @@ abc
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=14 span[header_field]="Content-Length"
 off=34 header_field complete
 off=35 len=3 span[header_value]="003"
@@ -71,8 +79,12 @@ Content-Length: 1000000000000000000000
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=14 span[header_field]="Content-Length"
 off=34 header_field complete
 off=35 len=21 span[header_value]="100000000000000000000"
@@ -91,8 +103,12 @@ Content-Length: 2
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=14 span[header_field]="Content-Length"
 off=34 header_field complete
 off=35 len=1 span[header_value]="1"
@@ -115,8 +131,12 @@ Transfer-Encoding: identity
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=14 span[header_field]="Content-Length"
 off=34 header_field complete
 off=35 len=1 span[header_value]="1"
@@ -142,8 +162,12 @@ abcdefgh
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=10 span[header_field]="Connection"
 off=30 header_field complete
 off=31 len=7 span[header_value]="upgrade"
@@ -166,8 +190,12 @@ abcdefgh
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=10 span[header_field]="Connection"
 off=30 header_field complete
 off=31 len=7 span[header_value]="upgrade"
@@ -199,8 +227,12 @@ Transfer-Encoding: chunked
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=14 span[header_field]="Content-Length"
 off=34 header_field complete
 off=35 len=1 span[header_value]="1"
@@ -224,8 +256,12 @@ HELLO
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=36 span[url]="/get_funky_content_length_body_hello"
 off=41 url complete
+off=46 len=3 span[version]="1.0"
+off=49 version complete
 off=51 len=14 span[header_field]="conTENT-Length"
 off=66 header_field complete
 off=67 len=1 span[header_value]="5"
@@ -247,8 +283,12 @@ Content-Length:  42
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=14 span[header_field]="Content-Length"
 off=32 header_field complete
 off=34 len=3 span[header_value]="42 "
@@ -268,8 +308,12 @@ Content-Length: 4 2
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=14 span[header_field]="Content-Length"
 off=32 header_field complete
 off=33 len=2 span[header_value]="4 "
@@ -288,8 +332,12 @@ Content-Length: 13 37
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=14 span[header_field]="Content-Length"
 off=32 header_field complete
 off=33 len=3 span[header_value]="13 "
@@ -308,8 +356,12 @@ Content-Length:
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=14 span[header_field]="Content-Length"
 off=32 header_field complete
 off=34 error code=11 reason="Empty Content-Length"
@@ -327,7 +379,11 @@ abc
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=26 error code=10 reason="Invalid header token"
 ```

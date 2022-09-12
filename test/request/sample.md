@@ -16,8 +16,12 @@ Header2:\t Value2
 
 ```log
 off=0 message begin
+off=0 len=7 span[method]="OPTIONS"
+off=7 method complete
 off=8 len=4 span[url]="/url"
 off=13 url complete
+off=18 len=3 span[version]="1.1"
+off=21 version complete
 off=23 len=7 span[header_field]="Header1"
 off=31 header_field complete
 off=32 len=6 span[header_value]="Value1"
@@ -37,7 +41,7 @@ There's a optimization in `start_req_or_res` that passes execution to
 with `HTTP/`). However, there're still methods like `HEAD` that should get
 to `start_req`. Verify that it still works after optimization.
 
-<!-- meta={"type": "request"} -->
+<!-- meta={"type": "request", "noScan": true } -->
 ```http
 HEAD /url HTTP/1.1
 
@@ -46,8 +50,12 @@ HEAD /url HTTP/1.1
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="HEAD"
+off=4 method complete
 off=5 len=4 span[url]="/url"
 off=10 url complete
+off=15 len=3 span[version]="1.1"
+off=18 version complete
 off=22 headers complete method=2 v=1/1 flags=0 content_length=0
 off=22 message complete
 ```
@@ -66,8 +74,12 @@ Accept: */*
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=5 span[url]="/test"
 off=10 url complete
+off=15 len=3 span[version]="1.1"
+off=18 version complete
 off=20 len=10 span[header_field]="User-Agent"
 off=31 header_field complete
 off=32 len=85 span[header_value]="curl/7.18.0 (i486-pc-linux-gnu) libcurl/7.18.0 OpenSSL/0.9.8g zlib/1.2.3.3 libidn/1.1"
@@ -103,8 +115,12 @@ Connection: keep-alive
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=12 span[url]="/favicon.ico"
 off=17 url complete
+off=22 len=3 span[version]="1.1"
+off=25 version complete
 off=27 len=4 span[header_field]="Host"
 off=32 header_field complete
 off=33 len=12 span[header_value]="0.0.0.0=5000"
@@ -153,8 +169,12 @@ aaaaaaaaaaaaa:++++++++++
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=9 span[url]="/dumbpack"
 off=14 url complete
+off=19 len=3 span[version]="1.1"
+off=22 version complete
 off=24 len=13 span[header_field]="aaaaaaaaaaaaa"
 off=38 header_field complete
 off=38 len=10 span[header_value]="++++++++++"
@@ -174,8 +194,12 @@ GET /get_no_headers_no_body/world HTTP/1.1
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=29 span[url]="/get_no_headers_no_body/world"
 off=34 url complete
+off=39 len=3 span[version]="1.1"
+off=42 version complete
 off=46 headers complete method=1 v=1/1 flags=0 content_length=0
 off=46 message complete
 ```
@@ -192,8 +216,12 @@ Accept: */*
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=23 span[url]="/get_one_header_no_body"
 off=28 url complete
+off=33 len=3 span[version]="1.1"
+off=36 version complete
 off=38 len=6 span[header_field]="Accept"
 off=45 header_field complete
 off=46 len=3 span[header_value]="*/*"
@@ -219,8 +247,12 @@ Accept: */*
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=5 span[url]="/test"
 off=10 url complete
+off=15 len=3 span[version]="1.0"
+off=18 version complete
 off=20 len=4 span[header_field]="Host"
 off=25 header_field complete
 off=26 len=12 span[header_value]="0.0.0.0:5000"
@@ -251,8 +283,12 @@ will send an extra CRLF before the next request.
 
 ```log
 off=2 message begin
+off=2 len=3 span[method]="GET"
+off=5 method complete
 off=6 len=5 span[url]="/test"
 off=12 url complete
+off=17 len=3 span[version]="1.1"
+off=20 version complete
 off=24 headers complete method=1 v=1/1 flags=0 content_length=0
 off=24 message complete
 ```
@@ -268,6 +304,8 @@ GET /
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=7 url complete
 off=9 headers complete method=1 v=0/9 flags=0 content_length=0
@@ -298,8 +336,12 @@ Connection:
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=16 len=5 span[header_field]="Line1"
 off=22 header_field complete
 off=25 len=3 span[header_value]="abc"
@@ -352,8 +394,12 @@ Connection:\n\
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=15 len=5 span[header_field]="Line1"
 off=21 header_field complete
 off=24 len=3 span[header_value]="abc"
@@ -372,8 +418,12 @@ Header1: Value1
 
 ```log
 off=2 message begin
+off=2 len=3 span[method]="GET"
+off=5 method complete
 off=6 len=4 span[url]="/url"
 off=11 url complete
+off=16 len=3 span[version]="1.1"
+off=19 version complete
 off=21 len=7 span[header_field]="Header1"
 off=29 header_field complete
 off=30 len=6 span[header_value]="Value1"
@@ -396,8 +446,12 @@ Test: Düsseldorf
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=16 len=4 span[header_field]="Test"
 off=21 header_field complete
 off=22 len=11 span[header_value]="Düsseldorf"
@@ -421,8 +475,12 @@ Header2: \xffValue2
 
 ```log
 off=0 message begin
+off=0 len=7 span[method]="OPTIONS"
+off=7 method complete
 off=8 len=4 span[url]="/url"
 off=13 url complete
+off=18 len=3 span[version]="1.1"
+off=21 version complete
 off=23 len=7 span[header_field]="Header1"
 off=31 header_field complete
 off=32 len=6 span[header_value]="Value1"
@@ -480,8 +538,12 @@ X-SSL-Nonsense:   -----BEGIN CERTIFICATE-----
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=16 len=14 span[header_field]="X-SSL-Nonsense"
 off=31 header_field complete
 off=34 len=27 span[header_value]="-----BEGIN CERTIFICATE-----"

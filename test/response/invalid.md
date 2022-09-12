@@ -28,6 +28,7 @@ HTTP/01.1 200 OK
 
 ```log
 off=0 message begin
+off=5 len=1 span[version]="0"
 off=6 error code=9 reason="Expected dot"
 ```
 
@@ -42,6 +43,7 @@ HTTP/11.1 200 OK
 
 ```log
 off=0 message begin
+off=5 len=1 span[version]="1"
 off=6 error code=9 reason="Expected dot"
 ```
 
@@ -56,8 +58,11 @@ HTTP/1.01 200 OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.0"
+off=8 version complete
 off=8 error code=9 reason="Expected space after version"
 ```
+-->
 
 ### Tab after HTTP version
 
@@ -70,6 +75,8 @@ HTTP/1.1\t200 OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=8 error code=9 reason="Expected space after version"
 ```
 
@@ -84,6 +91,8 @@ off=8 error code=9 reason="Expected space after version"
 
 ```log
 off=1 message begin
+off=6 len=3 span[version]="1.1"
+off=9 version complete
 off=9 error code=9 reason="Expected space after version"
 ```
 
@@ -99,6 +108,8 @@ Foo: 1\rBar: 2
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=3 span[header_field]="Foo"
@@ -118,6 +129,7 @@ HTTP/5.6 200 OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="5.6"
 off=8 error code=9 reason="Invalid HTTP version"
 ```
 
@@ -131,6 +143,8 @@ HTTP/1.1 200 OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=18 error code=30 reason="Unexpected space after start line"

@@ -13,6 +13,8 @@ Host: example.com
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=18 span[url]="/music/sweet/music"
 off=23 url complete
 off=27 error code=8 reason="Expected SOURCE method for ICE/x.x request"
@@ -30,6 +32,8 @@ Host: example.com
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=18 span[url]="/music/sweet/music"
 off=23 url complete
 off=24 error code=8 reason="Expected HTTP/"
@@ -47,6 +51,8 @@ Host: example.com
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=18 span[url]="/music/sweet/music"
 off=23 url complete
 off=28 error code=8 reason="Invalid method for RTSP/x.x request"
@@ -64,6 +70,8 @@ Host: example.com
 
 ```log
 off=0 message begin
+off=0 len=8 span[method]="ANNOUNCE"
+off=8 method complete
 off=9 len=18 span[url]="/music/sweet/music"
 off=28 url complete
 off=33 error code=8 reason="Invalid method for HTTP/x.x request"
@@ -81,8 +89,12 @@ Foo: 1\rBar: 2
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=16 len=3 span[header_field]="Foo"
 off=20 header_field complete
 off=21 len=1 span[header_value]="1"
@@ -101,8 +113,12 @@ Fo@: Failure
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=18 error code=10 reason="Invalid header token"
 ```
 
@@ -118,8 +134,12 @@ Foo\01\test: Bar
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=19 error code=10 reason="Invalid header token"
 ```
 
@@ -134,6 +154,8 @@ MKCOLA / HTTP/1.1
 
 ```log
 off=0 message begin
+off=0 len=5 span[method]="MKCOL"
+off=5 method complete
 off=5 error code=6 reason="Expected space after method"
 ```
 
@@ -150,8 +172,12 @@ name
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=20 error code=10 reason="Invalid header token"
 ```
 
@@ -169,8 +195,12 @@ Accept-Encoding: gzip
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=16 len=4 span[header_field]="Host"
 off=21 header_field complete
 off=22 len=15 span[header_value]="www.example.com"
@@ -192,8 +222,12 @@ Accept-Encoding: gzip
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=16 len=4 span[header_field]="Host"
 off=21 header_field complete
 off=22 len=15 span[header_value]="www.example.com"
@@ -219,8 +253,12 @@ Host: localhost
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=16 len=4 span[header_field]="Host"
 off=21 header_field complete
 off=22 len=9 span[header_value]="localhost"
@@ -240,8 +278,11 @@ GET / HTTP/5.6
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="5.6"
 off=14 error code=9 reason="Invalid HTTP version"
 ```
 
@@ -255,7 +296,11 @@ GET / HTTP/1.1
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
 off=4 len=1 span[url]="/"
 off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
 off=17 error code=30 reason="Unexpected space after start line"
 ```

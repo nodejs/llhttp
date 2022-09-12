@@ -24,6 +24,8 @@ struct llhttp_settings_s {
   /* Possible return values 0, -1, HPE_USER */
   llhttp_data_cb on_url;
   llhttp_data_cb on_status;
+  llhttp_data_cb on_method;
+  llhttp_data_cb on_version;
   llhttp_data_cb on_header_field;
   llhttp_data_cb on_header_value;
 
@@ -45,6 +47,8 @@ struct llhttp_settings_s {
   llhttp_cb      on_message_complete;
   llhttp_cb      on_url_complete;
   llhttp_cb      on_status_complete;
+  llhttp_cb      on_method_complete;
+  llhttp_cb      on_version_complete;
   llhttp_cb      on_header_field_complete;
   llhttp_cb      on_header_value_complete;
 

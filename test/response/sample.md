@@ -15,6 +15,8 @@ Content-Length: 0
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=7 span[header_field]="Header1"
@@ -60,6 +62,8 @@ HTTP/1.1 200 OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=19 headers complete status=200 v=1/1 flags=0 content_length=0
@@ -90,6 +94,8 @@ _(Note the `$` char in header field)_
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=17 span[status]="Moved Permanently"
 off=32 status complete
 off=32 len=8 span[header_field]="Location"
@@ -163,6 +169,8 @@ Transfer-Encoding: chunked
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=16 span[status]="MovedPermanently"
 off=31 status complete
 off=31 len=4 span[header_field]="Date"
@@ -221,6 +229,8 @@ HTTP/1.1 404 Not Found
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=9 span[status]="Not Found"
 off=24 status complete
 off=26 headers complete status=404 v=1/1 flags=0 content_length=0
@@ -237,6 +247,8 @@ HTTP/1.1 301
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=14 status complete
 off=16 headers complete status=301 v=1/1 flags=0 content_length=0
 ```
@@ -252,6 +264,8 @@ HTTP/1.1 200 \r\n\
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=15 status complete
 off=17 headers complete status=200 v=1/1 flags=0 content_length=0
 ```
@@ -269,6 +283,8 @@ these headers are from http://news.ycombinator.com/
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=16 status complete
 off=16 len=12 span[header_field]="Content-Type"
@@ -294,6 +310,8 @@ DCLK_imp: v7;x;114750856;0-0;0;17820020;0/0;21603567/21621457/1;;~okv=;dcmt=text
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=6 span[header_field]="Server"
@@ -339,6 +357,8 @@ Connection: keep-alive
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.0"
+off=8 version complete
 off=13 len=17 span[status]="Moved Permanently"
 off=32 status complete
 off=32 len=4 span[header_field]="Date"
@@ -405,6 +425,8 @@ Connection: close
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=4 span[header_field]="Date"
@@ -475,6 +497,8 @@ Connection: keep-alive
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=6 span[header_field]="Server"
@@ -508,6 +532,8 @@ Connection: keep-alive
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=6 span[header_field]="Server"
@@ -557,6 +583,8 @@ Connection: close
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=19 span[status]="Oriëntatieprobleem"
 off=34 status complete
 off=34 len=4 span[header_field]="Date"
@@ -586,6 +614,8 @@ HTTP/0.9 200 OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="0.9"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=19 headers complete status=200 v=0/9 flags=0 content_length=0
@@ -607,6 +637,8 @@ hello world
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=12 span[header_field]="Content-Type"
@@ -631,6 +663,8 @@ Content-Length: 0
 
 ```log
 off=2 message begin
+off=7 len=3 span[version]="1.1"
+off=10 version complete
 off=15 len=2 span[status]="OK"
 off=19 status complete
 off=19 len=7 span[header_field]="Header1"

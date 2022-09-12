@@ -103,20 +103,26 @@ The following callbacks can return `0` (proceed normally), `-1` (error) or `HPE_
 * `on_message_begin`: Invoked when a new request/response starts.
 * `on_message_complete`: Invoked when a request/response has been completedly parsed.
 * `on_url_complete`: Invoked after the URL has been parsed.
+* `on_method_complete`: Invoked after the HTTP method has been parsed.
+* `on_version_complete`: Invoked after the HTTP version has been parsed.
 * `on_status_complete`: Invoked after the status code has been parsed.
 * `on_header_field_complete`: Invoked after a header name has been parsed.
 * `on_header_value_complete`: Invoked after a header value has been parsed.
-* `on_chunk_header`: Invoked after a new chunk is started. The current chunk length is stored
-   `parser->content_length`. 
+* `on_chunk_header`: Invoked after a new chunk is started. The current chunk length is stored in `parser->content_length`.
 * `on_chunk_complete`: Invoked after a new chunk is received. 
-* `on_reset`: Invoked after `on_message_complete` and before `on_message_begin` when a new message is received on the same parser. This is not invoked for the first message of the parser.
+* `on_reset`: Invoked after `on_message_complete` and before `on_message_begin` when a new message 
+   is received on the same parser. This is not invoked for the first message of the parser.
 
 The following callbacks can return `0` (proceed normally), `-1` (error) or `HPE_USER` (error from the callback): 
 
-* `on_url`: Invoked when the URL starts. 
-* `on_status`: Invoked when the status starts.
-* `on_header_field`: Invoked when a new header name starts.
-* `on_header_value`: Invoked when a new header value starts.
+* `on_url`: Invoked when another character of the URL is received. 
+* `on_status`: Invoked when another character of the status is received.
+* `on_method`: Invoked when another character of the method is received. 
+   When parser is created with `HTTP_BOTH` and the input is a response, this also invoked for the sequence `HTTP/`
+   of the first message.
+* `on_version`: Invoked when another character of the version is received.
+* `on_header_field`: Invoked when another character of a header name is received.
+* `on_header_value`: Invoked when another character of a header value is received.
 
 The callback `on_headers_complete`, invoked when headers are completed, can return:
 

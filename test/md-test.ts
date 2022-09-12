@@ -305,7 +305,7 @@ run('response/content-length');
 run('response/transfer-encoding');
 run('response/invalid');
 run('response/finish');
-run('request/lenient-version');
+run('response/lenient-version');
 run('response/pausing');
 run('response/pipelining');
 

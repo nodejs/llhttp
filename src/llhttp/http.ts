@@ -22,6 +22,7 @@ const NODES: ReadonlyArray<string> = [
   'start',
   'after_start',
   'start_req',
+  'after_start_req',
   'start_res',
   'start_req_or_res',
 
@@ -31,6 +32,7 @@ const NODES: ReadonlyArray<string> = [
   'res_http_dot',
   'res_http_minor',
   'res_http_end',
+  'res_after_version',
   'res_status_code',
   'res_status_code_otherwise',
   'res_status_start',
@@ -40,6 +42,7 @@ const NODES: ReadonlyArray<string> = [
   'req_first_space_before_url',
   'req_spaces_before_url',
   'req_http_start',
+  'req_http_version',
   'req_http_major',
   'req_http_dot',
   'req_http_minor',
@@ -106,6 +109,8 @@ interface ISpanMap {
   readonly headerField: source.Span;
   readonly headerValue: source.Span;
   readonly status: source.Span;
+  readonly method: source.Span;
+  readonly version: source.Span;
 }
 
 interface ICallbackMap {
@@ -118,6 +123,8 @@ interface ICallbackMap {
   readonly onMessageBegin: source.code.Code;
   readonly onMessageComplete: source.code.Code;
   readonly onUrlComplete: source.code.Code;
+  readonly onMethodComplete: source.code.Code;
+  readonly onVersionComplete: source.code.Code;
   readonly onStatusComplete: source.code.Code;
   readonly onHeaderFieldComplete: source.code.Code;
   readonly onHeaderValueComplete: source.code.Code;
@@ -162,7 +169,9 @@ export class HTTP {
       body: p.span(p.code.span('llhttp__on_body')),
       headerField: p.span(p.code.span('llhttp__on_header_field')),
       headerValue: p.span(p.code.span('llhttp__on_header_value')),
+      method: p.span(p.code.span('llhttp__on_method')),
       status: p.span(p.code.span('llhttp__on_status')),
+      version: p.span(p.code.span('llhttp__on_version')),
     };
 
     /* tslint:disable:object-literal-sort-keys */
@@ -170,6 +179,8 @@ export class HTTP {
       // User callbacks
       onUrlComplete: p.code.match('llhttp__on_url_complete'),
       onStatusComplete: p.code.match('llhttp__on_status_complete'),
+      onMethodComplete: p.code.match('llhttp__on_method_complete'),
+      onVersionComplete: p.code.match('llhttp__on_version_complete'),
       onHeaderFieldComplete: p.code.match('llhttp__on_header_field_complete'),
       onHeaderValueComplete: p.code.match('llhttp__on_header_value_complete'),
       onHeadersComplete: p.code.match('llhttp__on_headers_complete'),
@@ -252,53 +263,65 @@ export class HTTP {
     );
 
     n('start_req_or_res')
-      .peek('H', n('req_or_res_method'))
+      .peek('H', this.span.method.start(n('req_or_res_method')))
       .otherwise(this.update('type', TYPE.REQUEST, 'start_req'));
 
     n('req_or_res_method')
       .select(H_METHOD_MAP, this.store('method',
-        this.update('type', TYPE.REQUEST, 'req_first_space_before_url')))
-      .match('HTTP/', this.update('type', TYPE.RESPONSE, 'res_http_major'))
+        this.update('type', TYPE.REQUEST, this.span.method.end(
+          this.invokePausable('on_method_complete', ERROR.CB_METHOD_COMPLETE, n('req_first_space_before_url')),
+        )),
+      ))
+      .match('HTTP/', this.span.method.end(this.update('type', TYPE.RESPONSE,
+        this.span.version.start(n('res_http_major')))))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Invalid word encountered'));
 
     const checkVersion = (destination: string): Node => {
+      const node = n(destination);
+      const errorNode = this.span.version.end(p.error(ERROR.INVALID_VERSION, 'Invalid HTTP version'));
+
       return this.testLenientFlags(LENIENT_FLAGS.VERSION,
         {
-          1: n(destination),
+          1: node,
         },
         this.load('http_major', {
           0: this.load('http_minor', {
-            9: n(destination),
-          }, p.error(ERROR.INVALID_VERSION, 'Invalid HTTP version')),
+            9: node,
+          }, errorNode),
           1: this.load('http_minor', {
-            0: n(destination),
-            1: n(destination),
-          }, p.error(ERROR.INVALID_VERSION, 'Invalid HTTP version')),
+            0: node,
+            1: node,
+          }, errorNode),
           2: this.load('http_minor', {
-            0: n(destination),
-          }, p.error(ERROR.INVALID_VERSION, 'Invalid HTTP version')),
-        }, p.error(ERROR.INVALID_VERSION, 'Invalid HTTP version')),
+            0: node,
+          }, errorNode),
+        }, errorNode),
       );
     };
 
     // Response
     n('start_res')
-      .match('HTTP/', n('res_http_major'))
+      .match('HTTP/', span.version.start(n('res_http_major')))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
 
     n('res_http_major')
       .select(MAJOR, this.store('http_major', 'res_http_dot'))
-      .otherwise(p.error(ERROR.INVALID_VERSION, 'Invalid major version'));
+      .otherwise(this.span.version.end(p.error(ERROR.INVALID_VERSION, 'Invalid major version')));
 
     n('res_http_dot')
       .match('.', n('res_http_minor'))
-      .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected dot'));
+      .otherwise(this.span.version.end(p.error(ERROR.INVALID_VERSION, 'Expected dot')));
 
     n('res_http_minor')
       .select(MINOR, this.store('http_minor', checkVersion('res_http_end')))
-      .otherwise(p.error(ERROR.INVALID_VERSION, 'Invalid minor version'));
+      .otherwise(this.span.version.end(p.error(ERROR.INVALID_VERSION, 'Invalid minor version')));
 
     n('res_http_end')
+      .otherwise(this.span.version.end().otherwise(
+        this.invokePausable('on_version_complete', ERROR.CB_VERSION_COMPLETE, 'res_after_version'),
+      ));
+
+    n('res_after_version')
       .match(' ', this.update('status_code', 0, 'res_status_code'))
       .otherwise(p.error(ERROR.INVALID_VERSION,
           'Expected space after version'));
@@ -339,10 +362,12 @@ export class HTTP {
     }
 
     // Request
+    n('start_req').otherwise(this.span.method.start(n('after_start_req')));
 
-    n('start_req')
-      .select(METHOD_MAP,
-        this.store('method', 'req_first_space_before_url'))
+    n('after_start_req')
+      .select(METHOD_MAP, this.store('method', this.span.method.end(
+        this.invokePausable('on_method_complete', ERROR.CB_METHOD_COMPLETE, n('req_first_space_before_url'),
+      ))))
       .otherwise(p.error(ERROR.INVALID_METHOD, 'Invalid method encountered'));
 
     n('req_first_space_before_url')
@@ -374,7 +399,7 @@ export class HTTP {
       );
 
     const checkMethod = (methods: METHODS[], error: string): Node => {
-      const success = n('req_http_major');
+      const success = n('req_http_version');
       const failure = p.error(ERROR.INVALID_CONSTANT, error);
 
       const map: { [key: number]: Node } = {};
@@ -395,21 +420,30 @@ export class HTTP {
       .match(' ', n('req_http_start'))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
 
+    n('req_http_version').otherwise(span.version.start(n('req_http_major')));
+
     n('req_http_major')
       .select(MAJOR, this.store('http_major', 'req_http_dot'))
-      .otherwise(p.error(ERROR.INVALID_VERSION, 'Invalid major version'));
+      .otherwise(this.span.version.end(p.error(ERROR.INVALID_VERSION, 'Invalid major version')));
 
     n('req_http_dot')
       .match('.', n('req_http_minor'))
-      .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected dot'));
+      .otherwise(this.span.version.end(p.error(ERROR.INVALID_VERSION, 'Expected dot')));
 
     n('req_http_minor')
       .select(MINOR, this.store('http_minor', checkVersion('req_http_end')))
-      .otherwise(p.error(ERROR.INVALID_VERSION, 'Invalid minor version'));
+      .otherwise(this.span.version.end(p.error(ERROR.INVALID_VERSION, 'Invalid minor version')));
 
-    n('req_http_end').otherwise(this.load('method', {
-      [METHODS.PRI]: n('req_pri_upgrade'),
-    }, n('req_http_complete')));
+    n('req_http_end').otherwise(
+      span.version.end().otherwise(
+        this.invokePausable(
+          'on_version_complete',
+          ERROR.CB_VERSION_COMPLETE,
+          this.load('method', {
+            [METHODS.PRI]: n('req_pri_upgrade'),
+          }, n('req_http_complete')),
+        )),
+    );
 
     n('req_http_complete')
       .match([ '\r\n', '\n' ], n('headers_start'))
@@ -1028,7 +1062,6 @@ export class HTTP {
     return res;
   }
 
-  // TODO(indutny): use type for `name`
   private invokePausable(name: string, errorCode: ERROR, next: string | Node)
     : Node {
     let cb;
@@ -1042,6 +1075,12 @@ export class HTTP {
         break;
       case 'on_status_complete':
         cb = this.callback.onStatusComplete;
+        break;
+      case 'on_method_complete':
+        cb = this.callback.onMethodComplete;
+        break;
+      case 'on_version_complete':
+        cb = this.callback.onVersionComplete;
         break;
       case 'on_header_field_complete':
         cb = this.callback.onHeaderFieldComplete;
