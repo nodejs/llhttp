@@ -109,6 +109,8 @@ The following callbacks can return `0` (proceed normally), `-1` (error) or `HPE_
 * `on_header_field_complete`: Invoked after a header name has been parsed.
 * `on_header_value_complete`: Invoked after a header value has been parsed.
 * `on_chunk_header`: Invoked after a new chunk is started. The current chunk length is stored in `parser->content_length`.
+* `on_chunk_extension_name_complete`: Invoked after a chunk extension name is started.
+* `on_chunk_extension_value_complete`: Invoked after a chunk extension value is started.
 * `on_chunk_complete`: Invoked after a new chunk is received. 
 * `on_reset`: Invoked after `on_message_complete` and before `on_message_begin` when a new message 
    is received on the same parser. This is not invoked for the first message of the parser.
@@ -123,6 +125,8 @@ The following callbacks can return `0` (proceed normally), `-1` (error) or `HPE_
 * `on_version`: Invoked when another character of the version is received.
 * `on_header_field`: Invoked when another character of a header name is received.
 * `on_header_value`: Invoked when another character of a header value is received.
+* `on_chunk_extension_name`: Invoked when another character of a chunk extension name is received.
+* `on_chunk_extension_value`: Invoked when another character of a extension value is received.
 
 The callback `on_headers_complete`, invoked when headers are completed, can return:
 
