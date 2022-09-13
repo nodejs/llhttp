@@ -42,7 +42,9 @@ build/c/llhttp.c: generate
 build/native:
 	mkdir -p build/native
 
-release: generate
+release: clean generate
+	@echo "${RELEASE}" | grep -q -e ".+" || { echo "Please make sure the RELEASE argument is set."; exit 1; }
+	rm -rf release
 	mkdir -p release/src
 	mkdir -p release/include
 	cp -rf build/llhttp.h release/include/
@@ -51,31 +53,31 @@ release: generate
 	cp -rf src/llhttp.gyp release/
 	cp -rf src/common.gypi release/
 	cp -rf CMakeLists.txt release/
-	sed -i s/_TAG_/$(TAG)/ release/CMakeLists.txt
+	sed -i s/_RELEASE_/$(RELEASE)/ release/CMakeLists.txt
 	cp -rf libllhttp.pc.in release/
 	cp -rf README.md release/
 	cp -rf LICENSE-MIT release/
 
 github-release:
-	@echo "${RELEASE}" | grep -q -e "^v" || { echo "Please make sure version starts with \"v\"."; exit 1; }
-	gh release create -d --generate-notes ${RELEASE}
+	@echo "${RELEASE_V}" | grep -q -e "^v" || { echo "Please make sure version starts with \"v\"."; exit 1; }
+	gh release create -d --generate-notes ${RELEASE_V}
 	@sleep 5
-	gh release view ${RELEASE} -t "{{.body}}" --json body > RELEASE_NOTES
-	gh release delete ${RELEASE} -y
-	gh release create -F RELEASE_NOTES -d --title ${RELEASE} --target release release/${RELEASE}
+	gh release view ${RELEASE_V} -t "{{.body}}" --json body > RELEASE_NOTES
+	gh release delete ${RELEASE_V} -y
+	gh release create -F RELEASE_NOTES -d --title ${RELEASE_V} --target release release/${RELEASE_V}
 	@sleep 5
 	rm -rf RELEASE_NOTES
-	open $$(gh release view release/${RELEASE} --json url -t "{{.url}}")
+	open $$(gh release view release/${RELEASE_V} --json url -t "{{.url}}")
 
-postversion: release
+postversion: release	
 	git fetch origin
 	git push
 	git checkout release --
 	cp -rf release/* ./
 	rm -rf release
 	git add include src *.gyp *.gypi CMakeLists.txt README.md LICENSE-MIT libllhttp.pc.in
-	git commit -a -m "release: $(TAG)"
-	git tag "release/v$(TAG)"
+	git commit -a -m "release: $(RELEASE)"
+	git tag "release/v$(RELEASE)"
 	git push && git push --tags
 	git checkout main
 
