@@ -31,6 +31,8 @@ Connection: close
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=4 span[header_field]="Date"
@@ -93,6 +95,8 @@ OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=16 span[header_field]="Content-Length-X"

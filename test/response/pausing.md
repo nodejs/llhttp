@@ -14,6 +14,8 @@ abc
 ```log
 off=0 message begin
 off=0 pause
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=14 span[header_field]="Content-Length"
@@ -37,6 +39,8 @@ abc
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=14 span[header_field]="Content-Length"
@@ -47,6 +51,32 @@ off=38 headers complete status=200 v=1/1 flags=20 content_length=3
 off=38 len=3 span[body]="abc"
 off=41 message complete
 off=41 pause
+```
+
+### on_version_complete
+
+<!-- meta={"type": "response", "pause": "on_version_complete"} -->
+```http
+HTTP/1.1 200 OK
+Content-Length: 3
+
+abc
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=8 pause
+off=13 len=2 span[status]="OK"
+off=17 status complete
+off=17 len=14 span[header_field]="Content-Length"
+off=32 header_field complete
+off=33 len=1 span[header_value]="3"
+off=36 header_value complete
+off=38 headers complete status=200 v=1/1 flags=20 content_length=3
+off=38 len=3 span[body]="abc"
+off=41 message complete
 ```
 
 ### on_status_complete
@@ -61,6 +91,8 @@ abc
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 pause
@@ -85,6 +117,8 @@ abc
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=14 span[header_field]="Content-Length"
@@ -109,6 +143,8 @@ abc
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=14 span[header_field]="Content-Length"
@@ -133,6 +169,8 @@ abc
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=14 span[header_field]="Content-Length"
@@ -161,6 +199,8 @@ a
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=17 span[header_field]="Transfer-Encoding"
@@ -194,6 +234,8 @@ a
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=17 span[header_field]="Transfer-Encoding"

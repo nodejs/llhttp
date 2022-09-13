@@ -16,6 +16,8 @@ hello world
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=12 span[header_field]="Content-Type"
@@ -54,6 +56,8 @@ HTTP/1.0 200 OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.0"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=10 span[header_field]="Connection"
@@ -78,6 +82,8 @@ HTTP/1.0 200 OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.0"
+off=8 version complete
 off=13 len=10 span[status]="No content"
 off=25 status complete
 off=25 len=10 span[header_field]="Connection"
@@ -88,6 +94,8 @@ off=51 headers complete status=204 v=1/0 flags=1 content_length=0
 off=51 message complete
 off=51 reset
 off=51 message begin
+off=56 len=3 span[version]="1.0"
+off=59 version complete
 off=64 len=2 span[status]="OK"
 ```
 
@@ -105,6 +113,8 @@ HTTP/1.1 200 OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=19 headers complete status=200 v=1/1 flags=0 content_length=0
@@ -124,12 +134,16 @@ HTTP/1.1 200 OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=10 span[status]="No content"
 off=25 status complete
 off=27 headers complete status=204 v=1/1 flags=0 content_length=0
 off=27 message complete
 off=27 reset
 off=27 message begin
+off=32 len=3 span[version]="1.1"
+off=35 version complete
 off=40 len=2 span[status]="OK"
 ```
 
@@ -145,6 +159,8 @@ HTTP/1.1 200 OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=10 span[status]="No content"
 off=25 status complete
 off=25 len=10 span[header_field]="Connection"
@@ -171,6 +187,8 @@ Connection: close
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=10 span[status]="No content"
 off=25 status complete
 off=25 len=14 span[header_field]="Content-Length"
@@ -201,6 +219,8 @@ Connection: close
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=10 span[status]="No content"
 off=25 status complete
 off=25 len=14 span[header_field]="Content-Length"
@@ -232,6 +252,8 @@ Connection: close
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=10 span[status]="No content"
 off=25 status complete
 off=25 len=14 span[header_field]="Content-Length"
@@ -247,6 +269,8 @@ off=65 len=5 span[body]="2ad73"
 off=70 message complete
 off=70 reset
 off=70 message begin
+off=75 len=3 span[version]="1.1"
+off=78 version complete
 off=83 len=2 span[status]="OK"
 ```
 
@@ -262,6 +286,8 @@ HTTP/1.1 200 OK
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=10 span[status]="No content"
 off=25 status complete
 off=25 len=10 span[header_field]="Connection"
@@ -272,6 +298,8 @@ off=46 headers complete status=204 v=1/1 flags=2 content_length=0
 off=46 message complete
 off=46 reset
 off=46 message begin
+off=51 len=3 span[version]="1.1"
+off=54 version complete
 off=59 len=2 span[status]="OK"
 ```
 
@@ -290,6 +318,8 @@ proto
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=19 span[status]="Switching Protocols"
 off=34 status complete
 off=34 len=10 span[header_field]="Connection"
@@ -330,6 +360,8 @@ proto
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=19 span[status]="Switching Protocols"
 off=34 status complete
 off=34 len=10 span[header_field]="Connection"
@@ -370,6 +402,8 @@ body
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=10 span[header_field]="Connection"
@@ -398,6 +432,8 @@ body
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=10 span[header_field]="Connection"
@@ -437,6 +473,8 @@ dy
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=10 span[header_field]="Connection"

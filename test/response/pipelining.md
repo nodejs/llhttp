@@ -21,6 +21,8 @@ CCCC
 
 ```log
 off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
 off=13 len=2 span[status]="OK"
 off=17 status complete
 off=17 len=14 span[header_field]="Content-Length"
@@ -32,6 +34,8 @@ off=38 len=3 span[body]="AAA"
 off=41 message complete
 off=43 reset
 off=43 message begin
+off=48 len=3 span[version]="1.1"
+off=51 version complete
 off=56 len=7 span[status]="Created"
 off=65 status complete
 off=65 len=14 span[header_field]="Content-Length"
@@ -43,6 +47,8 @@ off=86 len=4 span[body]="BBBB"
 off=90 message complete
 off=92 reset
 off=92 message begin
+off=97 len=3 span[version]="1.1"
+off=100 version complete
 off=105 len=8 span[status]="Accepted"
 off=115 status complete
 off=115 len=14 span[header_field]="Content-Length"
