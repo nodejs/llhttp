@@ -28,6 +28,8 @@ struct llhttp_settings_s {
   llhttp_data_cb on_version;
   llhttp_data_cb on_header_field;
   llhttp_data_cb on_header_value;
+  llhttp_data_cb      on_chunk_extension_name;
+  llhttp_data_cb      on_chunk_extension_value;
 
   /* Possible return values:
    * 0  - Proceed normally
@@ -51,6 +53,8 @@ struct llhttp_settings_s {
   llhttp_cb      on_version_complete;
   llhttp_cb      on_header_field_complete;
   llhttp_cb      on_header_value_complete;
+  llhttp_cb      on_chunk_extension_name_complete;
+  llhttp_cb      on_chunk_extension_value_complete;
 
   /* When on_chunk_header is called, the current chunk length is stored
    * in parser->content_length.

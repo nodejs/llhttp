@@ -223,16 +223,16 @@ off=134 chunk complete
 off=134 message complete
 ```
 
-### Parameters after chunk length
+### Chunk extensions
 
 <!-- meta={"type": "request"} -->
 ```http
 POST /chunked_w_unicorns_after_length HTTP/1.1
 Transfer-Encoding: chunked
 
-5; ilovew3;somuchlove=aretheseparametersfor
+5;ilovew3;somuchlove=aretheseparametersfor
 hello
-6; blahblah; blah
+6;blahblah;blah
  world
 0
 
@@ -251,16 +251,26 @@ off=66 header_field complete
 off=67 len=7 span[header_value]="chunked"
 off=76 header_value complete
 off=78 headers complete method=3 v=1/1 flags=208 content_length=0
-off=123 chunk header len=5
-off=123 len=5 span[body]="hello"
-off=130 chunk complete
-off=149 chunk header len=6
-off=149 len=6 span[body]=" world"
-off=157 chunk complete
-off=160 chunk header len=0
+off=80 len=7 span[chunk_extension_name]="ilovew3"
+off=88 chunk_extension_name complete
+off=88 len=10 span[chunk_extension_name]="somuchlove"
+off=99 chunk_extension_name complete
+off=99 len=21 span[chunk_extension_value]="aretheseparametersfor"
+off=121 chunk_extension_value complete
+off=122 chunk header len=5
+off=122 len=5 span[body]="hello"
+off=129 chunk complete
+off=131 len=8 span[chunk_extension_name]="blahblah"
+off=140 chunk_extension_name complete
+off=140 len=4 span[chunk_extension_name]="blah"
+off=145 chunk_extension_name complete
+off=146 chunk header len=6
+off=146 len=6 span[body]=" world"
+off=154 chunk complete
+off=157 chunk header len=0
 ```
 
-### No semicolon before chunk parameters
+### No semicolon before chunk extensions
 
 <!-- meta={"type": "request"} -->
 ```http
@@ -293,6 +303,136 @@ off=84 len=7 span[header_value]="chunked"
 off=93 header_value complete
 off=95 headers complete method=3 v=1/1 flags=208 content_length=0
 off=96 error code=12 reason="Invalid character in chunk size"
+```
+
+### No extension after semicolon
+
+<!-- meta={"type": "request"} -->
+```http
+POST /chunked_w_unicorns_after_length HTTP/1.1
+Host: localhost
+Transfer-encoding: chunked
+
+2;
+aa
+0
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
+off=5 len=32 span[url]="/chunked_w_unicorns_after_length"
+off=38 url complete
+off=43 len=3 span[version]="1.1"
+off=46 version complete
+off=48 len=4 span[header_field]="Host"
+off=53 header_field complete
+off=54 len=9 span[header_value]="localhost"
+off=65 header_value complete
+off=65 len=17 span[header_field]="Transfer-encoding"
+off=83 header_field complete
+off=84 len=7 span[header_value]="chunked"
+off=93 header_value complete
+off=95 headers complete method=3 v=1/1 flags=208 content_length=0
+off=98 error code=2 reason="Invalid character in chunk extensions"
+```
+
+
+### Chunk extensions quoting
+
+<!-- meta={"type": "request"} -->
+```http
+POST /chunked_w_unicorns_after_length HTTP/1.1
+Transfer-Encoding: chunked
+
+5;ilovew3="I love; extensions";somuchlove="aretheseparametersfor";blah;foo=bar
+hello
+6;blahblah;blah
+ world
+0
+
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
+off=5 len=32 span[url]="/chunked_w_unicorns_after_length"
+off=38 url complete
+off=43 len=3 span[version]="1.1"
+off=46 version complete
+off=48 len=17 span[header_field]="Transfer-Encoding"
+off=66 header_field complete
+off=67 len=7 span[header_value]="chunked"
+off=76 header_value complete
+off=78 headers complete method=3 v=1/1 flags=208 content_length=0
+off=80 len=7 span[chunk_extension_name]="ilovew3"
+off=88 chunk_extension_name complete
+off=88 len=20 span[chunk_extension_value]=""I love; extensions""
+off=108 chunk_extension_value complete
+off=109 len=10 span[chunk_extension_name]="somuchlove"
+off=120 chunk_extension_name complete
+off=120 len=23 span[chunk_extension_value]=""aretheseparametersfor""
+off=143 chunk_extension_value complete
+off=144 len=4 span[chunk_extension_name]="blah"
+off=149 chunk_extension_name complete
+off=149 len=3 span[chunk_extension_name]="foo"
+off=153 chunk_extension_name complete
+off=153 len=3 span[chunk_extension_value]="bar"
+off=157 chunk_extension_value complete
+off=158 chunk header len=5
+off=158 len=5 span[body]="hello"
+off=165 chunk complete
+off=167 len=8 span[chunk_extension_name]="blahblah"
+off=176 chunk_extension_name complete
+off=176 len=4 span[chunk_extension_name]="blah"
+off=181 chunk_extension_name complete
+off=182 chunk header len=6
+off=182 len=6 span[body]=" world"
+off=190 chunk complete
+off=193 chunk header len=0
+```
+
+
+### Unbalanced chunk extensions quoting
+
+<!-- meta={"type": "request"} -->
+```http
+POST /chunked_w_unicorns_after_length HTTP/1.1
+Transfer-Encoding: chunked
+
+5;ilovew3="abc";somuchlove="def; ghi
+hello
+6;blahblah;blah
+ world
+0
+
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
+off=5 len=32 span[url]="/chunked_w_unicorns_after_length"
+off=38 url complete
+off=43 len=3 span[version]="1.1"
+off=46 version complete
+off=48 len=17 span[header_field]="Transfer-Encoding"
+off=66 header_field complete
+off=67 len=7 span[header_value]="chunked"
+off=76 header_value complete
+off=78 headers complete method=3 v=1/1 flags=208 content_length=0
+off=80 len=7 span[chunk_extension_name]="ilovew3"
+off=88 chunk_extension_name complete
+off=88 len=5 span[chunk_extension_value]=""abc""
+off=93 chunk_extension_value complete
+off=94 len=10 span[chunk_extension_name]="somuchlove"
+off=105 chunk_extension_name complete
+off=105 len=9 span[chunk_extension_value]=""def; ghi"
+off=115 error code=2 reason="Invalid character in chunk extensions quoted value"
 ```
 
 ## Ignoring `pigeons`

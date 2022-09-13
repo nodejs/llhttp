@@ -11,8 +11,8 @@ import {
   HTTPMode,
   LENIENT_FLAGS,
   MAJOR, METHOD_MAP, METHODS, METHODS_HTTP, METHODS_ICE, METHODS_RTSP,
-  MINOR, NUM_MAP, SPECIAL_HEADERS, STRICT_TOKEN,
-  TOKEN, TYPE,
+  MINOR, NUM_MAP, QUOTED_STRING, SPECIAL_HEADERS,
+  STRICT_TOKEN, TOKEN, TYPE,
 } from './constants';
 import { URL } from './url';
 
@@ -88,7 +88,11 @@ const NODES: ReadonlyArray<string> = [
   'chunk_size_otherwise',
   'chunk_size_almost_done',
   'chunk_size_almost_done_lf',
-  'chunk_parameters',
+  'chunk_extensions',
+  'chunk_extension_name',
+  'chunk_extension_value',
+  'chunk_extension_quoted_value',
+  'chunk_extension_quoted_value_done',
   'chunk_data',
   'chunk_data_almost_done',
   'chunk_data_almost_done_skip',
@@ -105,29 +109,33 @@ const NODES: ReadonlyArray<string> = [
 ];
 
 interface ISpanMap {
-  readonly body: source.Span;
-  readonly headerField: source.Span;
-  readonly headerValue: source.Span;
   readonly status: source.Span;
   readonly method: source.Span;
   readonly version: source.Span;
+  readonly headerField: source.Span;
+  readonly headerValue: source.Span;
+  readonly chunkExtensionName: source.Span;
+  readonly chunkExtensionValue: source.Span;
+  readonly body: source.Span;
 }
 
 interface ICallbackMap {
-  readonly afterHeadersComplete: source.code.Code;
-  readonly afterMessageComplete: source.code.Code;
-  readonly beforeHeadersComplete: source.code.Code;
-  readonly onChunkComplete: source.code.Code;
-  readonly onChunkHeader: source.code.Code;
-  readonly onHeadersComplete: source.code.Code;
   readonly onMessageBegin: source.code.Code;
-  readonly onMessageComplete: source.code.Code;
   readonly onUrlComplete: source.code.Code;
   readonly onMethodComplete: source.code.Code;
   readonly onVersionComplete: source.code.Code;
   readonly onStatusComplete: source.code.Code;
+  readonly beforeHeadersComplete: source.code.Code;
   readonly onHeaderFieldComplete: source.code.Code;
   readonly onHeaderValueComplete: source.code.Code;
+  readonly onHeadersComplete: source.code.Code;
+  readonly afterHeadersComplete: source.code.Code;
+  readonly onChunkHeader: source.code.Code;
+  readonly onChunkExtensionName: source.code.Code;
+  readonly onChunkExtensionValue: source.code.Code;
+  readonly onChunkComplete: source.code.Code;
+  readonly onMessageComplete: source.code.Code;
+  readonly afterMessageComplete: source.code.Code;
   readonly onReset: source.code.Code;
 }
 
@@ -167,6 +175,8 @@ export class HTTP {
 
     this.span = {
       body: p.span(p.code.span('llhttp__on_body')),
+      chunkExtensionName: p.span(p.code.span('llhttp__on_chunk_extension_name')),
+      chunkExtensionValue: p.span(p.code.span('llhttp__on_chunk_extension_value')),
       headerField: p.span(p.code.span('llhttp__on_header_field')),
       headerValue: p.span(p.code.span('llhttp__on_header_value')),
       method: p.span(p.code.span('llhttp__on_method')),
@@ -187,6 +197,8 @@ export class HTTP {
       onMessageBegin: p.code.match('llhttp__on_message_begin'),
       onMessageComplete: p.code.match('llhttp__on_message_complete'),
       onChunkHeader: p.code.match('llhttp__on_chunk_header'),
+      onChunkExtensionName: p.code.match('llhttp__on_chunk_extension_name_complete'),
+      onChunkExtensionValue: p.code.match('llhttp__on_chunk_extension_value_complete'),
       onChunkComplete: p.code.match('llhttp__on_chunk_complete'),
       onReset: p.code.match('llhttp__on_reset'),
 
@@ -855,15 +867,69 @@ export class HTTP {
 
     n('chunk_size_otherwise')
       .match('\r', n('chunk_size_almost_done'))
-      .match('; ', n('chunk_parameters'))
+      .match(';', n('chunk_extensions'))
       .otherwise(p.error(ERROR.INVALID_CHUNK_SIZE,
         'Invalid character in chunk size'));
 
-    n('chunk_parameters')
+    const onChunkExtensionNameCompleted = (destination: Node) => {
+      return this.invokePausable(
+       'on_chunk_extension_name', ERROR.CB_CHUNK_EXTENSION_NAME_COMPLETE, destination);
+    };
+
+    const onChunkExtensionValueCompleted = (destination: Node) => {
+      return this.invokePausable(
+       'on_chunk_extension_value', ERROR.CB_CHUNK_EXTENSION_VALUE_COMPLETE, destination);
+    };
+
+    n('chunk_extensions')
+      .match(' ', p.error(ERROR.STRICT, 'Invalid character in chunk extensions'))
+      .match('\r', p.error(ERROR.STRICT, 'Invalid character in chunk extensions'))
+      .otherwise(this.span.chunkExtensionName.start(n('chunk_extension_name')));
+
+    n('chunk_extension_name')
+      .match(STRICT_TOKEN, n('chunk_extension_name'))
+      .peek('=', this.span.chunkExtensionName.end().skipTo(
+        this.span.chunkExtensionValue.start(
+          onChunkExtensionNameCompleted(n('chunk_extension_value')),
+        ),
+      ))
+      .peek(';', this.span.chunkExtensionName.end().skipTo(
+        onChunkExtensionNameCompleted(n('chunk_extensions')),
+      ))
+      .peek('\r', this.span.chunkExtensionName.end().skipTo(
+        onChunkExtensionNameCompleted(n('chunk_size_almost_done')),
+      ))
+      .otherwise(this.span.chunkExtensionName.end().skipTo(
+        p.error(ERROR.STRICT, 'Invalid character in chunk extensions name'),
+      ));
+
+    n('chunk_extension_value')
+      .match('"', n('chunk_extension_quoted_value'))
+      .match(STRICT_TOKEN, n('chunk_extension_value'))
+      .peek(';', this.span.chunkExtensionValue.end().skipTo(
+        onChunkExtensionValueCompleted(n('chunk_size_otherwise')),
+      ))
+      .peek('\r', this.span.chunkExtensionValue.end().skipTo(
+        onChunkExtensionValueCompleted(n('chunk_size_almost_done')),
+      ))
+      .otherwise(this.span.chunkExtensionValue.end().skipTo(
+        p.error(ERROR.STRICT, 'Invalid character in chunk extensions value'),
+      ));
+
+    n('chunk_extension_quoted_value')
+      .match(QUOTED_STRING, n('chunk_extension_quoted_value'))
+      .match('"', this.span.chunkExtensionValue.end(
+        onChunkExtensionValueCompleted(n('chunk_extension_quoted_value_done')),
+      ))
+      .otherwise(this.span.chunkExtensionValue.end().skipTo(
+        p.error(ERROR.STRICT, 'Invalid character in chunk extensions quoted value'),
+      ));
+
+    n('chunk_extension_quoted_value_done')
+      .match(';', n('chunk_extensions'))
       .match('\r', n('chunk_size_almost_done'))
-      .match(HEADER_CHARS, n('chunk_parameters'))
       .otherwise(p.error(ERROR.STRICT,
-        'Invalid character in chunk parameters'));
+        'Invalid character in chunk extensions quote value'));
 
     if (this.mode === 'strict') {
       n('chunk_size_almost_done')
@@ -1093,6 +1159,12 @@ export class HTTP {
         break;
       case 'on_chunk_header':
         cb = this.callback.onChunkHeader;
+        break;
+      case 'on_chunk_extension_name':
+        cb = this.callback.onChunkExtensionName;
+        break;
+      case 'on_chunk_extension_value':
+        cb = this.callback.onChunkExtensionValue;
         break;
       case 'on_chunk_complete':
         cb = this.callback.onChunkComplete;

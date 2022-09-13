@@ -261,6 +261,10 @@ function run(name: string): void {
 
       for (const mode of modes) {
         for (const ty of types) {
+          if (meta.skip === true || (process.env.ONLY === 'true' && !meta.only)) {
+            continue;
+          }
+
           runSingleTest(mode, ty, meta, input, fullExpected);
         }
       }

@@ -262,6 +262,87 @@ off=66 chunk complete
 off=66 message complete
 ```
 
+### on_chunk_extension_name
+
+<!-- meta={"type": "request", "pause": "on_chunk_extension_name"} -->
+```http
+PUT / HTTP/1.1
+Transfer-Encoding: chunked
+
+a;foo=bar
+0123456789
+0
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
+off=4 len=1 span[url]="/"
+off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
+off=16 len=17 span[header_field]="Transfer-Encoding"
+off=34 header_field complete
+off=35 len=7 span[header_value]="chunked"
+off=44 header_value complete
+off=46 headers complete method=4 v=1/1 flags=208 content_length=0
+off=48 len=3 span[chunk_extension_name]="foo"
+off=52 chunk_extension_name complete
+off=52 pause
+off=52 len=3 span[chunk_extension_value]="bar"
+off=56 chunk_extension_value complete
+off=57 chunk header len=10
+off=57 len=10 span[body]="0123456789"
+off=69 chunk complete
+off=72 chunk header len=0
+off=74 chunk complete
+off=74 message complete
+```
+
+### on_chunk_extension_value
+
+<!-- meta={"type": "request", "pause": "on_chunk_extension_value"} -->
+```http
+PUT / HTTP/1.1
+Transfer-Encoding: chunked
+
+a;foo=bar
+0123456789
+0
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
+off=4 len=1 span[url]="/"
+off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
+off=16 len=17 span[header_field]="Transfer-Encoding"
+off=34 header_field complete
+off=35 len=7 span[header_value]="chunked"
+off=44 header_value complete
+off=46 headers complete method=4 v=1/1 flags=208 content_length=0
+off=48 len=3 span[chunk_extension_name]="foo"
+off=52 chunk_extension_name complete
+off=52 len=3 span[chunk_extension_value]="bar"
+off=56 chunk_extension_value complete
+off=56 pause
+off=57 chunk header len=10
+off=57 len=10 span[body]="0123456789"
+off=69 chunk complete
+off=72 chunk header len=0
+off=74 chunk complete
+off=74 message complete
+```
+
+
 ### on_chunk_complete
 
 <!-- meta={"type": "request", "pause": "on_chunk_complete"} -->

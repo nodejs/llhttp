@@ -42,6 +42,8 @@ export enum ERROR {
   CB_VERSION_COMPLETE = 33,
   CB_HEADER_FIELD_COMPLETE = 28,
   CB_HEADER_VALUE_COMPLETE = 29,
+  CB_CHUNK_EXTENSION_NAME_COMPLETE = 34,
+  CB_CHUNK_EXTENSION_VALUE_COMPLETE = 35,
   CB_RESET = 31,
 }
 
@@ -429,6 +431,13 @@ for (let i = 32; i <= 255; i++) {
 // ',' = \x44
 export const CONNECTION_TOKEN_CHARS: CharList =
   HEADER_CHARS.filter((c: string | number) => c !== 44);
+
+export const QUOTED_STRING: CharList = [ '\t', ' ' ];
+for (let i = 0x21; i <= 0xff; i++) {
+  if (i !== 0x22 && i !== 0x5c) { // All characters in ASCII except \ and "
+    QUOTED_STRING.push(i);
+  }
+}
 
 export const MAJOR = NUM_MAP;
 export const MINOR = MAJOR;

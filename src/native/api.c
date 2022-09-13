@@ -64,9 +64,13 @@ const llhttp_settings_t wasm_settings = {
   NULL,
   wasm_on_header_field,
   wasm_on_header_value,
+  NULL,
+  NULL,
   wasm_on_headers_complete_wrap,
   wasm_on_body,
   wasm_on_message_complete,
+  NULL,
+  NULL,
   NULL,
   NULL,
   NULL,
@@ -401,11 +405,40 @@ int llhttp__on_chunk_header(llhttp_t* s, const char* p, const char* endp) {
 }
 
 
+int llhttp__on_chunk_extension_name(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  SPAN_CALLBACK_MAYBE(s, on_chunk_extension_name, p, endp - p);
+  return err;
+}
+
+
+int llhttp__on_chunk_extension_name_complete(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  CALLBACK_MAYBE(s, on_chunk_extension_name_complete);
+  return err;
+}
+
+
+int llhttp__on_chunk_extension_value(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  SPAN_CALLBACK_MAYBE(s, on_chunk_extension_value, p, endp - p);
+  return err;
+}
+
+
+int llhttp__on_chunk_extension_value_complete(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  CALLBACK_MAYBE(s, on_chunk_extension_value_complete);
+  return err;
+}
+
+
 int llhttp__on_chunk_complete(llhttp_t* s, const char* p, const char* endp) {
   int err;
   CALLBACK_MAYBE(s, on_chunk_complete);
   return err;
 }
+
 
 int llhttp__on_reset(llhttp_t* s, const char* p, const char* endp) {
   int err;

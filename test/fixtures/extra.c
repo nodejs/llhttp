@@ -305,6 +305,50 @@ int llhttp__on_chunk_header(llparse_t* s, const char* p, const char* endp) {
 }
 
 
+int llhttp__on_chunk_extension_name(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+
+  return llparse__print_span("chunk_extension_name", p, endp);
+}
+
+
+int llhttp__on_chunk_extension_name_complete(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+
+  llparse__print(p, endp, "chunk_extension_name complete");
+
+  #ifdef LLHTTP__TEST_PAUSE_ON_CHUNK_EXTENSION_NAME
+    return LLPARSE__ERROR_PAUSE;
+  #else
+    return 0;
+  #endif
+}
+
+
+int llhttp__on_chunk_extension_value(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+
+  return llparse__print_span("chunk_extension_value", p, endp);
+}
+
+
+int llhttp__on_chunk_extension_value_complete(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+
+  llparse__print(p, endp, "chunk_extension_value complete");
+
+  #ifdef LLHTTP__TEST_PAUSE_ON_CHUNK_EXTENSION_VALUE
+    return LLPARSE__ERROR_PAUSE;
+  #else
+    return 0;
+  #endif
+}
+
+
 int llhttp__on_chunk_complete(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
     return 0;
