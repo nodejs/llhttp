@@ -403,7 +403,7 @@ off=14 version complete
 off=15 len=5 span[header_field]="Line1"
 off=21 header_field complete
 off=24 len=3 span[header_value]="abc"
-off=28 error code=25 reason="Missing expected CR after header value"
+off=27 error code=10 reason="Invalid header value char"
 ```
 
 ## Request starting with CRLF

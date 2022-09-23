@@ -94,5 +94,6 @@ off=14 len=3 span[version]="1.1"
 off=17 version complete
 off=19 len=7 span[header_field]="Header1"
 off=27 header_field complete
+off=28 len=0 span[header_value]=""
 off=28 error code=10 reason="Invalid header value char"
 ```
