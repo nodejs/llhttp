@@ -105,6 +105,12 @@ void llhttp__test_init_response_lenient_version(llparse_t* s) {
 }
 
 
+void llhttp__test_init_response_lenient_headers(llparse_t* s) {
+  llhttp__test_init_response(s);
+  s->lenient_flags |= LENIENT_HEADERS;
+}
+
+
 void llhttp__test_finish(llparse_t* s) {
   llparse__print(NULL, NULL, "finish=%d", s->finish);
 }

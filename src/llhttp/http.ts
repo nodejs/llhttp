@@ -476,7 +476,9 @@ export class HTTP {
     n('header_value_discard_ws')
       .match([ ' ', '\t' ], n('header_value_discard_ws'))
       .match('\r', n('header_value_discard_ws_almost_done'))
-      .match('\n', n('header_value_discard_lws'))
+      .match('\n', this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
+        1: n('header_value_discard_lws'),
+      }, p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char')))
       .otherwise(span.headerValue.start(n('header_value_start')));
 
     if (this.mode === 'strict') {
@@ -638,7 +640,7 @@ export class HTTP {
 
     const checkLenient = this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
       1: n('header_value_lenient'),
-    }, n('header_value_lenient_failed'));
+    }, span.headerValue.end(p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char')));
 
     n('header_value_otherwise')
       .peek('\r', span.headerValue.end().skipTo(n('header_value_almost_done')))
@@ -661,7 +663,11 @@ export class HTTP {
         'Missing expected LF after header value'));
 
     n('header_value_lws')
-      .peek([ ' ', '\t' ], span.headerValue.start(n('header_value_start')))
+      .peek([ ' ', '\t' ],
+        this.load('header_state', {
+          [HEADER_STATE.TRANSFER_ENCODING_CHUNKED]:
+            this.resetHeaderState(span.headerValue.start(n('header_value_start'))),
+        }, span.headerValue.start(n('header_value_start'))))
       .otherwise(this.setHeaderFlags(onHeaderValueComplete));
 
     const checkTrailing = this.testFlags(FLAGS.TRAILING, {

@@ -274,7 +274,7 @@ off=16 status complete
 off=16 len=12 span[header_field]="Content-Type"
 off=29 header_field complete
 off=30 len=24 span[header_value]="text/html; charset=utf-8"
-off=55 error code=25 reason="Missing expected CR after header value"
+off=54 error code=10 reason="Invalid header value char"
 ```
 
 ## Underscore in header key
