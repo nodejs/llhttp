@@ -225,7 +225,7 @@ off=0 message begin
 off=13 len=2 span[status]="OK"
 off=16 len=12 span[header_field]="Content-Type"
 off=30 len=24 span[header_value]="text/html; charset=utf-8"
-off=55 error code=25 reason="Missing expected CR after header value"
+off=54 error code=10 reason="Invalid header value char"
 ```
 
 ## Underscore in header key
