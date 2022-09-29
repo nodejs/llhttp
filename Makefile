@@ -43,7 +43,7 @@ build/native:
 	mkdir -p build/native
 
 release: clean generate
-	@echo "${RELEASE}" | grep -q -e ".+" || { echo "Please make sure the RELEASE argument is set."; exit 1; }
+	@echo "${RELEASE}" | grep -q -E ".+" || { echo "Please make sure the RELEASE argument is set."; exit 1; }
 	rm -rf release
 	mkdir -p release/src
 	mkdir -p release/include
@@ -59,7 +59,7 @@ release: clean generate
 	cp -rf LICENSE-MIT release/
 
 github-release:
-	@echo "${RELEASE_V}" | grep -q -e "^v" || { echo "Please make sure version starts with \"v\"."; exit 1; }
+	@echo "${RELEASE_V}" | grep -q -E "^v" || { echo "Please make sure version starts with \"v\"."; exit 1; }
 	gh release create -d --generate-notes ${RELEASE_V}
 	@sleep 5
 	gh release view ${RELEASE_V} -t "{{.body}}" --json body > RELEASE_NOTES
