@@ -117,8 +117,12 @@ A
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=4 span[header_field]="Host"
 off=22 header_field complete
 off=23 len=14 span[header_value]="localhost:5000"
@@ -145,8 +149,12 @@ A
 
 ```log
 off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
 off=5 len=1 span[url]="/"
 off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
 off=17 len=4 span[header_field]="Host"
 off=22 header_field complete
 off=23 len=14 span[header_value]="localhost:5000"

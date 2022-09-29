@@ -869,8 +869,12 @@ World
 
 ```log
 off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
 off=4 len=4 span[url]="/url"
 off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
 off=19 len=17 span[header_field]="Transfer-Encoding"
 off=37 header_field complete
 off=38 len=7 span[header_value]="chunked"
