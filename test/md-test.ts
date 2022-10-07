@@ -99,6 +99,10 @@ async function buildMode(mode: llhttp.HTTPMode, ty: TestType, meta: any)
     extra.push(`-DLLHTTP__TEST_PAUSE_${meta.pause.toUpperCase()}=1`);
   }
 
+  if (meta.skipBody) {
+    extra.push('-DLLHTTP__TEST_SKIP_BODY=1');
+  }
+
   entry = await build(node.llparse, node.entry, `${prefix}-${mode}-${ty}`, {
     extra,
   }, ty);

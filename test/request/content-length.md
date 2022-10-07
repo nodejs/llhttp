@@ -387,3 +387,48 @@ off=14 len=3 span[version]="1.1"
 off=17 version complete
 off=26 error code=10 reason="Invalid header token"
 ```
+
+## Content-Length reset when no body is assumed
+
+<!-- meta={"type": "request", "skipBody": true} -->
+```http
+PUT /url HTTP/1.1
+Content-Length: 123
+
+POST /url HTTP/1.1
+Content-Length: 456
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
+off=4 len=4 span[url]="/url"
+off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
+off=19 len=14 span[header_field]="Content-Length"
+off=34 header_field complete
+off=35 len=3 span[header_value]="123"
+off=40 header_value complete
+off=42 headers complete method=4 v=1/1 flags=20 content_length=123
+off=42 skip body
+off=42 message complete
+off=42 reset
+off=42 message begin
+off=42 len=4 span[method]="POST"
+off=46 method complete
+off=47 len=4 span[url]="/url"
+off=52 url complete
+off=57 len=3 span[version]="1.1"
+off=60 version complete
+off=62 len=14 span[header_field]="Content-Length"
+off=77 header_field complete
+off=78 len=3 span[header_value]="456"
+off=83 header_value complete
+off=85 headers complete method=3 v=1/1 flags=20 content_length=456
+off=85 skip body
+off=85 message complete
+```
