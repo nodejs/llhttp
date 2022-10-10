@@ -388,7 +388,7 @@ off=17 version complete
 off=26 error code=10 reason="Invalid header token"
 ```
 
-## Content-Length reset when no body is assumed
+## Content-Length reset when no body is received
 
 <!-- meta={"type": "request", "skipBody": true} -->
 ```http

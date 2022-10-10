@@ -116,7 +116,7 @@ off=80 chunk complete
 off=80 message complete
 ```
 
-## Content-Length reset when no body is assumed
+## Content-Length reset when no body is received
 
 <!-- meta={"type": "response", "skipBody": true} -->
 ```http
