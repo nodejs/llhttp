@@ -283,6 +283,9 @@ int llhttp__on_headers_complete(llparse_t* s, const char* p, const char* endp) {
 
   #ifdef LLHTTP__TEST_PAUSE_ON_HEADERS_COMPLETE
     return LLPARSE__ERROR_PAUSE;
+  #elif defined(LLHTTP__TEST_SKIP_BODY)
+    llparse__print(p, endp, "skip body");
+    return 1;
   #else
     return 0;
   #endif

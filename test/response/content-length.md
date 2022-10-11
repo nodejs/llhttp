@@ -115,3 +115,44 @@ off=78 chunk header len=0
 off=80 chunk complete
 off=80 message complete
 ```
+
+## Content-Length reset when no body is received
+
+<!-- meta={"type": "response", "skipBody": true} -->
+```http
+HTTP/1.1 200 OK
+Content-Length: 123
+
+HTTP/1.1 200 OK
+Content-Length: 456
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=2 span[status]="OK"
+off=17 status complete
+off=17 len=14 span[header_field]="Content-Length"
+off=32 header_field complete
+off=33 len=3 span[header_value]="123"
+off=38 header_value complete
+off=40 headers complete status=200 v=1/1 flags=20 content_length=123
+off=40 skip body
+off=40 message complete
+off=40 reset
+off=40 message begin
+off=45 len=3 span[version]="1.1"
+off=48 version complete
+off=53 len=2 span[status]="OK"
+off=57 status complete
+off=57 len=14 span[header_field]="Content-Length"
+off=72 header_field complete
+off=73 len=3 span[header_value]="456"
+off=78 header_value complete
+off=80 headers complete status=200 v=1/1 flags=20 content_length=456
+off=80 skip body
+off=80 message complete
+```

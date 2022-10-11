@@ -995,7 +995,7 @@ export class HTTP {
     // Check if we'd like to keep-alive
     n('cleanup')
       .otherwise(p.invoke(callback.afterMessageComplete, {
-        1: n('restart'),
+        1: this.update('content_length', 0, n('restart')),
       }, this.update('finish', FINISH.SAFE, lenientClose)));
 
     if (this.mode === 'strict') {
