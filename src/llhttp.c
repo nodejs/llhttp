@@ -357,7 +357,7 @@ enum llparse_state_e {
   s_n_llhttp__internal__n_chunk_size_otherwise,
   s_n_llhttp__internal__n_chunk_size,
   s_n_llhttp__internal__n_chunk_size_digit,
-  s_n_llhttp__internal__n_invoke_update_content_length,
+  s_n_llhttp__internal__n_invoke_update_content_length_1,
   s_n_llhttp__internal__n_consume_content_length_1,
   s_n_llhttp__internal__n_span_start_llhttp__on_body_1,
   s_n_llhttp__internal__n_eof,
@@ -696,6 +696,14 @@ int llhttp__after_message_complete(
     llhttp__internal_t* s, const unsigned char* p,
     const unsigned char* endp);
 
+int llhttp__internal__c_update_content_length(
+    llhttp__internal_t* state,
+    const unsigned char* p,
+    const unsigned char* endp) {
+  state->content_length = 0;
+  return 0;
+}
+
 int llhttp__internal__c_update_initial_message_completed(
     llhttp__internal_t* state,
     const unsigned char* p,
@@ -744,14 +752,6 @@ int llhttp__on_headers_complete(
 int llhttp__after_headers_complete(
     llhttp__internal_t* s, const unsigned char* p,
     const unsigned char* endp);
-
-int llhttp__internal__c_update_content_length(
-    llhttp__internal_t* state,
-    const unsigned char* p,
-    const unsigned char* endp) {
-  state->content_length = 0;
-  return 0;
-}
 
 int llhttp__internal__c_mul_add_content_length(
     llhttp__internal_t* state,
@@ -1160,7 +1160,7 @@ static llparse_state_t llhttp__internal__run(
     s_n_llhttp__internal__n_invoke_llhttp__after_message_complete: {
       switch (llhttp__after_message_complete(state, p, endp)) {
         case 1:
-          goto s_n_llhttp__internal__n_invoke_update_initial_message_completed;
+          goto s_n_llhttp__internal__n_invoke_update_content_length;
         default:
           goto s_n_llhttp__internal__n_invoke_update_finish_1;
       }
@@ -1836,8 +1836,8 @@ static llparse_state_t llhttp__internal__run(
       /* UNREACHABLE */;
       abort();
     }
-    case s_n_llhttp__internal__n_invoke_update_content_length:
-    s_n_llhttp__internal__n_invoke_update_content_length: {
+    case s_n_llhttp__internal__n_invoke_update_content_length_1:
+    s_n_llhttp__internal__n_invoke_update_content_length_1: {
       switch (llhttp__internal__c_update_content_length(state, p, endp)) {
         default:
           goto s_n_llhttp__internal__n_chunk_size_digit;
@@ -1901,7 +1901,7 @@ static llparse_state_t llhttp__internal__run(
         case 1:
           goto s_n_llhttp__internal__n_invoke_llhttp__on_message_complete_1;
         case 2:
-          goto s_n_llhttp__internal__n_invoke_update_content_length;
+          goto s_n_llhttp__internal__n_invoke_update_content_length_1;
         case 3:
           goto s_n_llhttp__internal__n_span_start_llhttp__on_body_1;
         case 4:
@@ -6419,6 +6419,14 @@ static llparse_state_t llhttp__internal__run(
     /* UNREACHABLE */;
     abort();
   }
+  s_n_llhttp__internal__n_invoke_update_content_length: {
+    switch (llhttp__internal__c_update_content_length(state, p, endp)) {
+      default:
+        goto s_n_llhttp__internal__n_invoke_update_initial_message_completed;
+    }
+    /* UNREACHABLE */;
+    abort();
+  }
   s_n_llhttp__internal__n_error_7: {
     state->error = 0x5;
     state->reason = "Data after `Connection: close`";
@@ -6546,7 +6554,7 @@ static llparse_state_t llhttp__internal__run(
     state->error = 0x15;
     state->reason = "on_chunk_complete pause";
     state->error_pos = (const char*) p;
-    state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_update_content_length;
+    state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_update_content_length_1;
     return s_error;
     /* UNREACHABLE */;
     abort();
@@ -6563,7 +6571,7 @@ static llparse_state_t llhttp__internal__run(
   s_n_llhttp__internal__n_invoke_llhttp__on_chunk_complete: {
     switch (llhttp__on_chunk_complete(state, p, endp)) {
       case 0:
-        goto s_n_llhttp__internal__n_invoke_update_content_length;
+        goto s_n_llhttp__internal__n_invoke_update_content_length_1;
       case 21:
         goto s_n_llhttp__internal__n_pause_3;
       default:
@@ -9597,7 +9605,7 @@ enum llparse_state_e {
   s_n_llhttp__internal__n_chunk_size_otherwise,
   s_n_llhttp__internal__n_chunk_size,
   s_n_llhttp__internal__n_chunk_size_digit,
-  s_n_llhttp__internal__n_invoke_update_content_length,
+  s_n_llhttp__internal__n_invoke_update_content_length_1,
   s_n_llhttp__internal__n_consume_content_length_1,
   s_n_llhttp__internal__n_span_start_llhttp__on_body_1,
   s_n_llhttp__internal__n_eof,
@@ -9931,6 +9939,14 @@ int llhttp__after_message_complete(
     llhttp__internal_t* s, const unsigned char* p,
     const unsigned char* endp);
 
+int llhttp__internal__c_update_content_length(
+    llhttp__internal_t* state,
+    const unsigned char* p,
+    const unsigned char* endp) {
+  state->content_length = 0;
+  return 0;
+}
+
 int llhttp__internal__c_update_initial_message_completed(
     llhttp__internal_t* state,
     const unsigned char* p,
@@ -9979,14 +9995,6 @@ int llhttp__on_headers_complete(
 int llhttp__after_headers_complete(
     llhttp__internal_t* s, const unsigned char* p,
     const unsigned char* endp);
-
-int llhttp__internal__c_update_content_length(
-    llhttp__internal_t* state,
-    const unsigned char* p,
-    const unsigned char* endp) {
-  state->content_length = 0;
-  return 0;
-}
 
 int llhttp__internal__c_mul_add_content_length(
     llhttp__internal_t* state,
@@ -10383,7 +10391,7 @@ static llparse_state_t llhttp__internal__run(
     s_n_llhttp__internal__n_invoke_llhttp__after_message_complete: {
       switch (llhttp__after_message_complete(state, p, endp)) {
         case 1:
-          goto s_n_llhttp__internal__n_invoke_update_initial_message_completed;
+          goto s_n_llhttp__internal__n_invoke_update_content_length;
         default:
           goto s_n_llhttp__internal__n_invoke_update_finish_1;
       }
@@ -11048,8 +11056,8 @@ static llparse_state_t llhttp__internal__run(
       /* UNREACHABLE */;
       abort();
     }
-    case s_n_llhttp__internal__n_invoke_update_content_length:
-    s_n_llhttp__internal__n_invoke_update_content_length: {
+    case s_n_llhttp__internal__n_invoke_update_content_length_1:
+    s_n_llhttp__internal__n_invoke_update_content_length_1: {
       switch (llhttp__internal__c_update_content_length(state, p, endp)) {
         default:
           goto s_n_llhttp__internal__n_chunk_size_digit;
@@ -11113,7 +11121,7 @@ static llparse_state_t llhttp__internal__run(
         case 1:
           goto s_n_llhttp__internal__n_invoke_llhttp__on_message_complete_1;
         case 2:
-          goto s_n_llhttp__internal__n_invoke_update_content_length;
+          goto s_n_llhttp__internal__n_invoke_update_content_length_1;
         case 3:
           goto s_n_llhttp__internal__n_span_start_llhttp__on_body_1;
         case 4:
@@ -15455,6 +15463,14 @@ static llparse_state_t llhttp__internal__run(
     /* UNREACHABLE */;
     abort();
   }
+  s_n_llhttp__internal__n_invoke_update_content_length: {
+    switch (llhttp__internal__c_update_content_length(state, p, endp)) {
+      default:
+        goto s_n_llhttp__internal__n_invoke_update_initial_message_completed;
+    }
+    /* UNREACHABLE */;
+    abort();
+  }
   s_n_llhttp__internal__n_invoke_test_lenient_flags_1: {
     switch (llhttp__internal__c_test_lenient_flags_1(state, p, endp)) {
       case 1:
@@ -15573,7 +15589,7 @@ static llparse_state_t llhttp__internal__run(
     state->error = 0x15;
     state->reason = "on_chunk_complete pause";
     state->error_pos = (const char*) p;
-    state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_update_content_length;
+    state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_update_content_length_1;
     return s_error;
     /* UNREACHABLE */;
     abort();
@@ -15590,7 +15606,7 @@ static llparse_state_t llhttp__internal__run(
   s_n_llhttp__internal__n_invoke_llhttp__on_chunk_complete: {
     switch (llhttp__on_chunk_complete(state, p, endp)) {
       case 0:
-        goto s_n_llhttp__internal__n_invoke_update_content_length;
+        goto s_n_llhttp__internal__n_invoke_update_content_length_1;
       case 21:
         goto s_n_llhttp__internal__n_pause_3;
       default:
