@@ -1,7 +1,7 @@
 # llhttp
 [![CI](https://github.com/nodejs/llhttp/workflows/CI/badge.svg)](https://github.com/nodejs/llhttp/actions?query=workflow%3ACI)
 
-IMPORTANT: The 7.x series is discontinued and not maintained anymore. Update to the latest version of llhttp as soon as possible.
+**IMPORTANT: The 7.x series is discontinued and not maintained anymore. Update to the latest version of llhttp as soon as possible.**
 
 Port of [http_parser][0] to [llparse][1].
 
