@@ -1,6 +1,8 @@
 # llhttp
 [![CI](https://github.com/nodejs/llhttp/workflows/CI/badge.svg)](https://github.com/nodejs/llhttp/actions?query=workflow%3ACI)
 
+IMPORTANT: The 7.x series is discontinued and not maintained anymore. Update to the latest version of llhttp as soon as possible.
+
 Port of [http_parser][0] to [llparse][1].
 
 ## Why?
@@ -111,15 +113,15 @@ The following callbacks can return `0` (proceed normally), `-1` (error) or `HPE_
 * `on_chunk_header`: Invoked after a new chunk is started. The current chunk length is stored in `parser->content_length`.
 * `on_chunk_extension_name_complete`: Invoked after a chunk extension name is started.
 * `on_chunk_extension_value_complete`: Invoked after a chunk extension value is started.
-* `on_chunk_complete`: Invoked after a new chunk is received. 
-* `on_reset`: Invoked after `on_message_complete` and before `on_message_begin` when a new message 
+* `on_chunk_complete`: Invoked after a new chunk is received.
+* `on_reset`: Invoked after `on_message_complete` and before `on_message_begin` when a new message
    is received on the same parser. This is not invoked for the first message of the parser.
 
-The following callbacks can return `0` (proceed normally), `-1` (error) or `HPE_USER` (error from the callback): 
+The following callbacks can return `0` (proceed normally), `-1` (error) or `HPE_USER` (error from the callback):
 
-* `on_url`: Invoked when another character of the URL is received. 
+* `on_url`: Invoked when another character of the URL is received.
 * `on_status`: Invoked when another character of the status is received.
-* `on_method`: Invoked when another character of the method is received. 
+* `on_method`: Invoked when another character of the method is received.
    When parser is created with `HTTP_BOTH` and the input is a response, this also invoked for the sequence `HTTP/`
    of the first message.
 * `on_version`: Invoked when another character of the version is received.
@@ -166,7 +168,7 @@ Returns `1` if request includes the `Connection: upgrade` header.
 
 ### `void llhttp_reset(llhttp_t* parser)`
 
-Reset an already initialized parser back to the start state, preserving the 
+Reset an already initialized parser back to the start state, preserving the
 existing parser type, callback settings, user data, and lenient flags.
 
 ### `void llhttp_settings_init(llhttp_settings_t* settings)`
@@ -177,15 +179,15 @@ Initialize the settings object.
 
 Parse full or partial request/response, invoking user callbacks along the way.
 
-If any of `llhttp_data_cb` returns errno not equal to `HPE_OK` - the parsing interrupts, 
-and such errno is returned from `llhttp_execute()`. If `HPE_PAUSED` was used as a errno, 
+If any of `llhttp_data_cb` returns errno not equal to `HPE_OK` - the parsing interrupts,
+and such errno is returned from `llhttp_execute()`. If `HPE_PAUSED` was used as a errno,
 the execution can be resumed with `llhttp_resume()` call.
 
-In a special case of CONNECT/Upgrade request/response `HPE_PAUSED_UPGRADE` is returned 
-after fully parsing the request/response. If the user wishes to continue parsing, 
+In a special case of CONNECT/Upgrade request/response `HPE_PAUSED_UPGRADE` is returned
+after fully parsing the request/response. If the user wishes to continue parsing,
 they need to invoke `llhttp_resume_after_upgrade()`.
 
-**if this function ever returns a non-pause type error, it will continue to return 
+**if this function ever returns a non-pause type error, it will continue to return
 the same error upon each successive call up until `llhttp_init()` is called.**
 
 ### `llhttp_errno_t llhttp_finish(llhttp_t* parser)`
@@ -195,7 +197,7 @@ send (e.g. shutdown of readable side of the TCP connection.)
 
 Requests without `Content-Length` and other messages might require treating
 all incoming bytes as the part of the body, up to the last byte of the
-connection. 
+connection.
 
 This method will invoke `on_message_complete()` callback if the
 request was terminated safely. Otherwise a error code would be returned.
@@ -274,7 +276,7 @@ Returns textual name of HTTP status.
 
 Enables/disables lenient header value parsing (disabled by default).
 Lenient parsing disables header value token checks, extending llhttp's
-protocol support to highly non-compliant clients/server. 
+protocol support to highly non-compliant clients/server.
 
 No `HPE_INVALID_HEADER_TOKEN` will be raised for incorrect header values when
 lenient parsing is "on".
@@ -287,7 +289,7 @@ Enables/disables lenient handling of conflicting `Transfer-Encoding` and
 `Content-Length` headers (disabled by default).
 
 Normally `llhttp` would error when `Transfer-Encoding` is present in
-conjunction with `Content-Length`. 
+conjunction with `Content-Length`.
 
 This error is important to prevent HTTP request smuggling, but may be less desirable
 for small number of cases involving legacy servers.
@@ -301,10 +303,10 @@ requests responses.
 
 Normally `llhttp` would error on (in strict mode) or discard (in loose mode)
 the HTTP request/response after the request/response with `Connection: close`
-and `Content-Length`. 
+and `Content-Length`.
 
 This is important to prevent cache poisoning attacks,
-but might interact badly with outdated and insecure clients. 
+but might interact badly with outdated and insecure clients.
 
 With this flag the extra request/response will be parsed normally.
 
