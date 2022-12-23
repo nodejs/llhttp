@@ -2,11 +2,17 @@
 
 import * as assert from 'assert';
 import { spawnSync } from 'child_process';
+import { existsSync } from 'fs';
 
 const isURL = !process.argv[2] || process.argv[2] === 'url';
 const isHTTP = !process.argv[2] || process.argv[2] === 'http';
 
 const requests: Map<string, string> = new Map();
+
+if (!existsSync('./test/tmp/http-loose-request.c')) {
+  console.error('Run npm test to build ./test/tmp/http-loose-request');
+  process.exit(1);
+}
 
 requests.set('seanmonstar/httparse',
   'GET /wp-content/uploads/2010/03/hello-kitty-darth-vader-pink.jpg HTTP/1.1\r\n' +
