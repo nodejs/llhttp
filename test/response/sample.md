@@ -682,3 +682,39 @@ off=73 header_value complete
 off=75 headers complete status=200 v=1/1 flags=20 content_length=0
 off=75 message complete
 ```
+
+### Extra space between HTTP version and status code
+
+<!-- meta={"type": "response-only"} -->
+```http
+HTTP/1.1  200 OK
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=14 len=2 span[status]="OK"
+off=18 status complete
+off=20 headers complete status=200 v=1/1 flags=0 content_length=0
+```
+
+### Extra space between HTTP version, status code and reason
+
+<!-- meta={"type": "response-only"} -->
+```http
+HTTP/1.1  200  OK
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=15 len=2 span[status]="OK"
+off=19 status complete
+off=21 headers complete status=200 v=1/1 flags=0 content_length=0
+```

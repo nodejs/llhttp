@@ -32,9 +32,11 @@ const NODES: ReadonlyArray<string> = [
   'res_http_dot',
   'res_http_minor',
   'res_http_end',
-  'res_after_version',
+  'res_first_space_after_version',
+  'res_spaces_after_version',
   'res_status_code',
   'res_status_code_otherwise',
+  'res_spaces_before_status',
   'res_status_start',
   'res_status',
   'res_line_almost_done',
@@ -330,13 +332,16 @@ export class HTTP {
 
     n('res_http_end')
       .otherwise(this.span.version.end().otherwise(
-        this.invokePausable('on_version_complete', ERROR.CB_VERSION_COMPLETE, 'res_after_version'),
+        this.invokePausable('on_version_complete', ERROR.CB_VERSION_COMPLETE, 'res_first_space_after_version'),
       ));
 
-    n('res_after_version')
-      .match(' ', this.update('status_code', 0, 'res_status_code'))
-      .otherwise(p.error(ERROR.INVALID_VERSION,
-          'Expected space after version'));
+    n('res_first_space_after_version')
+      .match(' ', n('res_spaces_after_version'))
+      .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected space after version'));
+
+    n('res_spaces_after_version')
+      .match(' ', n('res_spaces_after_version'))
+      .otherwise(this.update('status_code', 0, 'res_status_code'));
 
     n('res_status_code')
       .select(NUM_MAP, this.mulAdd('status_code', {
@@ -346,13 +351,17 @@ export class HTTP {
       .otherwise(n('res_status_code_otherwise'));
 
     n('res_status_code_otherwise')
-      .match(' ', n('res_status_start'))
+      .match(' ', n('res_spaces_before_status'))
       .peek([ '\r', '\n' ], n('res_status_start'))
       .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid response status'));
 
     const onStatusComplete = this.invokePausable(
       'on_status_complete', ERROR.CB_STATUS_COMPLETE, n('headers_start'),
     );
+
+    n('res_spaces_before_status')
+      .match(' ', n('res_spaces_before_status'))
+      .otherwise(n('res_status_start'));
 
     n('res_status_start')
       .match('\r', n('res_line_almost_done'))
