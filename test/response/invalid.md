@@ -149,3 +149,53 @@ off=13 len=2 span[status]="OK"
 off=17 status complete
 off=18 error code=30 reason="Unexpected space after start line"
 ```
+
+### Extra space between HTTP version and status code
+
+<!-- meta={"type": "response-only"} -->
+```http
+HTTP/1.1  200 OK
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=9 error code=13 reason="Invalid status code"
+```
+
+### Extra space between status code and reason
+
+<!-- meta={"type": "response-only"} -->
+```http
+HTTP/1.1 200  OK
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=3 span[status]=" OK"
+off=18 status complete
+off=20 headers complete status=200 v=1/1 flags=0 content_length=0
+```
+
+### One-digit status code
+
+<!-- meta={"type": "response-only"} -->
+```http
+HTTP/1.1 2 OK
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=10 error code=13 reason="Invalid status code"
+```
