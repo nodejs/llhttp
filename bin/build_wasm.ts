@@ -1,12 +1,24 @@
 import { execSync } from 'child_process';
-import { copyFileSync, mkdirSync, writeFileSync } from 'fs';
-import { stringify } from 'javascript-stringify';
+import { copyFileSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
-import { constants } from '..';
 
-const { WASI_ROOT } = process.env;
+let platform = process.env.WASM_PLATFORM ?? '';
 const WASM_OUT = resolve(__dirname, '../build/wasm');
 const WASM_SRC = resolve(__dirname, '../');
+
+if (!platform && process.argv[2]) {
+  platform = execSync('docker info -f "{{.OSType}}/{{.Architecture}}"').toString().trim();
+}
+
+if (process.argv[2] === '--prebuild') {
+  const cmd = `docker build --platform=${platform.toString().trim()} -t llhttp_wasm_builder .`;
+
+  /* tslint:disable-next-line no-console */
+  console.log(`> ${cmd}\n\n`);
+  execSync(cmd, { stdio: 'inherit' });
+
+  process.exit(0);
+}
 
 if (process.argv[2] === '--setup') {
   try {
@@ -21,7 +33,7 @@ if (process.argv[2] === '--setup') {
 }
 
 if (process.argv[2] === '--docker') {
-  let cmd = 'docker run --rm -it';
+  let cmd = `docker run --rm -it --platform=${platform.toString().trim()}`;
   // Try to avoid root permission problems on compiled assets
   // when running on linux.
   // It will work flawessly if uid === gid === 1000
@@ -30,12 +42,11 @@ if (process.argv[2] === '--docker') {
     cmd += ` --user ${process.getuid()}:${process.getegid()}`;
   }
   cmd += ` --mount type=bind,source=${WASM_SRC}/build,target=/home/node/llhttp/build llhttp_wasm_builder npm run wasm`;
+
+  /* tslint:disable-next-line no-console */
+  console.log(`> ${cmd}\n\n`);
   execSync(cmd, { cwd: WASM_SRC, stdio: 'inherit' });
   process.exit(0);
-}
-
-if (!WASI_ROOT) {
-  throw new Error('Please setup the WASI_ROOT env variable.');
 }
 
 try {
@@ -50,8 +61,9 @@ try {
 execSync('npm run build', { cwd: WASM_SRC, stdio: 'inherit' });
 
 // Build wasm binary
-execSync(`${WASI_ROOT}/bin/clang \
- --sysroot=${WASI_ROOT}/share/wasi-sysroot \
+execSync(
+  `clang \
+ --sysroot=/usr/share/wasi-sysroot \
  -target wasm32-unknown-wasi \
  -Ofast \
  -fno-exceptions \
@@ -66,10 +78,13 @@ execSync(`${WASI_ROOT}/bin/clang \
  -Wl,--export-table \
  -Wl,--export=malloc \
  -Wl,--export=free \
+ -Wl,--no-entry \
  ${join(WASM_SRC, 'build', 'c')}/*.c \
  ${join(WASM_SRC, 'src', 'native')}/*.c \
  -I${join(WASM_SRC, 'build')} \
- -o ${join(WASM_OUT, 'llhttp.wasm')}`, { stdio: 'inherit' });
+ -o ${join(WASM_OUT, 'llhttp.wasm')}`,
+  { stdio: 'inherit' },
+);
 
 // Copy constants for `.js` and `.ts` users.
 copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'constants.js'), join(WASM_OUT, 'constants.js'));

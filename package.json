@@ -12,7 +12,7 @@
     "bench": "ts-node bench/",
     "build": "ts-node bin/generate.ts",
     "build-ts": "tsc",
-    "prebuild-wasm": "docker build -t llhttp_wasm_builder . && npm run wasm -- --setup",
+    "prebuild-wasm": "npm run wasm -- --prebuild && npm run wasm -- --setup",
     "build-wasm": "npm run wasm -- --docker",
     "wasm": "ts-node bin/build_wasm.ts",
     "clean": "rm -rf lib && rm -rf test/tmp",
