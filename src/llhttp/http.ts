@@ -33,7 +33,9 @@ const NODES: ReadonlyArray<string> = [
   'res_http_minor',
   'res_http_end',
   'res_after_version',
-  'res_status_code',
+  'res_status_code_digit_1',
+  'res_status_code_digit_2',
+  'res_status_code_digit_3',
   'res_status_code_otherwise',
   'res_status_start',
   'res_status',
@@ -334,16 +336,30 @@ export class HTTP {
       ));
 
     n('res_after_version')
-      .match(' ', this.update('status_code', 0, 'res_status_code'))
+      .match(' ', this.update('status_code', 0, 'res_status_code_digit_1'))
       .otherwise(p.error(ERROR.INVALID_VERSION,
           'Expected space after version'));
 
-    n('res_status_code')
+    n('res_status_code_digit_1')
       .select(NUM_MAP, this.mulAdd('status_code', {
-        overflow: p.error(ERROR.INVALID_STATUS, 'Response overflow'),
-        success: 'res_status_code',
-      }, { base: 10, signed: false, max: 999 }))
-      .otherwise(n('res_status_code_otherwise'));
+        overflow: p.error(ERROR.INVALID_STATUS, 'Invalid status code'),
+        success: 'res_status_code_digit_2',
+      }))
+      .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid status code'));
+
+    n('res_status_code_digit_2')
+    .select(NUM_MAP, this.mulAdd('status_code', {
+      overflow: p.error(ERROR.INVALID_STATUS, 'Invalid status code'),
+      success: 'res_status_code_digit_3',
+    }))
+    .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid status code'));
+
+    n('res_status_code_digit_3')
+      .select(NUM_MAP, this.mulAdd('status_code', {
+        overflow: p.error(ERROR.INVALID_STATUS, 'Invalid status code'),
+        success: 'res_status_code_otherwise',
+      }))
+      .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid status code'));
 
     n('res_status_code_otherwise')
       .match(' ', n('res_status_start'))
