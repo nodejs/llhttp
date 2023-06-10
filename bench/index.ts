@@ -71,7 +71,7 @@ if (isURL) {
 }
 
 if (isHTTP) {
-  for(const [request, name] of requests) {
+  for(const [name, request] of requests) {
     console.log('http loose: "%s" (C)', name);
 
     spawnSync('./test/tmp/http-loose-request-c', [
