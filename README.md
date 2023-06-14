@@ -61,33 +61,41 @@ checks could be performed to get even stricter verification of the llhttp.
 ## Usage
 
 ```C
+#include "stdio.h"
 #include "llhttp.h"
+#include "string.h"
 
-llhttp_t parser;
-llhttp_settings_t settings;
+int handle_on_message_complete(llhttp_t* parser) {
+	fprintf(stdout, "Message completed!\n");
+	return 0;
+}
 
-/* Initialize user callbacks and settings */
-llhttp_settings_init(&settings);
+int main() {
+	llhttp_t parser;
+	llhttp_settings_t settings;
 
-/* Set user callback */
-settings.on_message_complete = handle_on_message_complete;
+	/*Initialize user callbacks and settings */
+	llhttp_settings_init(&settings);
 
-/* Initialize the parser in HTTP_BOTH mode, meaning that it will select between
- * HTTP_REQUEST and HTTP_RESPONSE parsing automatically while reading the first
- * input.
- */
-llhttp_init(&parser, HTTP_BOTH, &settings);
+	/*Set user callback */
+	settings.on_message_complete = handle_on_message_complete;
 
-/* Parse request! */
-const char* request = "GET / HTTP/1.1\r\n\r\n";
-int request_len = strlen(request);
+	/*Initialize the parser in HTTP_BOTH mode, meaning that it will select between
+	*HTTP_REQUEST and HTTP_RESPONSE parsing automatically while reading the first
+	*input.
+	*/
+	llhttp_init(&parser, HTTP_BOTH, &settings);
 
-enum llhttp_errno err = llhttp_execute(&parser, request, request_len);
-if (err == HPE_OK) {
-  /* Successfully parsed! */
-} else {
-  fprintf(stderr, "Parse error: %s %s\n", llhttp_errno_name(err),
-          parser.reason);
+	/*Parse request! */
+	const char* request = "GET / HTTP/1.1\r\n\r\n";
+	int request_len = strlen(request);
+
+	enum llhttp_errno err = llhttp_execute(&parser, request, request_len);
+	if (err == HPE_OK) {
+		fprintf(stdout, "Successfully parsed!\n");
+	} else {
+		fprintf(stderr, "Parse error: %s %s\n", llhttp_errno_name(err), parser.reason);
+	}
 }
 ```
 For more information on API usage, please refer to [src/native/api.h](https://github.com/nodejs/llhttp/blob/main/src/native/api.h).
