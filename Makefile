@@ -51,7 +51,7 @@ release: generate
 	cp -rf src/llhttp.gyp release/
 	cp -rf src/common.gypi release/
 	cp -rf CMakeLists.txt release/
-	sed -i s/_TAG_/$(TAG)/ release/CMakeLists.txt
+	sed -i '' s/_TAG_/$(TAG)/ release/CMakeLists.txt
 	cp -rf libllhttp.pc.in release/
 	cp -rf README.md release/
 	cp -rf LICENSE-MIT release/

@@ -117,6 +117,38 @@ off=41 len=1 span[header_value]="x"
 off=42 error code=10 reason="Invalid header value char"
 ```
 
+### Empty headers separated by CR
+
+<!-- meta={"type": "request" } -->
+```http
+POST / HTTP/1.1
+Connection: Close
+Host: localhost:5000
+x:\rTransfer-Encoding: chunked
+
+1
+A
+0
+
+```
+
+```log
+off=0 message begin
+off=5 len=1 span[url]="/"
+off=7 url complete
+off=17 len=10 span[header_field]="Connection"
+off=28 header_field complete
+off=29 len=5 span[header_value]="Close"
+off=36 header_value complete
+off=36 len=4 span[header_field]="Host"
+off=41 header_field complete
+off=42 len=14 span[header_value]="localhost:5000"
+off=58 header_value complete
+off=58 len=1 span[header_field]="x"
+off=60 header_field complete
+off=61 error code=2 reason="Expected LF after CR"
+```
+
 ### Empty headers separated by LF
 
 <!-- meta={"type": "request"} -->
