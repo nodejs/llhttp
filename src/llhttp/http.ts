@@ -572,14 +572,13 @@ export class HTTP {
       }, p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char')))
       .otherwise(span.headerValue.start(n('header_value_start')));
 
-    if (this.mode === 'strict') {
-      n('header_value_discard_ws_almost_done')
-        .match('\n', n('header_value_discard_lws'))
-        .otherwise(p.error(ERROR.STRICT, 'Expected LF after CR'));
-    } else {
-      n('header_value_discard_ws_almost_done').skipTo(
-        n('header_value_discard_lws'));
-    }
+    n('header_value_discard_ws_almost_done')
+      .match('\n', n('header_value_discard_lws'))
+      .otherwise(
+        this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
+          1: n('header_value_discard_lws'),
+        }, p.error(ERROR.STRICT, 'Expected LF after CR')),
+      );
 
     const onHeaderValueComplete = this.invokePausable(
       'on_header_value_complete', ERROR.CB_HEADER_VALUE_COMPLETE, n('header_field_start'),
@@ -593,7 +592,9 @@ export class HTTP {
       this.emptySpan(span.headerValue, onHeaderValueComplete)));
 
     n('header_value_discard_lws')
-      .match([ ' ', '\t' ], n('header_value_discard_ws'))
+      .match([ ' ', '\t' ], this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
+        1: n('header_value_discard_ws'),
+      }, p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char')))
       .otherwise(checkContentLengthEmptiness);
 
     // Multiple `Transfer-Encoding` headers should be treated as one, but with
