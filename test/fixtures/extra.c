@@ -121,6 +121,36 @@ void llhttp__test_init_response_lenient_headers(llparse_t* s) {
   s->lenient_flags |= LENIENT_HEADERS;
 }
 
+void llhttp__test_init_request_lenient_data_after_close(llparse_t* s) {
+  llhttp__test_init_request(s);
+  s->lenient_flags |= LENIENT_DATA_AFTER_CLOSE;
+}
+
+void llhttp__test_init_response_lenient_data_after_close(llparse_t* s) {
+  llhttp__test_init_response(s);
+  s->lenient_flags |= LENIENT_DATA_AFTER_CLOSE;
+}
+
+void llhttp__test_init_request_lenient_optional_lf_after_cr(llparse_t* s) {
+  llhttp__test_init_request(s);
+  s->lenient_flags |= LENIENT_OPTIONAL_LF_AFTER_CR;
+}
+
+void llhttp__test_init_response_lenient_optional_lf_after_cr(llparse_t* s) {
+  llhttp__test_init_response(s);
+  s->lenient_flags |= LENIENT_OPTIONAL_LF_AFTER_CR;
+}
+
+void llhttp__test_init_request_lenient_optional_crlf_after_chunk(llparse_t* s) {
+  llhttp__test_init_request(s);
+  s->lenient_flags |= LENIENT_OPTIONAL_CRLF_AFTER_CHUNK;
+}
+
+void llhttp__test_init_response_lenient_optional_crlf_after_chunk(llparse_t* s) {
+  llhttp__test_init_response(s);
+  s->lenient_flags |= LENIENT_OPTIONAL_CRLF_AFTER_CHUNK;
+}
+
 
 void llhttp__test_finish(llparse_t* s) {
   llparse__print(NULL, NULL, "finish=%d", s->finish);

@@ -72,9 +72,9 @@ off=90 headers complete method=4 v=1/1 flags=1 content_length=0
 off=90 message complete
 ```
 
-### No restart when keep-alive is off (1.0) and parser is in strict mode
+### No restart when keep-alive is off (1.0)
 
-<!-- meta={"type": "request", "mode": "strict"} -->
+<!-- meta={"type": "request" } -->
 ```http
 PUT /url HTTP/1.0
 
@@ -241,11 +241,11 @@ off=40 headers complete method=4 v=1/1 flags=2 content_length=0
 off=40 message complete
 ```
 
-### CRLF between requests, explicit `close` (strict mode)
+### CRLF between requests, explicit `close`
 
-`close` means closed connection in strict mode.
+`close` means closed connection
 
-<!-- meta={"type": "request", "mode": "strict"} -->
+<!-- meta={"type": "request" } -->
 ```http
 POST / HTTP/1.1
 Host: www.example.com

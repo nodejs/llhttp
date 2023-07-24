@@ -8,11 +8,10 @@ import {
   CharList,
   CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, H_METHOD_MAP, HEADER_CHARS,
   HEADER_STATE, HEX_MAP,
-  HTTPMode,
   LENIENT_FLAGS,
   MAJOR, METHOD_MAP, METHODS, METHODS_HTTP, METHODS_ICE, METHODS_RTSP,
   MINOR, NUM_MAP, QUOTED_STRING, SPECIAL_HEADERS,
-  STRICT_TOKEN, TOKEN, TYPE,
+  TOKEN, TYPE,
 } from './constants';
 import { URL } from './url';
 
@@ -50,6 +49,7 @@ const NODES: ReadonlyArray<string> = [
   'req_http_minor',
   'req_http_end',
   'req_http_complete',
+  'req_http_complete_crlf',
 
   'req_pri_upgrade',
 
@@ -97,7 +97,6 @@ const NODES: ReadonlyArray<string> = [
   'chunk_extension_quoted_value_done',
   'chunk_data',
   'chunk_data_almost_done',
-  'chunk_data_almost_done_skip',
   'chunk_complete',
   'body_identity',
   'body_identity_eof',
@@ -168,12 +167,11 @@ export class HTTP {
   private readonly callback: ICallbackMap;
   private readonly nodes: Map<string, Match> = new Map();
 
-  constructor(private readonly llparse: LLParse,
-              private readonly mode: HTTPMode = 'loose') {
+  constructor(private readonly llparse: LLParse) {
     const p = llparse;
 
-    this.url = new URL(p, mode);
-    this.TOKEN = mode === 'strict' ? STRICT_TOKEN : TOKEN;
+    this.url = new URL(p);
+    this.TOKEN = TOKEN;
 
     this.span = {
       body: p.span(p.code.span('llhttp__on_body')),
@@ -377,17 +375,14 @@ export class HTTP {
 
     n('res_status')
       .peek('\r', span.status.end().skipTo(n('res_line_almost_done')))
-      .peek('\n', span.status.end().skipTo(onStatusComplete))
+      .peek('\n', span.status.end().skipTo(n('res_line_almost_done')))
       .skipTo(n('res_status'));
 
-    if (this.mode === 'strict') {
-      n('res_line_almost_done')
-        .match('\n', onStatusComplete)
-        .otherwise(p.error(ERROR.STRICT, 'Expected LF after CR'));
-    } else {
-      n('res_line_almost_done')
-        .skipTo(onStatusComplete);
-    }
+    n('res_line_almost_done')
+      .match(['\r', '\n'], onStatusComplete)
+      .otherwise(this.testLenientFlags(LENIENT_FLAGS.OPTIONAL_LF_AFTER_CR, {
+        1: onStatusComplete,
+      }, p.error(ERROR.STRICT, 'Expected LF after CR')));
 
     // Request
     n('start_req').otherwise(this.span.method.start(n('after_start_req')));
@@ -474,8 +469,14 @@ export class HTTP {
     );
 
     n('req_http_complete')
-      .match([ '\r\n', '\n' ], n('headers_start'))
+      .match('\r', n('req_http_complete_crlf'))
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected CRLF after version'));
+
+    n('req_http_complete_crlf')
+      .match('\n', n('headers_start'))
+      .otherwise(this.testLenientFlags(LENIENT_FLAGS.OPTIONAL_LF_AFTER_CR, {
+        1: n('headers_start'),
+      }, p.error(ERROR.STRICT, 'Expected CRLF after version')));
 
     n('req_pri_upgrade')
       .match('\r\n\r\nSM\r\n\r\n',
@@ -504,9 +505,6 @@ export class HTTP {
 
     n('header_field_start')
       .match('\r', n('headers_almost_done'))
-      /* they might be just sending \n instead of \r\n so this would be
-       * the second \n to denote the end of headers*/
-      .peek('\n', n('headers_almost_done'))
       .otherwise(span.headerField.start(n('header_field')));
 
     n('header_field')
@@ -768,14 +766,12 @@ export class HTTP {
         ERROR.CB_CHUNK_COMPLETE, 'message_done'),
     });
 
-    if (this.mode === 'strict') {
-      n('headers_almost_done')
-        .match('\n', checkTrailing)
-        .otherwise(p.error(ERROR.STRICT, 'Expected LF after headers'));
-    } else {
-      n('headers_almost_done')
-        .skipTo(checkTrailing);
-    }
+    n('headers_almost_done')
+      .match('\n', checkTrailing)
+      .otherwise(
+        this.testLenientFlags(LENIENT_FLAGS.OPTIONAL_LF_AFTER_CR, {
+          1: checkTrailing,
+        }, p.error(ERROR.STRICT, 'Expected LF after headers')));
 
     // Set `upgrade` if needed
     const beforeHeadersComplete = p.invoke(callback.beforeHeadersComplete);
@@ -910,7 +906,7 @@ export class HTTP {
       .otherwise(this.span.chunkExtensionName.start(n('chunk_extension_name')));
 
     n('chunk_extension_name')
-      .match(STRICT_TOKEN, n('chunk_extension_name'))
+      .match(TOKEN, n('chunk_extension_name'))
       .peek('=', this.span.chunkExtensionName.end().skipTo(
         this.span.chunkExtensionValue.start(
           onChunkExtensionNameCompleted(n('chunk_extension_value')),
@@ -928,7 +924,7 @@ export class HTTP {
 
     n('chunk_extension_value')
       .match('"', n('chunk_extension_quoted_value'))
-      .match(STRICT_TOKEN, n('chunk_extension_value'))
+      .match(TOKEN, n('chunk_extension_value'))
       .peek(';', this.span.chunkExtensionValue.end().skipTo(
         onChunkExtensionValueCompleted(n('chunk_size_otherwise')),
       ))
@@ -954,14 +950,13 @@ export class HTTP {
       .otherwise(p.error(ERROR.STRICT,
         'Invalid character in chunk extensions quote value'));
 
-    if (this.mode === 'strict') {
-      n('chunk_size_almost_done')
-        .match('\n', n('chunk_size_almost_done_lf'))
-        .otherwise(p.error(ERROR.STRICT, 'Expected LF after chunk size'));
-    } else {
-      n('chunk_size_almost_done')
-        .skipTo(n('chunk_size_almost_done_lf'));
-    }
+    n('chunk_size_almost_done')
+      .match('\n', n('chunk_size_almost_done_lf'))
+      .otherwise(
+        this.testLenientFlags(LENIENT_FLAGS.OPTIONAL_LF_AFTER_CR, {
+          1: n('chunk_size_almost_done_lf'),
+        }).otherwise(p.error(ERROR.STRICT, 'Expected LF after chunk size')),
+      );
 
     const toChunk = this.isEqual('content_length', 0, {
       equal: this.setFlag(FLAGS.TRAILING, 'header_field_start'),
@@ -977,17 +972,13 @@ export class HTTP {
         .otherwise(p.consume('content_length').otherwise(
           span.body.end(n('chunk_data_almost_done')))));
 
-    if (this.mode === 'strict') {
-      n('chunk_data_almost_done')
-        .match('\r\n', n('chunk_complete'))
-        .otherwise(p.error(ERROR.STRICT, 'Expected CRLF after chunk'));
-    } else {
-      n('chunk_data_almost_done')
-        .skipTo(n('chunk_data_almost_done_skip'));
-    }
-
-    n('chunk_data_almost_done_skip')
-      .skipTo(n('chunk_complete'));
+    n('chunk_data_almost_done')
+      .match('\r\n', n('chunk_complete'))
+      .otherwise(
+        this.testLenientFlags(LENIENT_FLAGS.OPTIONAL_CRLF_AFTER_CHUNK, {
+          1: n('chunk_complete'),
+        }).otherwise(p.error(ERROR.STRICT, 'Expected LF after chunk data')),
+      );
 
     n('chunk_complete')
       .otherwise(this.invokePausable('on_chunk_complete',
@@ -1015,16 +1006,13 @@ export class HTTP {
         1: this.update('content_length', 0, n('restart')),
       }, this.update('finish', FINISH.SAFE, lenientClose)));
 
-    if (this.mode === 'strict') {
-      // Error on extra data after `Connection: close`
-      n('closed')
-        .match([ '\r', '\n' ], n('closed'))
-        .skipTo(p.error(ERROR.CLOSED_CONNECTION,
-          'Data after `Connection: close`'));
-    } else {
-      // Discard all data after `Connection: close`
-      n('closed').skipTo(n('closed'));
-    }
+    const lenientDiscardAfterClose = this.testLenientFlags(LENIENT_FLAGS.DATA_AFTER_CLOSE, {
+      1: n('closed'),
+    }, p.error(ERROR.CLOSED_CONNECTION, 'Data after `Connection: close`'));
+
+    n('closed')
+      .match([ '\r', '\n' ], n('closed'))
+      .skipTo(lenientDiscardAfterClose);
 
     n('restart')
       .otherwise(

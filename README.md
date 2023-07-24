@@ -333,6 +333,47 @@ With this flag the extra value will be parsed normally.
 
 **USE AT YOUR OWN RISK!**
 
+### `void llhttp_set_lenient_version(llhttp_t* parser, int enabled)`
+
+Enables/disables lenient handling of HTTP version.
+
+Normally `llhttp` would error when the HTTP version in the request or status line
+is not `0.9`, `1.0`, `1.1` or `2.0`.
+With this flag the extra value will be parsed normally.
+
+**(USE AT YOUR OWN RISK)**
+
+### `void llhttp_set_lenient_data_after_close(llhttp_t* parser, int enabled)`
+
+Enables/disables lenient handling of additional data received after a message ends
+and keep-alive is disabled.
+
+Normally `llhttp` would error when additional unexpected data is received if the message
+contains the `Connection` header with `close` value.
+With this flag the extra data will discarded without throwing an error.
+
+**(USE AT YOUR OWN RISK)**
+
+### `void llhttp_set_lenient_optional_lf_after_cr(llhttp_t* parser, int enabled)`
+
+Enables/disables lenient handling of incomplete CRLF sequences.
+
+Normally `llhttp` would error when a CR is not followed by LF when terminating the
+request line, the status line, the headers or a chunk header.
+With this flag only a CR is required to terminate such sections.
+
+**(USE AT YOUR OWN RISK)**
+
+### `void llhttp_set_lenient_optional_crlf_after_chunk(llhttp_t* parser, int enabled)`
+
+Enables/disables lenient handling of chunks not separated via CRLF.
+
+Normally `llhttp` would error when after a chunk data a CRLF is missing before
+starting a new chunk.
+With this flag the new chunk can start immediately after the previous one.
+
+**(USE AT YOUR OWN RISK)**
+
 ## Build Instructions
 
 Make sure you have [Node.js](https://nodejs.org/), npm and npx installed. Then under project directory run:

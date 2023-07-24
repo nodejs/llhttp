@@ -133,6 +133,71 @@ off=41 len=1 span[header_value]="x"
 off=42 error code=10 reason="Invalid header value char"
 ```
 
+### Headers separated by dummy characters
+
+<!-- meta={"type": "request"} -->
+```http
+GET / HTTP/1.1
+Connection: close
+Host: a
+\rZGET /evil: HTTP/1.1
+Host: a
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
+off=4 len=1 span[url]="/"
+off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
+off=16 len=10 span[header_field]="Connection"
+off=27 header_field complete
+off=28 len=5 span[header_value]="close"
+off=35 header_value complete
+off=35 len=4 span[header_field]="Host"
+off=40 header_field complete
+off=41 len=1 span[header_value]="a"
+off=44 header_value complete
+off=45 error code=2 reason="Expected LF after headers"
+```
+
+
+### Headers separated by dummy characters in lenient mode
+
+<!-- meta={"type": "request-lenient-optional-lf-after-cr"} -->
+```http
+GET / HTTP/1.1
+Connection: close
+Host: a
+\rZGET /evil: HTTP/1.1
+Host: a
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
+off=4 len=1 span[url]="/"
+off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
+off=16 len=10 span[header_field]="Connection"
+off=27 header_field complete
+off=28 len=5 span[header_value]="close"
+off=35 header_value complete
+off=35 len=4 span[header_field]="Host"
+off=40 header_field complete
+off=41 len=1 span[header_value]="a"
+off=44 header_value complete
+off=45 headers complete method=1 v=1/1 flags=2 content_length=0
+off=45 message complete
+off=46 error code=5 reason="Data after `Connection: close`"
+```
+
 ### Empty headers separated by CR
 
 <!-- meta={"type": "request" } -->
