@@ -3,9 +3,7 @@ Invalid responses
 
 ### Incomplete HTTP protocol
 
-*TODO(indutny): test `req_or_res` mode too*
-
-<!-- meta={"type": "response-only"} -->
+<!-- meta={"type": "response"} -->
 ```http
 HTP/1.1 200 OK
 
@@ -152,7 +150,7 @@ off=18 error code=30 reason="Unexpected space after start line"
 
 ### Extra space between HTTP version and status code
 
-<!-- meta={"type": "response-only"} -->
+<!-- meta={"type": "response"} -->
 ```http
 HTTP/1.1  200 OK
 
@@ -168,7 +166,7 @@ off=9 error code=13 reason="Invalid status code"
 
 ### Extra space between status code and reason
 
-<!-- meta={"type": "response-only"} -->
+<!-- meta={"type": "response"} -->
 ```http
 HTTP/1.1 200  OK
 
@@ -186,7 +184,7 @@ off=20 headers complete status=200 v=1/1 flags=0 content_length=0
 
 ### One-digit status code
 
-<!-- meta={"type": "response-only"} -->
+<!-- meta={"type": "response"} -->
 ```http
 HTTP/1.1 2 OK
 

@@ -825,7 +825,7 @@ off=57 error code=12 reason="Invalid character in chunk size"
 
 ## Validate chunk parameters
 
-<!-- meta={"type": "request", "mode": "strict"} -->
+<!-- meta={"type": "request" } -->
 ```http
 PUT /url HTTP/1.1
 Transfer-Encoding: chunked
@@ -854,7 +854,7 @@ off=50 error code=12 reason="Invalid character in chunk size"
 
 ## Invalid OBS fold after chunked value
 
-<!-- meta={"type": "request", "mode": "strict"} -->
+<!-- meta={"type": "request" } -->
 ```http
 PUT /url HTTP/1.1
 Transfer-Encoding: chunked
@@ -882,4 +882,204 @@ off=47 len=5 span[header_value]="  abc"
 off=54 header_value complete
 off=56 headers complete method=4 v=1/1 flags=200 content_length=0
 off=56 error code=15 reason="Request has invalid `Transfer-Encoding`"
+```
+
+### Chunk header not terminated by CRLF
+
+<!-- meta={"type": "request" } -->
+
+```http
+GET / HTTP/1.1
+Host: a
+Connection: close 
+Transfer-Encoding: chunked 
+
+5\r\r;ABCD
+34
+E
+0
+
+GET / HTTP/1.1 
+Host: a
+Content-Length: 5
+
+0
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
+off=4 len=1 span[url]="/"
+off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
+off=16 len=4 span[header_field]="Host"
+off=21 header_field complete
+off=22 len=1 span[header_value]="a"
+off=25 header_value complete
+off=25 len=10 span[header_field]="Connection"
+off=36 header_field complete
+off=37 len=6 span[header_value]="close "
+off=45 header_value complete
+off=45 len=17 span[header_field]="Transfer-Encoding"
+off=63 header_field complete
+off=64 len=8 span[header_value]="chunked "
+off=74 header_value complete
+off=76 headers complete method=1 v=1/1 flags=20a content_length=0
+off=78 error code=2 reason="Expected LF after chunk size"
+```
+
+### Chunk header not terminated by CRLF in lenient mode
+
+<!-- meta={"type": "request-lenient-optional-lf-after-cr" } -->
+
+```http
+GET / HTTP/1.1
+Host: a
+Connection: close 
+Transfer-Encoding: chunked 
+
+6\r\r;ABCD
+33
+E
+0
+
+GET / HTTP/1.1 
+Host: a
+Content-Length: 5
+0
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
+off=4 len=1 span[url]="/"
+off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
+off=16 len=4 span[header_field]="Host"
+off=21 header_field complete
+off=22 len=1 span[header_value]="a"
+off=25 header_value complete
+off=25 len=10 span[header_field]="Connection"
+off=36 header_field complete
+off=37 len=6 span[header_value]="close "
+off=45 header_value complete
+off=45 len=17 span[header_field]="Transfer-Encoding"
+off=63 header_field complete
+off=64 len=8 span[header_value]="chunked "
+off=74 header_value complete
+off=76 headers complete method=1 v=1/1 flags=20a content_length=0
+off=78 chunk header len=6
+off=78 len=1 span[body]=cr
+off=79 len=5 span[body]=";ABCD"
+off=86 chunk complete
+off=90 chunk header len=51
+off=90 len=1 span[body]="E"
+off=91 len=1 span[body]=cr
+off=92 len=1 span[body]=lf
+off=93 len=1 span[body]="0"
+off=94 len=1 span[body]=cr
+off=95 len=1 span[body]=lf
+off=96 len=1 span[body]=cr
+off=97 len=1 span[body]=lf
+off=98 len=15 span[body]="GET / HTTP/1.1 "
+off=113 len=1 span[body]=cr
+off=114 len=1 span[body]=lf
+off=115 len=7 span[body]="Host: a"
+off=122 len=1 span[body]=cr
+off=123 len=1 span[body]=lf
+off=124 len=17 span[body]="Content-Length: 5"
+off=143 chunk complete
+off=146 chunk header len=0
+off=148 chunk complete
+off=148 message complete
+```
+
+### Chunk data not terminated by CRLF
+
+<!-- meta={"type": "request" } -->
+
+```http
+GET / HTTP/1.1
+Host: a
+Connection: close 
+Transfer-Encoding: chunked 
+
+5
+ABCDE0
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
+off=4 len=1 span[url]="/"
+off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
+off=16 len=4 span[header_field]="Host"
+off=21 header_field complete
+off=22 len=1 span[header_value]="a"
+off=25 header_value complete
+off=25 len=10 span[header_field]="Connection"
+off=36 header_field complete
+off=37 len=6 span[header_value]="close "
+off=45 header_value complete
+off=45 len=17 span[header_field]="Transfer-Encoding"
+off=63 header_field complete
+off=64 len=8 span[header_value]="chunked "
+off=74 header_value complete
+off=76 headers complete method=1 v=1/1 flags=20a content_length=0
+off=79 chunk header len=5
+off=79 len=5 span[body]="ABCDE"
+off=84 error code=2 reason="Expected LF after chunk data"
+```
+
+### Chunk data not terminated by CRLF in lenient mode
+
+<!-- meta={"type": "request-lenient-optional-crlf-after-chunk" } -->
+
+```http
+GET / HTTP/1.1
+Host: a
+Connection: close 
+Transfer-Encoding: chunked 
+
+5
+ABCDE0
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
+off=4 len=1 span[url]="/"
+off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
+off=16 len=4 span[header_field]="Host"
+off=21 header_field complete
+off=22 len=1 span[header_value]="a"
+off=25 header_value complete
+off=25 len=10 span[header_field]="Connection"
+off=36 header_field complete
+off=37 len=6 span[header_value]="close "
+off=45 header_value complete
+off=45 len=17 span[header_field]="Transfer-Encoding"
+off=63 header_field complete
+off=64 len=8 span[header_value]="chunked "
+off=74 header_value complete
+off=76 headers complete method=1 v=1/1 flags=20a content_length=0
+off=79 chunk header len=5
+off=79 len=5 span[body]="ABCDE"
+off=84 chunk complete
+off=87 chunk header len=0
 ```
