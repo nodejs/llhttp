@@ -76,6 +76,24 @@ void llhttp__test_init_response(llparse_t* s) {
 }
 
 
+void llhttp__test_init_request_lenient_all(llparse_t* s) {
+  llhttp__test_init_request(s);
+  s->lenient_flags |= 
+    LENIENT_HEADERS | LENIENT_CHUNKED_LENGTH | LENIENT_KEEP_ALIVE |
+    LENIENT_TRANSFER_ENCODING | LENIENT_VERSION | LENIENT_DATA_AFTER_CLOSE |
+    LENIENT_OPTIONAL_LF_AFTER_CR | LENIENT_OPTIONAL_CRLF_AFTER_CHUNK;
+}
+
+
+void llhttp__test_init_response_lenient_all(llparse_t* s) {
+  llhttp__test_init_response(s);
+  s->lenient_flags |= 
+    LENIENT_HEADERS | LENIENT_CHUNKED_LENGTH | LENIENT_KEEP_ALIVE |
+    LENIENT_TRANSFER_ENCODING | LENIENT_VERSION | LENIENT_DATA_AFTER_CLOSE |
+    LENIENT_OPTIONAL_LF_AFTER_CR | LENIENT_OPTIONAL_CRLF_AFTER_CHUNK;
+}
+
+
 void llhttp__test_init_request_lenient_headers(llparse_t* s) {
   llhttp__test_init_request(s);
   s->lenient_flags |= LENIENT_HEADERS;

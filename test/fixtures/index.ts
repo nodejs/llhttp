@@ -11,6 +11,7 @@ import * as llhttp from '../../src/llhttp';
 export { FixtureResult };
 
 export type TestType = 'request' | 'response' | 'request-finish' | 'response-finish' |
+  'request-lenient-all' | 'response-lenient-all' |
   'request-lenient-headers' | 'request-lenient-chunked-length' | 'request-lenient-transfer-encoding' |
   'request-lenient-keep-alive' | 'response-lenient-keep-alive' | 'response-lenient-headers' |
   'request-lenient-version' | 'response-lenient-version' |
@@ -24,6 +25,8 @@ export const allowedTypes: TestType[] = [
   'response',
   'request-finish',
   'response-finish',
+  'request-lenient-all',
+  'response-lenient-all',
   'request-lenient-headers',
   'response-lenient-headers',
   'request-lenient-keep-alive',

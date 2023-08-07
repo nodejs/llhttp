@@ -197,3 +197,38 @@ off=5 len=3 span[version]="1.1"
 off=8 version complete
 off=10 error code=13 reason="Invalid status code"
 ```
+
+### Only LFs present
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK\nContent-Length: 0\n\n
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=2 span[status]="OK"
+off=16 error code=2 reason="Expected LF after CR"
+```
+
+### Only LFs present (lenient)
+
+<!-- meta={"type": "response-lenient-all"} -->
+```http
+HTTP/1.1 200 OK\nContent-Length: 0\n\n
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=2 span[status]="OK"
+off=16 status complete
+off=16 len=14 span[header_field]="Content-Length"
+off=31 header_field complete
+off=32 len=1 span[header_value]="0"
+off=34 header_value complete
+off=35 message complete
+```

@@ -495,6 +495,9 @@ export class HTTP {
     const span = this.span;
     const n = (name: string): Match => this.node<Match>(name);
 
+    const onInvalidHeaderFieldChar =
+      p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header field char');
+
     n('headers_start')
       .match(' ',
         this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
@@ -505,6 +508,11 @@ export class HTTP {
 
     n('header_field_start')
       .match('\r', n('headers_almost_done'))
+      .match('\n',
+        this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
+          1: n('headers_done'),
+        }, onInvalidHeaderFieldChar),
+      )
       .otherwise(span.headerField.start(n('header_field')));
 
     n('header_field')
@@ -516,9 +524,6 @@ export class HTTP {
     const onHeaderFieldComplete = this.invokePausable(
       'on_header_field_complete', ERROR.CB_HEADER_FIELD_COMPLETE, n('header_value_discard_ws'),
     );
-
-    const onInvalidHeaderFieldChar =
-      p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header field char');
 
     const checkLenientFlagsOnColon =
       this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
