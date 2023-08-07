@@ -220,7 +220,7 @@ off=79 error code=22 reason="Pause on CONNECT/Upgrade"
 ```http
 PUT /url HTTP/1.1
 Content-Length: 1
-Transfer-Encoding: chunked
+Transfer-Encoding: identity
 
 
 ```
@@ -239,9 +239,9 @@ off=35 len=1 span[header_value]="1"
 off=38 header_value complete
 off=38 len=17 span[header_field]="Transfer-Encoding"
 off=56 header_field complete
-off=57 len=7 span[header_value]="chunked"
-off=66 header_value complete
-off=68 headers complete method=4 v=1/1 flags=228 content_length=1
+off=57 len=8 span[header_value]="identity"
+off=67 header_value complete
+off=69 headers complete method=4 v=1/1 flags=220 content_length=1
 ```
 
 ## Funky `Content-Length` with body
