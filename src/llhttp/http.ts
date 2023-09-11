@@ -521,8 +521,40 @@ export class HTTP {
       .select(SPECIAL_HEADERS, this.store('header_state', 'header_field_colon'))
       .otherwise(this.resetHeaderState('header_field_general'));
 
+    /* https://www.rfc-editor.org/rfc/rfc7230.html#section-3.3.3, paragraph 3.
+     *
+     * If a message is received with both a Transfer-Encoding and a
+     * Content-Length header field, the Transfer-Encoding overrides the
+     * Content-Length.  Such a message might indicate an attempt to
+     * perform request smuggling (Section 9.5) or response splitting
+     * (Section 9.4) and **ought to be handled as an error**.  A sender MUST
+     * remove the received Content-Length field prior to forwarding such
+     * a message downstream.
+     *
+     * Since llhttp 9, we go for the stricter approach and treat this as an error.
+     */
+    const checkInvalidTransferEncoding = (otherwise: Node) => {
+      return this.testFlags(FLAGS.CONTENT_LENGTH, {
+        1: this.testLenientFlags(LENIENT_FLAGS.CHUNKED_LENGTH, {
+          0: p.error(ERROR.INVALID_TRANSFER_ENCODING, "Transfer-Encoding can't be present with Content-Length"),
+        }).otherwise(otherwise),
+      }).otherwise(otherwise);
+    };
+
+    const checkInvalidContentLength = (otherwise: Node) => {
+      return this.testFlags(FLAGS.TRANSFER_ENCODING, {
+        1: this.testLenientFlags(LENIENT_FLAGS.CHUNKED_LENGTH, {
+          0: p.error(ERROR.INVALID_CONTENT_LENGTH, "Content-Length can't be present with Transfer-Encoding"),
+        }).otherwise(otherwise),
+      }).otherwise(otherwise);
+    };
+
     const onHeaderFieldComplete = this.invokePausable(
-      'on_header_field_complete', ERROR.CB_HEADER_FIELD_COMPLETE, n('header_value_discard_ws'),
+      'on_header_field_complete', ERROR.CB_HEADER_FIELD_COMPLETE,
+      this.load('header_state', {
+        [HEADER_STATE.TRANSFER_ENCODING]: checkInvalidTransferEncoding(n('header_value_discard_ws')),
+        [HEADER_STATE.CONTENT_LENGTH]: checkInvalidContentLength(n('header_value_discard_ws')),
+      }, 'header_value_discard_ws'),
     );
 
     const checkLenientFlagsOnColon =
@@ -766,10 +798,13 @@ export class HTTP {
         }, span.headerValue.start(n('header_value_start'))))
       .otherwise(this.setHeaderFlags(onHeaderValueComplete));
 
+    // Set `upgrade` if needed
+    const beforeHeadersComplete = p.invoke(callback.beforeHeadersComplete);
+
     const checkTrailing = this.testFlags(FLAGS.TRAILING, {
       1: this.invokePausable('on_chunk_complete',
         ERROR.CB_CHUNK_COMPLETE, 'message_done'),
-    });
+    }).otherwise(beforeHeadersComplete);
 
     n('headers_almost_done')
       .match('\n', checkTrailing)
@@ -778,43 +813,7 @@ export class HTTP {
           1: checkTrailing,
         }, p.error(ERROR.STRICT, 'Expected LF after headers')));
 
-    // Set `upgrade` if needed
-    const beforeHeadersComplete = p.invoke(callback.beforeHeadersComplete);
-
-    /* Present `Transfer-Encoding` header overrides `Content-Length` even if the
-     * actual coding is not `chunked`. As per spec:
-     *
-     * https://www.rfc-editor.org/rfc/rfc7230.html#section-3.3.3
-     *
-     * If a message is received with both a Transfer-Encoding and a
-     * Content-Length header field, the Transfer-Encoding overrides the
-     * Content-Length.  Such a message might indicate an attempt to
-     * perform request smuggling (Section 9.5) or response splitting
-     * (Section 9.4) and **ought to be handled as an error**.  A sender MUST
-     * remove the received Content-Length field prior to forwarding such
-     * a message downstream.
-     *
-     * (Note our emphasis on **ought to be handled as an error**
-     */
-
-    const ENCODING_CONFLICT = FLAGS.TRANSFER_ENCODING | FLAGS.CONTENT_LENGTH;
-
-    const onEncodingConflict =
-      this.testLenientFlags(LENIENT_FLAGS.CHUNKED_LENGTH, {
-        0: p.error(ERROR.UNEXPECTED_CONTENT_LENGTH,
-          'Content-Length can\'t be present with Transfer-Encoding'),
-
-        // For LENIENT mode fall back to past behavior:
-        // Ignore `Transfer-Encoding` when `Content-Length` is present.
-      }).otherwise(beforeHeadersComplete);
-
-    const checkEncConflict = this.testFlags(ENCODING_CONFLICT, {
-      1: onEncodingConflict,
-    }).otherwise(beforeHeadersComplete);
-
-    checkTrailing.otherwise(checkEncConflict);
-
-    /* Here we call the headers_complete callback. This is somewhat
+        /* Here we call the headers_complete callback. This is somewhat
      * different than other callbacks because if the user returns 1, we
      * will interpret that as saying that this message has no body. This
      * is needed for the annoying case of receiving a response to a HEAD
