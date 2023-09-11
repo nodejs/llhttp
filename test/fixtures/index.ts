@@ -12,12 +12,14 @@ export { FixtureResult };
 
 export type TestType = 'request' | 'response' | 'request-finish' | 'response-finish' |
   'request-lenient-all' | 'response-lenient-all' |
-  'request-lenient-headers' | 'request-lenient-chunked-length' | 'request-lenient-transfer-encoding' |
-  'request-lenient-keep-alive' | 'response-lenient-keep-alive' | 'response-lenient-headers' |
+  'request-lenient-headers' | 'response-lenient-headers' |
+  'request-lenient-chunked-length' | 'request-lenient-transfer-encoding' |
+  'request-lenient-keep-alive' | 'response-lenient-keep-alive' |
   'request-lenient-version' | 'response-lenient-version' |
   'request-lenient-data-after-close' | 'response-lenient-data-after-close' |
-  'response-lenient-optional-lf-after-cr' | 'request-lenient-optional-lf-after-cr' |
-  'response-lenient-optional-crlf-after-chunk' | 'request-lenient-optional-crlf-after-chunk' |
+  'request-lenient-optional-lf-after-cr' | 'response-lenient-optional-lf-after-cr' |
+  'request-lenient-optional-cr-before-lf' | 'response-lenient-optional-cr-before-lf' |
+  'request-lenient-optional-crlf-after-chunk' | 'response-lenient-optional-crlf-after-chunk' |
   'none' | 'url';
 
 export const allowedTypes: TestType[] = [
@@ -39,6 +41,8 @@ export const allowedTypes: TestType[] = [
   'response-lenient-data-after-close',
   'request-lenient-optional-lf-after-cr',
   'response-lenient-optional-lf-after-cr',
+  'request-lenient-optional-cr-before-lf',
+  'response-lenient-optional-cr-before-lf',
   'request-lenient-optional-crlf-after-chunk',
   'response-lenient-optional-crlf-after-chunk',
 ];

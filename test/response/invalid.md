@@ -198,7 +198,7 @@ off=8 version complete
 off=10 error code=13 reason="Invalid status code"
 ```
 
-### Only LFs present
+### Only LFs present and no body
 
 <!-- meta={"type": "response"} -->
 ```http
@@ -210,10 +210,10 @@ off=0 message begin
 off=5 len=3 span[version]="1.1"
 off=8 version complete
 off=13 len=2 span[status]="OK"
-off=16 error code=2 reason="Expected LF after CR"
+off=16 error code=25 reason="Missing expected CR after response line"
 ```
 
-### Only LFs present (lenient)
+### Only LFs present and no body (lenient)
 
 <!-- meta={"type": "response-lenient-all"} -->
 ```http
@@ -231,4 +231,53 @@ off=31 header_field complete
 off=32 len=1 span[header_value]="0"
 off=34 header_value complete
 off=35 message complete
+```
+
+### Only LFs present
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK\n\
+Foo: abc\n\
+Bar: def\n\
+\n\
+BODY\n\
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=2 span[status]="OK"
+off=16 error code=25 reason="Missing expected CR after response line"
+```
+
+### Only LFs present (lenient)
+
+<!-- meta={"type": "response-lenient-all"} -->
+```http
+HTTP/1.1 200 OK\n\
+Foo: abc\n\
+Bar: def\n\
+\n\
+BODY\n\
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=2 span[status]="OK"
+off=16 status complete
+off=16 len=3 span[header_field]="Foo"
+off=20 header_field complete
+off=21 len=3 span[header_value]="abc"
+off=25 header_value complete
+off=25 len=3 span[header_field]="Bar"
+off=29 header_field complete
+off=30 len=3 span[header_value]="def"
+off=34 header_value complete
+off=35 len=4 span[body]="BODY"
+off=39 len=1 span[body]=lf
+off=40 len=1 span[body]="\"
 ```

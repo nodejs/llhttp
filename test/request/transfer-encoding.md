@@ -966,7 +966,7 @@ off=76 headers complete method=1 v=1/1 flags=20a content_length=0
 off=78 error code=2 reason="Expected LF after chunk size"
 ```
 
-### Chunk header not terminated by CRLF in lenient mode
+### Chunk header not terminated by CRLF (lenient)
 
 <!-- meta={"type": "request-lenient-optional-lf-after-cr" } -->
 
@@ -1077,7 +1077,7 @@ off=79 len=5 span[body]="ABCDE"
 off=84 error code=2 reason="Expected LF after chunk data"
 ```
 
-### Chunk data not terminated by CRLF in lenient mode
+### Chunk data not terminated by CRLF (lenient)
 
 <!-- meta={"type": "request-lenient-optional-crlf-after-chunk" } -->
 

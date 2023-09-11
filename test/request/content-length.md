@@ -455,7 +455,7 @@ off=38 header_value complete
 off=39 error code=2 reason="Expected LF after headers"
 ```
 
-## Missing CRLF-CRLF before body in lenient
+## Missing CRLF-CRLF before body (lenient)
 
 <!-- meta={"type": "request-lenient-optional-lf-after-cr" } -->
 ```http

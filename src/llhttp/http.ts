@@ -224,7 +224,7 @@ export class HTTP {
     p.property('i8', 'http_major');
     p.property('i8', 'http_minor');
     p.property('i8', 'header_state');
-    p.property('i8', 'lenient_flags');
+    p.property('i16', 'lenient_flags');
     p.property('i8', 'upgrade');
     p.property('i8', 'finish');
     p.property('i16', 'flags');
@@ -311,6 +311,10 @@ export class HTTP {
       );
     };
 
+    const checkIfAllowLFWithoutCR = (success: Node, failure: Node) => {
+      return this.testLenientFlags(LENIENT_FLAGS.OPTIONAL_CR_BEFORE_LF, { 1: success }, failure);
+    };
+
     // Response
     n('start_res')
       .match('HTTP/', span.version.start(n('res_http_major')))
@@ -329,7 +333,7 @@ export class HTTP {
       .otherwise(this.span.version.end(p.error(ERROR.INVALID_VERSION, 'Invalid minor version')));
 
     n('res_http_end')
-      .otherwise(this.span.version.end().otherwise(
+      .otherwise(this.span.version.end(
         this.invokePausable('on_version_complete', ERROR.CB_VERSION_COMPLETE, 'res_after_version'),
       ));
 
@@ -359,23 +363,36 @@ export class HTTP {
       }))
       .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid status code'));
 
-    n('res_status_code_otherwise')
-      .match(' ', n('res_status_start'))
-      .peek([ '\r', '\n' ], n('res_status_start'))
-      .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid response status'));
-
     const onStatusComplete = this.invokePausable(
       'on_status_complete', ERROR.CB_STATUS_COMPLETE, n('headers_start'),
     );
 
-    n('res_status_start')
+    n('res_status_code_otherwise')
+      .match(' ', n('res_status_start'))
       .match('\r', n('res_line_almost_done'))
-      .match('\n', onStatusComplete)
+      .match(
+        '\n',
+        checkIfAllowLFWithoutCR(
+          onStatusComplete,
+          p.error(ERROR.INVALID_STATUS, 'Invalid response status'),
+        ),
+      )
+      .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid response status'));
+
+    n('res_status_start')
       .otherwise(span.status.start(n('res_status')));
 
     n('res_status')
       .peek('\r', span.status.end().skipTo(n('res_line_almost_done')))
-      .peek('\n', span.status.end().skipTo(n('res_line_almost_done')))
+      .peek(
+        '\n',
+        span.status.end().skipTo(
+          checkIfAllowLFWithoutCR(
+            onStatusComplete,
+            p.error(ERROR.CR_EXPECTED, 'Missing expected CR after response line'),
+          ),
+        ),
+      )
       .skipTo(n('res_status'));
 
     n('res_line_almost_done')
@@ -458,18 +475,26 @@ export class HTTP {
       .otherwise(this.span.version.end(p.error(ERROR.INVALID_VERSION, 'Invalid minor version')));
 
     n('req_http_end').otherwise(
-      span.version.end().otherwise(
+      span.version.end(
         this.invokePausable(
           'on_version_complete',
           ERROR.CB_VERSION_COMPLETE,
           this.load('method', {
             [METHODS.PRI]: n('req_pri_upgrade'),
           }, n('req_http_complete')),
-        )),
+        ),
+      ),
     );
 
     n('req_http_complete')
       .match('\r', n('req_http_complete_crlf'))
+      .match(
+        '\n',
+        checkIfAllowLFWithoutCR(
+          n('req_http_complete_crlf'),
+          p.error(ERROR.INVALID_VERSION, 'Expected CRLF after version'),
+        ),
+      )
       .otherwise(p.error(ERROR.INVALID_VERSION, 'Expected CRLF after version'));
 
     n('req_http_complete_crlf')
@@ -509,8 +534,11 @@ export class HTTP {
     n('header_field_start')
       .match('\r', n('headers_almost_done'))
       .match('\n',
-        this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
-          1: n('headers_done'),
+        this.testLenientFlags(LENIENT_FLAGS.OPTIONAL_CR_BEFORE_LF, {
+          1: this.testFlags(FLAGS.TRAILING, {
+            1: this.invokePausable('on_chunk_complete',
+              ERROR.CB_CHUNK_COMPLETE, 'message_done'),
+          }).otherwise(n('headers_done')),
         }, onInvalidHeaderFieldChar),
       )
       .otherwise(span.headerField.start(n('header_field')));
@@ -602,7 +630,7 @@ export class HTTP {
     n('header_value_discard_ws')
       .match([ ' ', '\t' ], n('header_value_discard_ws'))
       .match('\r', n('header_value_discard_ws_almost_done'))
-      .match('\n', this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
+      .match('\n', this.testLenientFlags(LENIENT_FLAGS.OPTIONAL_CR_BEFORE_LF, {
         1: n('header_value_discard_lws'),
       }, p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char')))
       .otherwise(span.headerValue.start(n('header_value_start')));
@@ -766,24 +794,31 @@ export class HTTP {
       .match(HEADER_CHARS, n('header_value'))
       .otherwise(n('header_value_otherwise'));
 
+    const checkIfAllowLFWithoutCR = (success: Node, failure: Node) => {
+      return this.testLenientFlags(LENIENT_FLAGS.OPTIONAL_CR_BEFORE_LF, { 1: success }, failure);
+    };
+
     const checkLenient = this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
       1: n('header_value_lenient'),
     }, span.headerValue.end(p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char')));
 
     n('header_value_otherwise')
       .peek('\r', span.headerValue.end().skipTo(n('header_value_almost_done')))
+      .peek(
+        '\n',
+        span.headerValue.end(
+          checkIfAllowLFWithoutCR(
+            n('header_value_almost_done'),
+            p.error(ERROR.CR_EXPECTED, 'Missing expected CR after header value'),
+          ),
+        ),
+      )
       .otherwise(checkLenient);
 
     n('header_value_lenient')
       .peek('\r', span.headerValue.end().skipTo(n('header_value_almost_done')))
       .peek('\n', span.headerValue.end(n('header_value_almost_done')))
       .skipTo(n('header_value_lenient'));
-
-    n('header_value_lenient_failed')
-      .peek('\n', span.headerValue.end().skipTo(
-        p.error(ERROR.CR_EXPECTED, 'Missing expected CR after header value')),
-      )
-      .otherwise(p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char'));
 
     n('header_value_almost_done')
       .match('\n', n('header_value_lws'))
@@ -890,6 +925,13 @@ export class HTTP {
 
     n('chunk_size_otherwise')
       .match('\r', n('chunk_size_almost_done'))
+      .match(
+        '\n',
+        checkIfAllowLFWithoutCR(
+          n('chunk_size_almost_done'),
+          p.error(ERROR.CR_EXPECTED, 'Missing expected CR after chunk size'),
+        ),
+      )
       .match(';', n('chunk_extensions'))
       .otherwise(p.error(ERROR.INVALID_CHUNK_SIZE,
         'Invalid character in chunk size'));
@@ -922,6 +964,14 @@ export class HTTP {
       .peek('\r', this.span.chunkExtensionName.end().skipTo(
         onChunkExtensionNameCompleted(n('chunk_size_almost_done')),
       ))
+      .peek('\n', this.span.chunkExtensionName.end(
+        onChunkExtensionNameCompleted(
+          checkIfAllowLFWithoutCR(
+            n('chunk_size_almost_done'),
+            p.error(ERROR.CR_EXPECTED, 'Missing expected CR after chunk extension name'),
+          ),
+        ),
+      ))
       .otherwise(this.span.chunkExtensionName.end().skipTo(
         p.error(ERROR.STRICT, 'Invalid character in chunk extensions name'),
       ));
@@ -934,6 +984,14 @@ export class HTTP {
       ))
       .peek('\r', this.span.chunkExtensionValue.end().skipTo(
         onChunkExtensionValueCompleted(n('chunk_size_almost_done')),
+      ))
+      .peek('\n', this.span.chunkExtensionValue.end(
+        onChunkExtensionValueCompleted(
+          checkIfAllowLFWithoutCR(
+            n('chunk_size_almost_done'),
+            p.error(ERROR.CR_EXPECTED, 'Missing expected CR after chunk extension value'),
+          ),
+        ),
       ))
       .otherwise(this.span.chunkExtensionValue.end().skipTo(
         p.error(ERROR.STRICT, 'Invalid character in chunk extensions value'),
@@ -951,6 +1009,13 @@ export class HTTP {
     n('chunk_extension_quoted_value_done')
       .match(';', n('chunk_extensions'))
       .match('\r', n('chunk_size_almost_done'))
+      .peek(
+        '\n',
+        checkIfAllowLFWithoutCR(
+          n('chunk_size_almost_done'),
+          p.error(ERROR.CR_EXPECTED, 'Missing expected CR after chunk extension value'),
+        ),
+      )
       .otherwise(p.error(ERROR.STRICT,
         'Invalid character in chunk extensions quote value'));
 
@@ -978,6 +1043,13 @@ export class HTTP {
 
     n('chunk_data_almost_done')
       .match('\r\n', n('chunk_complete'))
+      .match(
+        '\n',
+        checkIfAllowLFWithoutCR(
+          n('chunk_complete'),
+          p.error(ERROR.CR_EXPECTED, 'Missing expected CR after chunk data'),
+        ),
+      )
       .otherwise(
         this.testLenientFlags(LENIENT_FLAGS.OPTIONAL_CRLF_AFTER_CHUNK, {
           1: n('chunk_complete'),

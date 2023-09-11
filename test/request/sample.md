@@ -404,7 +404,7 @@ off=14 version complete
 off=16 len=5 span[header_field]="Line1"
 off=22 header_field complete
 off=25 len=3 span[header_value]="abc"
-off=28 error code=10 reason="Invalid header value char"
+off=28 error code=25 reason="Missing expected CR after header value"
 ```
 
 ## No LF after CR
@@ -427,7 +427,7 @@ off=14 version complete
 off=15 error code=2 reason="Expected CRLF after version"
 ```
 
-## No LF after CR in lenient mode
+## No LF after CR (lenient)
 
 <!-- meta={"type":"request-lenient-optional-lf-after-cr"} -->
 

@@ -172,7 +172,7 @@ off=46 message complete
 off=47 error code=5 reason="Data after `Connection: close`"
 ```
 
-## HTTP/1.1 with keep-alive disabled, content-length, and in lenient mode
+## HTTP/1.1 with keep-alive disabled, content-length (lenient)
 
 Parser should discard extra request in lenient mode.
 
@@ -237,7 +237,7 @@ off=70 message complete
 off=71 error code=5 reason="Data after `Connection: close`"
 ```
 
-## HTTP/1.1 with keep-alive disabled and 204 status in lenient mode
+## HTTP/1.1 with keep-alive disabled and 204 status (lenient)
 
 <!-- meta={"type": "response-lenient-keep-alive"} -->
 ```http

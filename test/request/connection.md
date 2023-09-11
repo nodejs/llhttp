@@ -96,7 +96,7 @@ off=21 message complete
 off=22 error code=5 reason="Data after `Connection: close`"
 ```
 
-### Resetting flags when keep-alive is off (1.0) and parser is in lenient mode
+### Resetting flags when keep-alive is off (1.0, lenient)
 
 Even though we allow restarts in loose mode, the flags should be still set to
 `0` upon restart.
@@ -289,7 +289,7 @@ off=133 message complete
 off=138 error code=5 reason="Data after `Connection: close`"
 ```
 
-### CRLF between requests, explicit `close` (lenient mode)
+### CRLF between requests, explicit `close` (lenient)
 
 Loose mode is more lenient, and allows further requests.
 
