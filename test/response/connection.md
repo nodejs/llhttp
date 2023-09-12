@@ -298,9 +298,8 @@ off=84 header_field complete
 off=85 len=1 span[header_value]="4"
 off=88 header_value complete
 off=90 headers complete status=101 v=1/1 flags=34 content_length=4
-off=90 len=4 span[body]="body"
-off=94 message complete
-off=94 error code=22 reason="Pause on CONNECT/Upgrade"
+off=90 message complete
+off=90 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ## HTTP 101 response with Upgrade and Transfer-Encoding header
@@ -340,16 +339,8 @@ off=87 header_field complete
 off=88 len=7 span[header_value]="chunked"
 off=97 header_value complete
 off=99 headers complete status=101 v=1/1 flags=21c content_length=0
-off=102 chunk header len=2
-off=102 len=2 span[body]="bo"
-off=106 chunk complete
-off=109 chunk header len=2
-off=109 len=2 span[body]="dy"
-off=113 chunk complete
-off=116 chunk header len=0
-off=118 chunk complete
-off=118 message complete
-off=118 error code=22 reason="Pause on CONNECT/Upgrade"
+off=99 message complete
+off=99 error code=22 reason="Pause on CONNECT/Upgrade"
 ```
 
 ## HTTP 200 response with Upgrade header
@@ -462,4 +453,90 @@ off=96 chunk complete
 off=99 chunk header len=0
 off=101 chunk complete
 off=101 message complete
+```
+
+## HTTP 304 with Content-Length
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 304 Not Modified
+Content-Length: 10
+
+
+HTTP/1.1 200 OK
+Content-Length: 5
+
+hello
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=12 span[status]="Not Modified"
+off=27 status complete
+off=27 len=14 span[header_field]="Content-Length"
+off=42 header_field complete
+off=43 len=2 span[header_value]="10"
+off=47 header_value complete
+off=49 headers complete status=304 v=1/1 flags=20 content_length=10
+off=49 message complete
+off=51 reset
+off=51 message begin
+off=56 len=3 span[version]="1.1"
+off=59 version complete
+off=64 len=2 span[status]="OK"
+off=68 status complete
+off=68 len=14 span[header_field]="Content-Length"
+off=83 header_field complete
+off=84 len=1 span[header_value]="5"
+off=87 header_value complete
+off=89 headers complete status=200 v=1/1 flags=20 content_length=5
+off=89 len=5 span[body]="hello"
+off=94 message complete
+```
+
+## HTTP 304 with Transfer-Encoding
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 304 Not Modified
+Transfer-Encoding: chunked
+
+HTTP/1.1 200 OK
+Transfer-Encoding: chunked
+
+5
+hello
+0
+
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=12 span[status]="Not Modified"
+off=27 status complete
+off=27 len=17 span[header_field]="Transfer-Encoding"
+off=45 header_field complete
+off=46 len=7 span[header_value]="chunked"
+off=55 header_value complete
+off=57 headers complete status=304 v=1/1 flags=208 content_length=0
+off=57 message complete
+off=57 reset
+off=57 message begin
+off=62 len=3 span[version]="1.1"
+off=65 version complete
+off=70 len=2 span[status]="OK"
+off=74 status complete
+off=74 len=17 span[header_field]="Transfer-Encoding"
+off=92 header_field complete
+off=93 len=7 span[header_value]="chunked"
+off=102 header_value complete
+off=104 headers complete status=200 v=1/1 flags=208 content_length=0
+off=107 chunk header len=5
+off=107 len=5 span[body]="hello"
+off=114 chunk complete
+off=117 chunk header len=0
 ```
