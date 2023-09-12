@@ -381,6 +381,15 @@ With this flag the new chunk can start immediately after the previous one.
 
 **Enabling this flag can pose a security issue since you will be exposed to request smuggling attacks. USE WITH CAUTION!**
 
+### `void llhttp_set_lenient_spaces_after_chunk_size(llhttp_t* parser, int enabled)`
+
+Enables/disables lenient handling of spaces after chunk size.
+
+Normally `llhttp` would error when after a chunk size is followed by one or more spaces are present instead of a CRLF or `;`.
+With this flag this check is disabled.
+
+**Enabling this flag can pose a security issue since you will be exposed to request smuggling attacks. USE WITH CAUTION!**
+
 ## Build Instructions
 
 Make sure you have [Node.js](https://nodejs.org/), npm and npx installed. Then under project directory run:

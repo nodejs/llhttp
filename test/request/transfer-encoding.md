@@ -302,7 +302,7 @@ off=83 header_field complete
 off=84 len=7 span[header_value]="chunked"
 off=93 header_value complete
 off=95 headers complete method=3 v=1/1 flags=208 content_length=0
-off=96 error code=12 reason="Invalid character in chunk size"
+off=97 error code=12 reason="Invalid character in chunk size"
 ```
 
 ### No extension after semicolon
@@ -884,7 +884,7 @@ off=37 header_field complete
 off=38 len=7 span[header_value]="chunked"
 off=47 header_value complete
 off=49 headers complete method=4 v=1/1 flags=208 content_length=0
-off=50 error code=12 reason="Invalid character in chunk size"
+off=51 error code=12 reason="Invalid character in chunk size"
 ```
 
 ## Invalid OBS fold after chunked value
@@ -1117,4 +1117,67 @@ off=79 chunk header len=5
 off=79 len=5 span[body]="ABCDE"
 off=84 chunk complete
 off=87 chunk header len=0
+```
+
+## Space after chunk header
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Transfer-Encoding: chunked
+
+a \r\n0123456789
+0
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
+off=4 len=4 span[url]="/url"
+off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
+off=19 len=17 span[header_field]="Transfer-Encoding"
+off=37 header_field complete
+off=38 len=7 span[header_value]="chunked"
+off=47 header_value complete
+off=49 headers complete method=4 v=1/1 flags=208 content_length=0
+off=51 error code=12 reason="Invalid character in chunk size"
+```
+
+## Space after chunk header (lenient)
+
+<!-- meta={"type": "request-lenient-spaces-after-chunk-size"} -->
+```http
+PUT /url HTTP/1.1
+Transfer-Encoding: chunked
+
+a \r\n0123456789
+0
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
+off=4 len=4 span[url]="/url"
+off=9 url complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
+off=19 len=17 span[header_field]="Transfer-Encoding"
+off=37 header_field complete
+off=38 len=7 span[header_value]="chunked"
+off=47 header_value complete
+off=49 headers complete method=4 v=1/1 flags=208 content_length=0
+off=53 chunk header len=10
+off=53 len=10 span[body]="0123456789"
+off=65 chunk complete
+off=68 chunk header len=0
+off=70 chunk complete
+off=70 message complete
 ```

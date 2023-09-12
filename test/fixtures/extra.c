@@ -181,6 +181,16 @@ void llhttp__test_init_response_lenient_optional_crlf_after_chunk(llparse_t* s) 
   s->lenient_flags |= LENIENT_OPTIONAL_CRLF_AFTER_CHUNK;
 }
 
+void llhttp__test_init_request_lenient_spaces_after_chunk_size(llparse_t* s) {
+  llhttp__test_init_request(s);
+  s->lenient_flags |= LENIENT_SPACES_AFTER_CHUNK_SIZE;
+}
+
+void llhttp__test_init_response_lenient_spaces_after_chunk_size(llparse_t* s) {
+  llhttp__test_init_response(s);
+  s->lenient_flags |= LENIENT_SPACES_AFTER_CHUNK_SIZE;
+}
+
 
 void llhttp__test_finish(llparse_t* s) {
   llparse__print(NULL, NULL, "finish=%d", s->finish);
