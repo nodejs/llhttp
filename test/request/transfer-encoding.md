@@ -494,9 +494,7 @@ off=86 len=8 span[header_value]="identity"
 off=96 header_value complete
 off=96 len=14 span[header_field]="Content-Length"
 off=111 header_field complete
-off=112 len=1 span[header_value]="5"
-off=115 header_value complete
-off=117 error code=4 reason="Content-Length can't be present with Transfer-Encoding"
+off=111 error code=11 reason="Content-Length can't be present with Transfer-Encoding"
 ```
 
 ## POST with `Transfer-Encoding` and `Content-Length` (lenient)
@@ -539,6 +537,43 @@ off=112 len=1 span[header_value]="1"
 off=115 header_value complete
 off=117 headers complete method=3 v=1/1 flags=220 content_length=1
 off=117 len=5 span[body]="World"
+```
+
+## POST with empty `Transfer-Encoding` and `Content-Length` (lenient)
+
+<!-- meta={"type": "request"} -->
+```http
+POST / HTTP/1.1
+Host: foo
+Content-Length: 10
+Transfer-Encoding:
+Transfer-Encoding:
+Transfer-Encoding:
+
+2
+AA
+0
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
+off=5 len=1 span[url]="/"
+off=7 url complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
+off=17 len=4 span[header_field]="Host"
+off=22 header_field complete
+off=23 len=3 span[header_value]="foo"
+off=28 header_value complete
+off=28 len=14 span[header_field]="Content-Length"
+off=43 header_field complete
+off=44 len=2 span[header_value]="10"
+off=48 header_value complete
+off=48 len=17 span[header_field]="Transfer-Encoding"
+off=66 header_field complete
+off=66 error code=15 reason="Transfer-Encoding can't be present with Content-Length"
 ```
 
 ## POST with `chunked` before other transfer coding names
@@ -931,7 +966,7 @@ off=76 headers complete method=1 v=1/1 flags=20a content_length=0
 off=78 error code=2 reason="Expected LF after chunk size"
 ```
 
-### Chunk header not terminated by CRLF in lenient mode
+### Chunk header not terminated by CRLF (lenient)
 
 <!-- meta={"type": "request-lenient-optional-lf-after-cr" } -->
 
@@ -1042,7 +1077,7 @@ off=79 len=5 span[body]="ABCDE"
 off=84 error code=2 reason="Expected LF after chunk data"
 ```
 
-### Chunk data not terminated by CRLF in lenient mode
+### Chunk data not terminated by CRLF (lenient)
 
 <!-- meta={"type": "request-lenient-optional-crlf-after-chunk" } -->
 

@@ -73,6 +73,7 @@ export enum LENIENT_FLAGS {
   DATA_AFTER_CLOSE = 1 << 5,
   OPTIONAL_LF_AFTER_CR = 1 << 6,
   OPTIONAL_CRLF_AFTER_CHUNK = 1 << 7,
+  OPTIONAL_CR_BEFORE_LF = 1 << 8,
 }
 
 export enum METHODS {

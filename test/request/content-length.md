@@ -143,9 +143,7 @@ off=35 len=1 span[header_value]="1"
 off=38 header_value complete
 off=38 len=17 span[header_field]="Transfer-Encoding"
 off=56 header_field complete
-off=57 len=8 span[header_value]="identity"
-off=67 header_value complete
-off=69 error code=4 reason="Content-Length can't be present with Transfer-Encoding"
+off=56 error code=15 reason="Transfer-Encoding can't be present with Content-Length"
 ```
 
 ## Invalid whitespace token with `Content-Length` header field
@@ -457,7 +455,7 @@ off=38 header_value complete
 off=39 error code=2 reason="Expected LF after headers"
 ```
 
-## Missing CRLF-CRLF before body in lenient
+## Missing CRLF-CRLF before body (lenient)
 
 <!-- meta={"type": "request-lenient-optional-lf-after-cr" } -->
 ```http

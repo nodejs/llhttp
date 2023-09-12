@@ -266,6 +266,7 @@ HTTP/1.1 200 \r\n\
 off=0 message begin
 off=5 len=3 span[version]="1.1"
 off=8 version complete
+off=13 len=0 span[status]=""
 off=15 status complete
 off=17 headers complete status=200 v=1/1 flags=0 content_length=0
 ```
@@ -286,12 +287,12 @@ off=0 message begin
 off=5 len=3 span[version]="1.1"
 off=8 version complete
 off=13 len=2 span[status]="OK"
-off=16 error code=2 reason="Expected LF after CR"
+off=16 error code=25 reason="Missing expected CR after response line"
 ```
 
-## No carriage ret in lenient mode
+## No carriage ret (lenient)
 
-<!-- meta={"type": "response-lenient-optional-lf-after-cr"} -->
+<!-- meta={"type": "response-lenient-optional-cr-before-lf"} -->
 ```http
 HTTP/1.1 200 OK\n\
 Content-Type: text/html; charset=utf-8\n\
@@ -309,7 +310,12 @@ off=16 status complete
 off=16 len=12 span[header_field]="Content-Type"
 off=29 header_field complete
 off=30 len=24 span[header_value]="text/html; charset=utf-8"
-off=54 error code=10 reason="Invalid header value char"
+off=55 header_value complete
+off=55 len=10 span[header_field]="Connection"
+off=66 header_field complete
+off=67 len=5 span[header_value]="close"
+off=73 header_value complete
+off=74 len=51 span[body]="these headers are from http://news.ycombinator.com/"
 ```
 
 ## Underscore in header key

@@ -361,6 +361,14 @@ Normally `llhttp` would error when a CR is not followed by LF when terminating t
 request line, the status line, the headers or a chunk header.
 With this flag only a CR is required to terminate such sections.
 
+### `void llhttp_set_lenient_optional_cr_before_lf(llhttp_t* parser, int enabled)`
+
+Enables/disables lenient handling of line separators.
+
+Normally `llhttp` would error when a LF is not preceded by CR when terminating the
+request line, the status line, the headers, a chunk header or a chunk data.
+With this flag only a LF is required to terminate such sections.
+
 **Enabling this flag can pose a security issue since you will be exposed to request smuggling attacks. USE WITH CAUTION!**
 
 ### `void llhttp_set_lenient_optional_crlf_after_chunk(llhttp_t* parser, int enabled)`
