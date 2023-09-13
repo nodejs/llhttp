@@ -315,6 +315,22 @@ void llhttp_set_lenient_optional_crlf_after_chunk(llhttp_t* parser, int enabled)
   }
 }
 
+void llhttp_set_lenient_optional_cr_before_lf(llhttp_t* parser, int enabled) {
+  if (enabled) {
+    parser->lenient_flags |= LENIENT_OPTIONAL_CR_BEFORE_LF;
+  } else {
+    parser->lenient_flags &= ~LENIENT_OPTIONAL_CR_BEFORE_LF;
+  }
+}
+
+void llhttp_set_lenient_spaces_after_chunk_size(llhttp_t* parser, int enabled) {
+  if (enabled) {
+    parser->lenient_flags |= LENIENT_SPACES_AFTER_CHUNK_SIZE;
+  } else {
+    parser->lenient_flags &= ~LENIENT_SPACES_AFTER_CHUNK_SIZE;
+  }
+}
+
 /* Callbacks */
 
 

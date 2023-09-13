@@ -3,8 +3,8 @@
 #define INCLUDE_LLHTTP_H_
 
 #define LLHTTP_VERSION_MAJOR 9
-#define LLHTTP_VERSION_MINOR 0
-#define LLHTTP_VERSION_PATCH 1
+#define LLHTTP_VERSION_MINOR 1
+#define LLHTTP_VERSION_PATCH 0
 
 #ifndef INCLUDE_LLHTTP_ITSELF_H_
 #define INCLUDE_LLHTTP_ITSELF_H_
@@ -30,7 +30,7 @@ struct llhttp__internal_s {
   uint8_t http_major;
   uint8_t http_minor;
   uint8_t header_state;
-  uint8_t lenient_flags;
+  uint16_t lenient_flags;
   uint8_t upgrade;
   uint8_t finish;
   uint16_t flags;
@@ -115,7 +115,9 @@ enum llhttp_lenient_flags {
   LENIENT_VERSION = 0x10,
   LENIENT_DATA_AFTER_CLOSE = 0x20,
   LENIENT_OPTIONAL_LF_AFTER_CR = 0x40,
-  LENIENT_OPTIONAL_CRLF_AFTER_CHUNK = 0x80
+  LENIENT_OPTIONAL_CRLF_AFTER_CHUNK = 0x80,
+  LENIENT_OPTIONAL_CR_BEFORE_LF = 0x100,
+  LENIENT_SPACES_AFTER_CHUNK_SIZE = 0x200
 };
 typedef enum llhttp_lenient_flags llhttp_lenient_flags_t;
 
