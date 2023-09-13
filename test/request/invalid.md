@@ -553,6 +553,7 @@ off=66 len=3 span[header_field]="Bar"
 off=70 header_field complete
 off=71 len=3 span[header_value]="def"
 off=75 header_value complete
+off=76 headers complete method=3 v=1/1 flags=208 content_length=0
 off=78 chunk header len=1
 off=78 len=1 span[body]="A"
 off=80 chunk complete

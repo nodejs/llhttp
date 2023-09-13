@@ -230,6 +230,7 @@ off=16 len=14 span[header_field]="Content-Length"
 off=31 header_field complete
 off=32 len=1 span[header_value]="0"
 off=34 header_value complete
+off=35 headers complete status=200 v=1/1 flags=20 content_length=0
 off=35 message complete
 ```
 
@@ -277,6 +278,7 @@ off=25 len=3 span[header_field]="Bar"
 off=29 header_field complete
 off=30 len=3 span[header_value]="def"
 off=34 header_value complete
+off=35 headers complete status=200 v=1/1 flags=0 content_length=0
 off=35 len=4 span[body]="BODY"
 off=39 len=1 span[body]=lf
 off=40 len=1 span[body]="\"

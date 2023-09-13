@@ -315,6 +315,7 @@ off=55 len=10 span[header_field]="Connection"
 off=66 header_field complete
 off=67 len=5 span[header_value]="close"
 off=73 header_value complete
+off=74 headers complete status=200 v=1/1 flags=2 content_length=0
 off=74 len=51 span[body]="these headers are from http://news.ycombinator.com/"
 ```
 

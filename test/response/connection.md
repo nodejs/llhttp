@@ -540,3 +540,58 @@ off=107 len=5 span[body]="hello"
 off=114 chunk complete
 off=117 chunk header len=0
 ```
+
+
+## HTTP 103 first, then 200
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 103 Early Hints
+Link: </styles.css>; rel=preload; as=style
+
+HTTP/1.1 200 OK
+Date: Wed, 13 Sep 2023 11:09:41 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Content-Length: 17
+
+response content
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=11 span[status]="Early Hints"
+off=26 status complete
+off=26 len=4 span[header_field]="Link"
+off=31 header_field complete
+off=32 len=36 span[header_value]="</styles.css>; rel=preload; as=style"
+off=70 header_value complete
+off=72 headers complete status=103 v=1/1 flags=0 content_length=0
+off=72 message complete
+off=72 reset
+off=72 message begin
+off=77 len=3 span[version]="1.1"
+off=80 version complete
+off=85 len=2 span[status]="OK"
+off=89 status complete
+off=89 len=4 span[header_field]="Date"
+off=94 header_field complete
+off=95 len=29 span[header_value]="Wed, 13 Sep 2023 11:09:41 GMT"
+off=126 header_value complete
+off=126 len=10 span[header_field]="Connection"
+off=137 header_field complete
+off=138 len=10 span[header_value]="keep-alive"
+off=150 header_value complete
+off=150 len=10 span[header_field]="Keep-Alive"
+off=161 header_field complete
+off=162 len=9 span[header_value]="timeout=5"
+off=173 header_value complete
+off=173 len=14 span[header_field]="Content-Length"
+off=188 header_field complete
+off=189 len=2 span[header_value]="17"
+off=193 header_value complete
+off=195 headers complete status=200 v=1/1 flags=21 content_length=17
+off=195 len=16 span[body]="response content"
+```
