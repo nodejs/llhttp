@@ -924,6 +924,16 @@ export class HTTP {
       .otherwise(n('chunk_size_otherwise'));
 
     n('chunk_size_otherwise')
+      .match(
+        [ ' ', '\t' ],
+        this.testLenientFlags(
+          LENIENT_FLAGS.SPACES_AFTER_CHUNK_SIZE,
+          {
+            1: n('chunk_size_otherwise'),
+          },
+          p.error(ERROR.INVALID_CHUNK_SIZE, 'Invalid character in chunk size'),
+        ),
+      )
       .match('\r', n('chunk_size_almost_done'))
       .match(
         '\n',
