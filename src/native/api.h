@@ -269,7 +269,7 @@ void llhttp_set_lenient_keep_alive(llhttp_t* parser, int enabled);
  * avoid request smuggling.
  * With this flag the extra value will be parsed normally.
  *
- * **Enabling this flag can pose a security issue since you will be exposed to 
+ * **Enabling this flag can pose a security issue since you will be exposed to
  * request smuggling attacks. USE WITH CAUTION!**
  */
 LLHTTP_EXPORT
@@ -312,6 +312,19 @@ void llhttp_set_lenient_data_after_close(llhttp_t* parser, int enabled);
 LLHTTP_EXPORT
 void llhttp_set_lenient_optional_lf_after_cr(llhttp_t* parser, int enabled);
 
+/*
+ * Enables/disables lenient handling of line separators.
+ *
+ * Normally `llhttp` would error when a LF is not preceded by CR when terminating the
+ * request line, the status line, the headers, a chunk header or a chunk data.
+ * With this flag only a LF is required to terminate such sections.
+ *
+ * **Enabling this flag can pose a security issue since you will be exposed to
+ * request smuggling attacks. USE WITH CAUTION!**
+ */
+LLHTTP_EXPORT
+void llhttp_set_lenient_optional_cr_before_lf(llhttp_t* parser, int enabled);
+
 /* Enables/disables lenient handling of chunks not separated via CRLF.
  *
  * Normally `llhttp` would error when after a chunk data a CRLF is missing before
@@ -323,6 +336,18 @@ void llhttp_set_lenient_optional_lf_after_cr(llhttp_t* parser, int enabled);
  */
 LLHTTP_EXPORT
 void llhttp_set_lenient_optional_crlf_after_chunk(llhttp_t* parser, int enabled);
+
+/* Enables/disables lenient handling of spaces after chunk size.
+ *
+ * Normally `llhttp` would error when after a chunk size is followed by one or more
+ * spaces are present instead of a CRLF or `;`.
+ * With this flag this check is disabled.
+ *
+ * **Enabling this flag can pose a security issue since you will be exposed to
+ * request smuggling attacks. USE WITH CAUTION!**
+ */
+LLHTTP_EXPORT
+void llhttp_set_lenient_spaces_after_chunk_size(llhttp_t* parser, int enabled);
 
 #ifdef __cplusplus
 }  /* extern "C" */
