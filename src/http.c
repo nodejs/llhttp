@@ -43,7 +43,10 @@ int llhttp__after_headers_complete(llhttp_t* parser, const char* p,
       (parser->upgrade && (parser->method == HTTP_CONNECT ||
                           (parser->flags & F_SKIPBODY) || !hasBody)) ||
       /* See RFC 2616 section 4.4 - 1xx e.g. Continue */
-      (parser->type == HTTP_RESPONSE && parser->status_code / 100 == 1)
+      (
+        parser->type == HTTP_RESPONSE &&
+        (parser->status_code == 100 || parser->status_code == 101)
+      )
   ) {
     /* Exit, the rest of the message is in a different protocol. */
     return 1;
@@ -54,6 +57,8 @@ int llhttp__after_headers_complete(llhttp_t* parser, const char* p,
     parser->flags & F_SKIPBODY ||         /* response to a HEAD request */
     (
       parser->type == HTTP_RESPONSE && (
+        parser->status_code == 102 ||     /* Processing */
+        parser->status_code == 103 ||     /* Early Hints */
         parser->status_code == 204 ||     /* No Content */
         parser->status_code == 304        /* Not Modified */
       )
