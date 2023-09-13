@@ -538,7 +538,7 @@ export class HTTP {
           1: this.testFlags(FLAGS.TRAILING, {
             1: this.invokePausable('on_chunk_complete',
               ERROR.CB_CHUNK_COMPLETE, 'message_done'),
-          }).otherwise(n('headers_done')),
+          }).otherwise(this.headersCompleted()),
         }, onInvalidHeaderFieldChar),
       )
       .otherwise(span.headerField.start(n('header_field')));
@@ -833,13 +833,10 @@ export class HTTP {
         }, span.headerValue.start(n('header_value_start'))))
       .otherwise(this.setHeaderFlags(onHeaderValueComplete));
 
-    // Set `upgrade` if needed
-    const beforeHeadersComplete = p.invoke(callback.beforeHeadersComplete);
-
     const checkTrailing = this.testFlags(FLAGS.TRAILING, {
       1: this.invokePausable('on_chunk_complete',
         ERROR.CB_CHUNK_COMPLETE, 'message_done'),
-    }).otherwise(beforeHeadersComplete);
+    }).otherwise(this.headersCompleted());
 
     n('headers_almost_done')
       .match('\n', checkTrailing)
@@ -847,26 +844,6 @@ export class HTTP {
         this.testLenientFlags(LENIENT_FLAGS.OPTIONAL_LF_AFTER_CR, {
           1: checkTrailing,
         }, p.error(ERROR.STRICT, 'Expected LF after headers')));
-
-        /* Here we call the headers_complete callback. This is somewhat
-     * different than other callbacks because if the user returns 1, we
-     * will interpret that as saying that this message has no body. This
-     * is needed for the annoying case of receiving a response to a HEAD
-     * request.
-     *
-     * We'd like to use CALLBACK_NOTIFY_NOADVANCE() here but we cannot, so
-     * we have to simulate it by handling a change in errno below.
-     */
-    const onHeadersComplete = p.invoke(callback.onHeadersComplete, {
-      0: n('headers_done'),
-      1: this.setFlag(FLAGS.SKIPBODY, 'headers_done'),
-      2: this.update('upgrade', 1,
-        this.setFlag(FLAGS.SKIPBODY, 'headers_done')),
-      [ERROR.PAUSED]: this.pause('Paused by on_headers_complete',
-        'headers_done'),
-    }, p.error(ERROR.CB_HEADERS_COMPLETE, 'User callback error'));
-
-    beforeHeadersComplete.otherwise(onHeadersComplete);
 
     const upgradePause = p.pause(ERROR.PAUSED_UPGRADE,
       'Pause on CONNECT/Upgrade');
@@ -1104,6 +1081,37 @@ export class HTTP {
       .otherwise(
         this.update('initial_message_completed', 1, this.update('finish', FINISH.SAFE, n('start')),
       ));
+  }
+
+  private headersCompleted(): Node {
+    const p = this.llparse;
+    const callback = this.callback;
+    const n = (name: string): Match => this.node<Match>(name);
+
+    // Set `upgrade` if needed
+    const beforeHeadersComplete = p.invoke(callback.beforeHeadersComplete);
+
+    /* Here we call the headers_complete callback. This is somewhat
+     * different than other callbacks because if the user returns 1, we
+     * will interpret that as saying that this message has no body. This
+     * is needed for the annoying case of receiving a response to a HEAD
+     * request.
+     *
+     * We'd like to use CALLBACK_NOTIFY_NOADVANCE() here but we cannot, so
+     * we have to simulate it by handling a change in errno below.
+     */
+    const onHeadersComplete = p.invoke(callback.onHeadersComplete, {
+      0: n('headers_done'),
+      1: this.setFlag(FLAGS.SKIPBODY, 'headers_done'),
+      2: this.update('upgrade', 1,
+        this.setFlag(FLAGS.SKIPBODY, 'headers_done')),
+      [ERROR.PAUSED]: this.pause('Paused by on_headers_complete',
+        'headers_done'),
+    }, p.error(ERROR.CB_HEADERS_COMPLETE, 'User callback error'));
+
+    beforeHeadersComplete.otherwise(onHeadersComplete);
+
+    return beforeHeadersComplete;
   }
 
   private node<T extends Node>(name: string | T): T {
