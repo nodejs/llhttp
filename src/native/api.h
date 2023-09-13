@@ -347,7 +347,7 @@ void llhttp_set_lenient_optional_crlf_after_chunk(llhttp_t* parser, int enabled)
  * request smuggling attacks. USE WITH CAUTION!**
  */
 LLHTTP_EXPORT
-void llhttp_set_lenient_spaces_after_chunk_size(llhttp_t* parser, int enabled)
+void llhttp_set_lenient_spaces_after_chunk_size(llhttp_t* parser, int enabled);
 
 #ifdef __cplusplus
 }  /* extern "C" */
