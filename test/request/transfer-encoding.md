@@ -230,7 +230,7 @@ off=134 message complete
 POST /chunked_w_unicorns_after_length HTTP/1.1
 Transfer-Encoding: chunked
 
-5;ilovew3;somuchlove=aretheseparametersfor
+5;ilovew3;somuchlove=aretheseparametersfor;another=withvalue
 hello
 6;blahblah;blah
  world
@@ -257,17 +257,21 @@ off=88 len=10 span[chunk_extension_name]="somuchlove"
 off=99 chunk_extension_name complete
 off=99 len=21 span[chunk_extension_value]="aretheseparametersfor"
 off=121 chunk_extension_value complete
-off=122 chunk header len=5
-off=122 len=5 span[body]="hello"
-off=129 chunk complete
-off=131 len=8 span[chunk_extension_name]="blahblah"
-off=140 chunk_extension_name complete
-off=140 len=4 span[chunk_extension_name]="blah"
-off=145 chunk_extension_name complete
-off=146 chunk header len=6
-off=146 len=6 span[body]=" world"
-off=154 chunk complete
-off=157 chunk header len=0
+off=121 len=7 span[chunk_extension_name]="another"
+off=129 chunk_extension_name complete
+off=129 len=9 span[chunk_extension_value]="withvalue"
+off=139 chunk_extension_value complete
+off=140 chunk header len=5
+off=140 len=5 span[body]="hello"
+off=147 chunk complete
+off=149 len=8 span[chunk_extension_name]="blahblah"
+off=158 chunk_extension_name complete
+off=158 len=4 span[chunk_extension_name]="blah"
+off=163 chunk_extension_name complete
+off=164 chunk header len=6
+off=164 len=6 span[body]=" world"
+off=172 chunk complete
+off=175 chunk header len=0
 ```
 
 ### No semicolon before chunk extensions
