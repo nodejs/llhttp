@@ -46,6 +46,8 @@ jobs:
         path: requirements/cython.txt
     - name: Build aiohttp parser
       run: make cythonize
+    - name: Install aiohttp
+      run: pip install .
     - name: Run tests
       env:
         COLOR: yes
