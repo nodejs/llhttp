@@ -31,7 +31,6 @@ jobs:
       run: make
       working-directory: vendor/llhttp
     - name: Setup Python
-      id: python-install
       uses: actions/setup-python@v4
       with:
         python-version: 3.x
