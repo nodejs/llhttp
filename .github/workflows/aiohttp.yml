@@ -24,6 +24,12 @@ jobs:
       uses: actions/checkout@v4
       with:
         path: vendor/llhttp
+    - name: Restore node_modules cache
+      uses: actions/cache@v3
+      with:
+        path: vendor/llhttp/.npm
+        key: ubuntu-latest-node-${{ hashFiles('vendor/llhttp/**/package-lock.json') }}
+        restore-keys: ubuntu-latest-node-
     - name: Install llhttp dependencies
       run: npm install --ignore-scripts
       working-directory: vendor/llhttp
