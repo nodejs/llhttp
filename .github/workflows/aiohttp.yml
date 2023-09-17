@@ -57,10 +57,10 @@ jobs:
     - name: Run tests
       env:
         COLOR: yes
-      run: pytest tests/test_http_parser.py tests/test_web_functional.py
-      shell: bash
+      run: pytest test_http_parser.py test_web_functional.py
+      working-directory: tests
     - name: Run dev_mode tests
       env:
         COLOR: yes
-      run: python -X dev -m pytest -m dev_mode tests/test_http_parser.py tests/test_web_functional.py
-      shell: bash
+      run: python -X dev -m pytest -m dev_mode test_http_parser.py test_web_functional.py
+      working-directory: tests
