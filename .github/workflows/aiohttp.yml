@@ -42,14 +42,12 @@ jobs:
         python-version: 3.x
         cache: 'pip'
         cache-dependency-path: 'requirements/*.txt'
-    - name: Install aiohttp dependencies
-      uses: py-actions/py-dependency-install@v4
-      with:
-        path: requirements/test.txt
-    - name: Install aiohttp build dependencies
-      uses: py-actions/py-dependency-install@v4
-      with:
-        path: requirements/cython.txt
+    - name: Provision the dev env
+      env:
+        COLOR: yes
+      run: >-
+        PATH="${HOME}/.local/bin:${PATH}"
+        make .develop
     - name: Build aiohttp parser
       run: make cythonize
     - name: Run tests
