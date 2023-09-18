@@ -1,4 +1,5 @@
 name: Aiohttp
+# If you don't understand the reason for a test failure, ping @Dreamsorcerer or open an issue in aio-libs/aiohttp.
 
 on:
   push:
