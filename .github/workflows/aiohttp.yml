@@ -34,7 +34,8 @@ jobs:
       run: npm install --ignore-scripts
       working-directory: vendor/llhttp
     - name: Build llhttp
-      run: make generate-llhttp
+      run: make
+      working-directory: vendor/llhttp
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
@@ -51,12 +52,6 @@ jobs:
         path: requirements/cython.txt
     - name: Build aiohttp parser
       run: make cythonize
-    - name: Provision the dev env
-      env:
-        COLOR: yes
-      run: >-
-        PATH="${HOME}/.local/bin:${PATH}"
-        make .develop
     - name: Run tests
       env:
         COLOR: yes
