@@ -43,16 +43,18 @@ jobs:
         cache: 'pip'
         cache-dependency-path: 'requirements/*.txt'
     - name: Provision the dev env
-      env:
-        PATH: $HOME/.local/bin:$PATH
-      run: make .develop
+      run: >-
+        PATH="${HOME}/.local/bin:${PATH}"
+        make .develop
     - name: Run tests
       env:
         COLOR: yes
-        PATH: $HOME/.local/bin:$PATH
-      run: pytest tests/test_http_parser.py tests/test_web_functional.py
+      run: >-
+        PATH="${HOME}/.local/bin:${PATH}"
+        pytest tests/test_http_parser.py tests/test_web_functional.py
     - name: Run dev_mode tests
       env:
         COLOR: yes
-        PATH: $HOME/.local/bin:$PATH
-      run: python -X dev -m pytest -m dev_mode tests/test_http_parser.py tests/test_web_functional.py
+      run: >-
+        PATH="${HOME}/.local/bin:${PATH}"
+        python -X dev -m pytest -m dev_mode tests/test_http_parser.py tests/test_web_functional.py
