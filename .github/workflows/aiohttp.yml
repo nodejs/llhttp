@@ -34,8 +34,7 @@ jobs:
       run: npm install --ignore-scripts
       working-directory: vendor/llhttp
     - name: Build llhttp
-      run: make
-      working-directory: vendor/llhttp
+      run: make generate-llhttp
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
