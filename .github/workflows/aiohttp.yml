@@ -51,12 +51,18 @@ jobs:
         path: requirements/cython.txt
     - name: Build aiohttp parser
       run: make cythonize
-    - name: Install aiohttp
-      run: pip install .
+    - name: Provision the dev env
+      env:
+        COLOR: yes
+      run: >-
+        PATH="${HOME}/.local/bin:${PATH}"
+        make .develop
     - name: Run tests
       env:
         COLOR: yes
-      run: pytest tests/test_http_parser.py tests/test_web_functional.py
+      run: >-
+        PATH="${HOME}/.local/bin:${PATH}"
+        pytest tests/test_http_parser.py tests/test_web_functional.py
     - name: Run dev_mode tests
       env:
         COLOR: yes
