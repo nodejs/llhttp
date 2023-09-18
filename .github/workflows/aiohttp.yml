@@ -48,8 +48,6 @@ jobs:
       run: >-
         PATH="${HOME}/.local/bin:${PATH}"
         make .develop
-    - name: Build aiohttp parser
-      run: make cythonize
     - name: Run tests
       env:
         COLOR: yes
