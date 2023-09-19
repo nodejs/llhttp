@@ -967,7 +967,7 @@ export class HTTP {
       .match('"', n('chunk_extension_quoted_value'))
       .match(TOKEN, n('chunk_extension_value'))
       .peek(';', this.span.chunkExtensionValue.end().skipTo(
-        onChunkExtensionValueCompleted(n('chunk_size_otherwise')),
+        onChunkExtensionValueCompleted(n('chunk_extensions')),
       ))
       .peek('\r', this.span.chunkExtensionValue.end().skipTo(
         onChunkExtensionValueCompleted(n('chunk_size_almost_done')),
