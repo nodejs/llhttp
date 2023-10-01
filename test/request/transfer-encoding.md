@@ -352,7 +352,7 @@ off=98 error code=2 reason="Invalid character in chunk extensions"
 POST /chunked_w_unicorns_after_length HTTP/1.1
 Transfer-Encoding: chunked
 
-5;ilovew3="I love; extensions";somuchlove="aretheseparametersfor";blah;foo=bar
+5;ilovew3="I \"love\"; \\extensions\\";somuchlove="aretheseparametersfor";blah;foo=bar
 hello
 6;blahblah;blah
  world
@@ -375,29 +375,29 @@ off=76 header_value complete
 off=78 headers complete method=3 v=1/1 flags=208 content_length=0
 off=80 len=7 span[chunk_extension_name]="ilovew3"
 off=88 chunk_extension_name complete
-off=88 len=20 span[chunk_extension_value]=""I love; extensions""
-off=108 chunk_extension_value complete
-off=109 len=10 span[chunk_extension_name]="somuchlove"
-off=120 chunk_extension_name complete
-off=120 len=23 span[chunk_extension_value]=""aretheseparametersfor""
-off=143 chunk_extension_value complete
-off=144 len=4 span[chunk_extension_name]="blah"
-off=149 chunk_extension_name complete
-off=149 len=3 span[chunk_extension_name]="foo"
-off=153 chunk_extension_name complete
-off=153 len=3 span[chunk_extension_value]="bar"
-off=157 chunk_extension_value complete
-off=158 chunk header len=5
-off=158 len=5 span[body]="hello"
-off=165 chunk complete
-off=167 len=8 span[chunk_extension_name]="blahblah"
-off=176 chunk_extension_name complete
-off=176 len=4 span[chunk_extension_name]="blah"
-off=181 chunk_extension_name complete
-off=182 chunk header len=6
-off=182 len=6 span[body]=" world"
-off=190 chunk complete
-off=193 chunk header len=0
+off=88 len=28 span[chunk_extension_value]=""I \"love\"; \\extensions\\""
+off=116 chunk_extension_value complete
+off=117 len=10 span[chunk_extension_name]="somuchlove"
+off=128 chunk_extension_name complete
+off=128 len=23 span[chunk_extension_value]=""aretheseparametersfor""
+off=151 chunk_extension_value complete
+off=152 len=4 span[chunk_extension_name]="blah"
+off=157 chunk_extension_name complete
+off=157 len=3 span[chunk_extension_name]="foo"
+off=161 chunk_extension_name complete
+off=161 len=3 span[chunk_extension_value]="bar"
+off=165 chunk_extension_value complete
+off=166 chunk header len=5
+off=166 len=5 span[body]="hello"
+off=173 chunk complete
+off=175 len=8 span[chunk_extension_name]="blahblah"
+off=184 chunk_extension_name complete
+off=184 len=4 span[chunk_extension_name]="blah"
+off=189 chunk_extension_name complete
+off=190 chunk header len=6
+off=190 len=6 span[body]=" world"
+off=198 chunk complete
+off=201 chunk header len=0
 ```
 
 
