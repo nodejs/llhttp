@@ -7,7 +7,7 @@ import Node = source.node.Node;
 import {
   CharList,
   CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, H_METHOD_MAP, HEADER_CHARS,
-  HEADER_STATE, HEX_MAP,
+  HEADER_STATE, HEX_MAP, HTAB_SP_VCHAR_OBS_TEXT,
   LENIENT_FLAGS,
   MAJOR, METHOD_MAP, METHODS, METHODS_HTTP, METHODS_ICE, METHODS_RTSP,
   MINOR, NUM_MAP, QUOTED_STRING, SPECIAL_HEADERS,
@@ -94,6 +94,7 @@ const NODES: ReadonlyArray<string> = [
   'chunk_extension_name',
   'chunk_extension_value',
   'chunk_extension_quoted_value',
+  'chunk_extension_quoted_value_quoted_pair',
   'chunk_extension_quoted_value_done',
   'chunk_data',
   'chunk_data_almost_done',
@@ -989,8 +990,15 @@ export class HTTP {
       .match('"', this.span.chunkExtensionValue.end(
         onChunkExtensionValueCompleted(n('chunk_extension_quoted_value_done')),
       ))
+      .match('\\', n('chunk_extension_quoted_value_quoted_pair'))
       .otherwise(this.span.chunkExtensionValue.end().skipTo(
         p.error(ERROR.STRICT, 'Invalid character in chunk extensions quoted value'),
+      ));
+
+    n('chunk_extension_quoted_value_quoted_pair')
+      .match(HTAB_SP_VCHAR_OBS_TEXT, n('chunk_extension_quoted_value'))
+      .otherwise(this.span.chunkExtensionValue.end().skipTo(
+        p.error(ERROR.STRICT, 'Invalid quoted-pair in chunk extensions quoted value'),
       ));
 
     n('chunk_extension_quoted_value_done')
