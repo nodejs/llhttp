@@ -541,6 +541,56 @@ off=114 chunk complete
 off=117 chunk header len=0
 ```
 
+## HTTP 100 first, then 400
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 100 Continue
+
+
+HTTP/1.1 404 Not Found
+Content-Type: text/plain; charset=utf-8
+Content-Length: 14
+Date: Fri, 15 Sep 2023 19:47:23 GMT
+Server: Python/3.10 aiohttp/4.0.0a2.dev0
+
+404: Not Found
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=8 span[status]="Continue"
+off=23 status complete
+off=25 headers complete status=100 v=1/1 flags=0 content_length=0
+off=25 message complete
+off=27 reset
+off=27 message begin
+off=32 len=3 span[version]="1.1"
+off=35 version complete
+off=40 len=9 span[status]="Not Found"
+off=51 status complete
+off=51 len=12 span[header_field]="Content-Type"
+off=64 header_field complete
+off=65 len=25 span[header_value]="text/plain; charset=utf-8"
+off=92 header_value complete
+off=92 len=14 span[header_field]="Content-Length"
+off=107 header_field complete
+off=108 len=2 span[header_value]="14"
+off=112 header_value complete
+off=112 len=4 span[header_field]="Date"
+off=117 header_field complete
+off=118 len=29 span[header_value]="Fri, 15 Sep 2023 19:47:23 GMT"
+off=149 header_value complete
+off=149 len=6 span[header_field]="Server"
+off=156 header_field complete
+off=157 len=32 span[header_value]="Python/3.10 aiohttp/4.0.0a2.dev0"
+off=191 header_value complete
+off=193 headers complete status=404 v=1/1 flags=20 content_length=14
+off=193 len=14 span[body]="404: Not Found"
+off=207 message complete
+```
 
 ## HTTP 103 first, then 200
 
