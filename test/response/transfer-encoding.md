@@ -408,3 +408,30 @@ off=67 len=1 span[body]=cr
 off=68 len=1 span[body]=lf
 ```
 
+## Zero length chunked can be parsed
+
+<!-- meta={"type": "response" } -->
+```http
+HTTP/1.1 304 Not Modified
+Transfer-Encoding: chunked
+
+0
+
+
+```
+
+```log
+off=0 message begin
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=12 span[status]="Not Modified"
+off=27 status complete
+off=27 len=17 span[header_field]="Transfer-Encoding"
+off=45 header_field complete
+off=46 len=7 span[header_value]="chunked"
+off=55 header_value complete
+off=57 headers complete status=304 v=1/1 flags=208 content_length=0
+off=60 chunk header len=0
+off=62 chunk complete
+off=62 message complete
+```
