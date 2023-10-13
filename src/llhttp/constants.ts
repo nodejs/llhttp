@@ -1,7 +1,5 @@
 import { enumToMap, IEnumMap } from './utils';
 
-export type HTTPMode = 'loose' | 'strict';
-
 // C headers
 
 export enum ERROR {
@@ -72,6 +70,11 @@ export enum LENIENT_FLAGS {
   KEEP_ALIVE = 1 << 2,
   TRANSFER_ENCODING = 1 << 3,
   VERSION = 1 << 4,
+  DATA_AFTER_CLOSE = 1 << 5,
+  OPTIONAL_LF_AFTER_CR = 1 << 6,
+  OPTIONAL_CRLF_AFTER_CHUNK = 1 << 7,
+  OPTIONAL_CR_BEFORE_LF = 1 << 8,
+  SPACES_AFTER_CHUNK_SIZE = 1 << 9,
 }
 
 export enum METHODS {
@@ -453,7 +456,7 @@ export const USERINFO_CHARS: CharList = ALPHANUM
   .concat([ '%', ';', ':', '&', '=', '+', '$', ',' ]);
 
 // TODO(indutny): use RFC
-export const STRICT_URL_CHAR: CharList = ([
+export const URL_CHAR: CharList = ([
   '!', '"', '$', '%', '&', '\'',
   '(', ')', '*', '+', ',', '-', '.', '/',
   ':', ';', '<', '=', '>',
@@ -461,14 +464,6 @@ export const STRICT_URL_CHAR: CharList = ([
   '`',
   '{', '|', '}', '~',
 ] as CharList).concat(ALPHANUM);
-
-export const URL_CHAR: CharList = STRICT_URL_CHAR
-  .concat(([ '\t', '\f' ] as CharList));
-
-// All characters with 0x80 bit set to 1
-for (let i = 0x80; i <= 0xff; i++) {
-  URL_CHAR.push(i);
-}
 
 export const HEX: CharList = NUM.concat(
   [ 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F' ]);
@@ -480,14 +475,12 @@ export const HEX: CharList = NUM.concat(
  *                    | "/" | "[" | "]" | "?" | "="
  *                    | "{" | "}" | SP | HT
  */
-export const STRICT_TOKEN: CharList = ([
+export const TOKEN: CharList = ([
   '!', '#', '$', '%', '&', '\'',
   '*', '+', '-', '.',
   '^', '_', '`',
   '|', '~',
 ] as CharList).concat(ALPHANUM);
-
-export const TOKEN: CharList = STRICT_TOKEN.concat([ ' ' ]);
 
 /*
  * Verify that a char is a valid visible (printable) US-ASCII
@@ -509,6 +502,17 @@ for (let i = 0x21; i <= 0xff; i++) {
   if (i !== 0x22 && i !== 0x5c) { // All characters in ASCII except \ and "
     QUOTED_STRING.push(i);
   }
+}
+
+export const HTAB_SP_VCHAR_OBS_TEXT: CharList = [ '\t', ' ' ];
+
+// VCHAR: https://tools.ietf.org/html/rfc5234#appendix-B.1
+for (let i = 0x21; i <= 0x7E; i++) {
+    HTAB_SP_VCHAR_OBS_TEXT.push(i);
+}
+// OBS_TEXT: https://datatracker.ietf.org/doc/html/rfc9110#name-collected-abnf
+for (let i = 0x80; i <= 0xff; i++) {
+    HTAB_SP_VCHAR_OBS_TEXT.push(i);
 }
 
 export const MAJOR = NUM_MAP;

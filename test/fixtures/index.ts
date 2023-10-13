@@ -8,14 +8,47 @@ import * as path from 'path';
 
 import * as llhttp from '../../src/llhttp';
 
-export type TestType = 'request' | 'response' | 'request-lenient-headers' |
+export { FixtureResult };
+
+export type TestType = 'request' | 'response' | 'request-finish' | 'response-finish' |
+  'request-lenient-all' | 'response-lenient-all' |
+  'request-lenient-headers' | 'response-lenient-headers' |
   'request-lenient-chunked-length' | 'request-lenient-transfer-encoding' |
   'request-lenient-keep-alive' | 'response-lenient-keep-alive' |
-  'response-lenient-headers' | 'request-lenient-version' | 'response-lenient-version' |
-  'request-finish' | 'response-finish' |
+  'request-lenient-version' | 'response-lenient-version' |
+  'request-lenient-data-after-close' | 'response-lenient-data-after-close' |
+  'request-lenient-optional-lf-after-cr' | 'response-lenient-optional-lf-after-cr' |
+  'request-lenient-optional-cr-before-lf' | 'response-lenient-optional-cr-before-lf' |
+  'request-lenient-optional-crlf-after-chunk' | 'response-lenient-optional-crlf-after-chunk' |
+  'request-lenient-spaces-after-chunk-size' | 'response-lenient-spaces-after-chunk-size' |
   'none' | 'url';
 
-export { FixtureResult };
+export const allowedTypes: TestType[] = [
+  'request',
+  'response',
+  'request-finish',
+  'response-finish',
+  'request-lenient-all',
+  'response-lenient-all',
+  'request-lenient-headers',
+  'response-lenient-headers',
+  'request-lenient-keep-alive',
+  'response-lenient-keep-alive',
+  'request-lenient-chunked-length',
+  'request-lenient-transfer-encoding',
+  'request-lenient-version',
+  'response-lenient-version',
+  'request-lenient-data-after-close',
+  'response-lenient-data-after-close',
+  'request-lenient-optional-lf-after-cr',
+  'response-lenient-optional-lf-after-cr',
+  'request-lenient-optional-cr-before-lf',
+  'response-lenient-optional-cr-before-lf',
+  'request-lenient-optional-crlf-after-chunk',
+  'response-lenient-optional-crlf-after-chunk',
+  'request-lenient-spaces-after-chunk-size',
+  'response-lenient-spaces-after-chunk-size',
+];
 
 const BUILD_DIR = path.join(__dirname, '..', 'tmp');
 const CHEADERS_FILE = path.join(BUILD_DIR, 'cheaders.h');
@@ -62,18 +95,13 @@ export async function build(
   }
 
   const extra = options.extra === undefined ? [] : options.extra.slice();
-  if (ty === 'request' || ty === 'response' ||
-      ty === 'request-lenient-headers' ||
-      ty === 'request-lenient-chunked-length' ||
-      ty === 'request-lenient-transfer-encoding' ||
-      ty === 'request-lenient-keep-alive' ||
-      ty === 'request-lenient-version' ||
-      ty === 'response-lenient-headers' ||
-      ty === 'response-lenient-keep-alive' ||
-      ty === 'response-lenient-version') {
+
+  if (allowedTypes.includes(ty)) {
     extra.push(
       `-DLLPARSE__TEST_INIT=llhttp__test_init_${ty.replace(/-/g, '_')}`);
-  } else if (ty === 'request-finish' || ty === 'response-finish') {
+  }
+
+  if (ty === 'request-finish' || ty === 'response-finish') {
     if (ty === 'request-finish') {
       extra.push('-DLLPARSE__TEST_INIT=llhttp__test_init_request');
     } else {
