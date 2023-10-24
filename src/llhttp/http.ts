@@ -542,7 +542,7 @@ export class HTTP {
           }).otherwise(this.headersCompleted()),
         }, onInvalidHeaderFieldChar),
       )
-      .peek(':', p.error(ERROR.INVALID_HEADER_TOKEN, 'Empty header field'))
+      .peek(':', p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header token'))
       .otherwise(span.headerField.start(n('header_field')));
 
     n('header_field')
