@@ -307,6 +307,27 @@ off=14 version complete
 off=19 error code=10 reason="Invalid header token"
 ```
 
+### Invalid header token #3
+
+<!-- meta={"type": "request", "noScan": true} -->
+```http
+GET / HTTP/1.1
+: Bar
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
+off=4 len=1 span[url]="/"
+off=6 url complete
+off=11 len=3 span[version]="1.1"
+off=14 version complete
+off=16 error code=10 reason="Invalid header token"
+```
+
 ### Invalid method
 
 <!-- meta={"type": "request"} -->
