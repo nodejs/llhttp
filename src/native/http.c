@@ -62,7 +62,8 @@ int llhttp__after_headers_complete(llhttp_t* parser, const char* p,
         parser->status_code == 102 ||     /* Processing */
         parser->status_code == 103 ||     /* Early Hints */
         parser->status_code == 204 ||     /* No Content */
-        parser->status_code == 304        /* Not Modified */
+        (parser->status_code == 304 &&
+         !(parser->flags & F_CHUNKED)) /* Not Modified */
       )
     )
   ) {
