@@ -503,8 +503,6 @@ off=94 message complete
 HTTP/1.1 304 Not Modified
 Transfer-Encoding: chunked
 
-0
-
 HTTP/1.1 200 OK
 Transfer-Encoding: chunked
 
@@ -525,24 +523,22 @@ off=45 header_field complete
 off=46 len=7 span[header_value]="chunked"
 off=55 header_value complete
 off=57 headers complete status=304 v=1/1 flags=208 content_length=0
-off=60 chunk header len=0
-off=62 chunk complete
-off=62 message complete
-off=62 reset
-off=62 message begin
-off=67 len=3 span[version]="1.1"
-off=70 version complete
-off=75 len=2 span[status]="OK"
-off=79 status complete
-off=79 len=17 span[header_field]="Transfer-Encoding"
-off=97 header_field complete
-off=98 len=7 span[header_value]="chunked"
-off=107 header_value complete
-off=109 headers complete status=200 v=1/1 flags=208 content_length=0
-off=112 chunk header len=5
-off=112 len=5 span[body]="hello"
-off=119 chunk complete
-off=122 chunk header len=0
+off=57 message complete
+off=57 reset
+off=57 message begin
+off=62 len=3 span[version]="1.1"
+off=65 version complete
+off=70 len=2 span[status]="OK"
+off=74 status complete
+off=74 len=17 span[header_field]="Transfer-Encoding"
+off=92 header_field complete
+off=93 len=7 span[header_value]="chunked"
+off=102 header_value complete
+off=104 headers complete status=200 v=1/1 flags=208 content_length=0
+off=107 chunk header len=5
+off=107 len=5 span[body]="hello"
+off=114 chunk complete
+off=117 chunk header len=0
 ```
 
 ## HTTP 100 first, then 400
