@@ -84,6 +84,7 @@ const NODES: ReadonlyArray<string> = [
   'chunk_size_almost_done',
   'chunk_size_almost_done_lf',
   'chunk_parameters',
+  'chunk_parameters_ows',
   'chunk_data',
   'chunk_data_almost_done',
   'chunk_data_almost_done_skip',
@@ -101,6 +102,7 @@ const NODES: ReadonlyArray<string> = [
 
 interface ISpanMap {
   readonly body: source.Span;
+  readonly chunkParameters: source.Span;
   readonly headerField: source.Span;
   readonly headerValue: source.Span;
   readonly status: source.Span;
@@ -157,6 +159,7 @@ export class HTTP {
 
     this.span = {
       body: p.span(p.code.span('llhttp__on_body')),
+      chunkParameters: p.span(p.code.span('llhttp__on_chunk_parameters')),
       headerField: p.span(p.code.span('llhttp__on_header_field')),
       headerValue: p.span(p.code.span('llhttp__on_header_value')),
       status: p.span(p.code.span('llhttp__on_status')),
@@ -798,12 +801,16 @@ export class HTTP {
 
     n('chunk_size_otherwise')
       .match('\r', n('chunk_size_almost_done'))
-      .match([ ';', ' ' ], n('chunk_parameters'))
+      .match([ ';' ], n('chunk_parameters_ows'))
       .otherwise(p.error(ERROR.INVALID_CHUNK_SIZE,
         'Invalid character in chunk size'));
 
+    n('chunk_parameters_ows')
+      .match(' ', n('chunk_parameters_ows'))
+      .otherwise(span.chunkParameters.start(n('chunk_parameters')));
+
     n('chunk_parameters')
-      .match('\r', n('chunk_size_almost_done'))
+      .peek('\r', span.chunkParameters.end().skipTo(n('chunk_size_almost_done')))
       .match(HEADER_CHARS, n('chunk_parameters'))
       .otherwise(p.error(ERROR.STRICT,
         'Invalid character in chunk parameters'));

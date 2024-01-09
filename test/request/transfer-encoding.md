@@ -223,9 +223,11 @@ off=66 header_field complete
 off=67 len=7 span[header_value]="chunked"
 off=76 header_value complete
 off=78 headers complete method=3 v=1/1 flags=208 content_length=0
+off=81 len=40 span[chunk parameters]="ilovew3;somuchlove=aretheseparametersfor"
 off=123 chunk header len=5
 off=123 len=5 span[body]="hello"
 off=130 chunk complete
+off=133 len=14 span[chunk parameters]="blahblah; blah"
 off=149 chunk header len=6
 off=149 len=6 span[body]=" world"
 off=157 chunk complete
@@ -598,7 +600,7 @@ off=37 header_field complete
 off=38 len=7 span[header_value]="chunked"
 off=47 header_value complete
 off=49 headers complete method=4 v=1/1 flags=208 content_length=0
-off=51 error code=2 reason="Invalid character in chunk parameters"
+off=50 error code=12 reason="Invalid character in chunk size"
 ```
 
 ## Invalid OBS fold after chunked value
