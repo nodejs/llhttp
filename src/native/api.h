@@ -39,6 +39,9 @@ struct llhttp_settings_s {
   llhttp_cb      on_headers_complete;
 
   /* Possible return values 0, -1, HPE_USER */
+  llhttp_data_cb on_chunk_parameters;
+
+  /* Possible return values 0, -1, HPE_USER */
   llhttp_data_cb on_body;
 
   /* Possible return values 0, -1, `HPE_PAUSED` */

@@ -203,6 +203,12 @@ int llhttp__on_body(llparse_t* s, const char* p, const char* endp) {
   return llparse__print_span("body", p, endp);
 }
 
+int llhttp__on_chunk_parameters(llparse_t* s, const char* p, const char* endp) {
+  if (llparse__in_bench)
+    return 0;
+  return llparse__print_span("chunk parameters", p, endp);
+}
+
 
 int llhttp__on_chunk_header(llparse_t* s, const char* p, const char* endp) {
   if (llparse__in_bench)
