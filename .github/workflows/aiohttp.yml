@@ -9,6 +9,9 @@ on:
     branches:
       - 'main'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     permissions:
@@ -18,15 +21,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout aiohttp
-      uses: actions/checkout@v4
+      uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
       with:
         repository: aio-libs/aiohttp
     - name: Checkout llhttp
-      uses: actions/checkout@v4
+      uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
       with:
         path: vendor/llhttp
     - name: Restore node_modules cache
-      uses: actions/cache@v3
+      uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
       with:
         path: vendor/llhttp/.npm
         key: ubuntu-latest-node-${{ hashFiles('vendor/llhttp/**/package-lock.json') }}
@@ -38,7 +41,7 @@ jobs:
       run: make
       working-directory: vendor/llhttp
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
       with:
         python-version: 3.x
         cache: 'pip'
