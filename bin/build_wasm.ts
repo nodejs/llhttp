@@ -24,7 +24,7 @@ if (process.argv[2] === '--setup') {
   try {
     mkdirSync(join(WASM_SRC, 'build'));
     process.exit(0);
-  } catch (error) {
+  } catch (error: any) {
     if (error.code !== 'EEXIST') {
       throw error;
     }
@@ -39,7 +39,7 @@ if (process.argv[2] === '--docker') {
   // It will work flawessly if uid === gid === 1000
   // there will be some warnings otherwise.
   if (process.platform === 'linux') {
-    cmd += ` --user ${process.getuid()}:${process.getegid()}`;
+    cmd += ` --user ${process.getuid!()}:${process.getegid!()}`;
   }
   cmd += ` --mount type=bind,source=${WASM_SRC}/build,target=/home/node/llhttp/build llhttp_wasm_builder npm run wasm`;
 
@@ -51,7 +51,7 @@ if (process.argv[2] === '--docker') {
 
 try {
   mkdirSync(WASM_OUT);
-} catch (error) {
+} catch (error: any) {
   if (error.code !== 'EEXIST') {
     throw error;
   }
