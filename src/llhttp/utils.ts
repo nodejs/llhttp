@@ -1,13 +1,17 @@
-export interface IEnumMap {
-  [key: string]: number;
-}
+type NumericKeys<T> = {
+  [K in keyof T]: T[K] extends number ? K : never
+}[keyof T];
 
-export function enumToMap(
-  obj: any,
+export type IEnumMap<T = Record<string, any>> = {
+  [K in NumericKeys<T>]: T[K]
+};
+
+export function enumToMap<T extends Record<string, any>>(
+  obj: T,
   filter?: ReadonlyArray<number>,
   exceptions?: ReadonlyArray<number>,
-): IEnumMap {
-  const res: IEnumMap = {};
+): IEnumMap<T> {
+  const res: Record<string, number> = {};
 
   for (const key of Object.keys(obj)) {
     const value = obj[key];
@@ -23,5 +27,5 @@ export function enumToMap(
     res[key] = value;
   }
 
-  return res;
+  return res as IEnumMap<T>;
 }
