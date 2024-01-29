@@ -135,6 +135,8 @@ export enum METHODS {
   RECORD = 44,
   /* RAOP */
   FLUSH = 45,
+  /* DRAFT https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-02.html */
+  QUERY = 46,
 }
 
 export const METHODS_HTTP = [
@@ -175,6 +177,7 @@ export const METHODS_HTTP = [
 
   // TODO(indutny): should we allow it with HTTP?
   METHODS.SOURCE,
+  METHODS.QUERY,
 ];
 
 export const METHODS_ICE = [
