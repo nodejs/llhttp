@@ -53,8 +53,8 @@
     "typescript": "^3.9.9"
   },
   "dependencies": {
-    "@types/semver": "^5.5.0",
+    "@types/semver": "^7.5.6",
     "llparse": "^7.1.1",
-    "semver": "^5.7.1"
+    "semver": "^7.5.4"
   }
 }
