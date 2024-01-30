@@ -95,7 +95,7 @@ jobs:
         run: npm run test
 
   lint:
-    name: Run TSLint
+    name: Run ESLint
     runs-on: ubuntu-latest
     steps:
       - name: Fetch code
