@@ -41,7 +41,7 @@
   },
   "homepage": "https://github.com/nodejs/llhttp#readme",
   "devDependencies": {
-    "@types/mocha": "^5.2.7",
+    "@types/mocha": "^10.0.6",
     "@types/node": "^20.11.10",
     "javascript-stringify": "^2.0.1",
     "llparse-dot": "^1.0.1",
