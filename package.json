@@ -42,12 +42,11 @@
   "homepage": "https://github.com/nodejs/llhttp#readme",
   "devDependencies": {
     "@stylistic/eslint-plugin": "^1.5.4",
-    "@types/mocha": "^5.2.7",
+    "@types/mocha": "^10.0.6",
     "@types/node": "^20.11.10",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
     "eslint": "^8.56.0",
-    "javascript-stringify": "^2.0.1",
     "llparse-dot": "^1.0.1",
     "llparse-test-fixture": "^5.0.1",
     "mdgator": "^1.1.2",
@@ -56,8 +55,6 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@types/semver": "^7.5.6",
-    "llparse": "^7.1.1",
-    "semver": "^7.5.4"
+    "llparse": "^7.1.1"
   }
 }
