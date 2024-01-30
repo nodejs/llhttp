@@ -6,24 +6,12 @@ import * as path from 'path';
 import * as vm from 'vm';
 
 import * as llhttp from '../src/llhttp';
-import {IHTTPResult} from '../src/llhttp/http';
-import {IURLResult} from '../src/llhttp/url';
-import { allowedTypes, build, FixtureResult, TestType } from './fixtures';
+import { allowedTypes, build, FixtureResult, Node, TestType } from './fixtures';
 
 //
 // Cache nodes/llparse instances ahead of time
 // (different types of tests will re-use them)
 //
-
-interface INodeCacheEntry {
-  llparse: LLParse;
-  entry: IHTTPResult['entry'];
-}
-
-interface IUrlCacheEntry {
-  llparse: LLParse;
-  entry: IURLResult['entry']['normal'];
-}
 
 const modeCache = new Map<string, FixtureResult>();
 
@@ -51,9 +39,7 @@ function buildURL() {
 // Build binaries using cached nodes/llparse
 //
 
-async function buildMode(ty: TestType, meta: any)
-    : Promise<FixtureResult> {
-
+async function buildMode(ty: TestType, meta: Metadata): Promise<FixtureResult> {
   const cacheKey = `${ty}:${JSON.stringify(meta || {})}`;
   let entry = modeCache.get(cacheKey);
 
@@ -61,7 +47,7 @@ async function buildMode(ty: TestType, meta: any)
     return entry;
   }
 
-  let node;
+  let node: { llparse: LLParse; entry: Node };
   let prefix: string;
   let extra: string[];
   if (ty === 'url') {
@@ -93,10 +79,6 @@ async function buildMode(ty: TestType, meta: any)
   return entry;
 }
 
-interface IFixtureMap {
-  [key: string]: { [key: string]: Promise<FixtureResult> };
-}
-
 //
 // Run test suite
 //
@@ -107,7 +89,7 @@ function run(name: string): void {
   const raw = fs.readFileSync(path.join(__dirname, name + '.md')).toString();
   const groups = md.parse(raw);
 
-  function runSingleTest(ty: TestType, meta: any,
+  function runSingleTest(ty: TestType, meta: Metadata,
                          input: string,
                          expected: ReadonlyArray<string | RegExp>): void {
     it(`should pass for type="${ty}"`, async () => {
@@ -141,7 +123,7 @@ function run(name: string): void {
       if (isURL) {
         types = [ 'url' ];
       } else {
-        assert(meta.hasOwnProperty('type'), 'Missing required `type` metadata');
+        assert(Object.prototype.hasOwnProperty.call(meta, 'type'), 'Missing required `type` metadata');
 
         if (meta.type) {
           if (!allowedTypes.includes(meta.type)) {
@@ -225,7 +207,7 @@ function run(name: string): void {
   }
 
   function runGroup(group: Group) {
-    describe(group.name + ` at ${name}.md:${group.line + 1}`, function() {
+    describe(group.name + ` at ${name}.md:${group.line + 1}`, function () {
       this.timeout(60000);
 
       for (const child of group.children) {

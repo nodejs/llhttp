@@ -96,7 +96,7 @@ export class CHeaders {
     let res = '';
 
     res += `#define ${name}_MAP(XX) \\\n`;
-    for (const [key, value] of Object.entries(map)) {
+    for (const [ key, value ] of Object.entries(map)) {
       res += `  XX(${value!}, ${key.replace(/-/g, '')}, ${key}) \\\n`;
     }
     res += '\n';

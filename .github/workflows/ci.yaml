@@ -97,7 +97,7 @@ jobs:
         run: npx mocha --timeout 30000 -r ts-node/register/type-check test/*-test.ts
 
   lint:
-    name: Run TSLint
+    name: Run ESLint
     runs-on: ubuntu-latest
     steps:
       - name: Fetch code
