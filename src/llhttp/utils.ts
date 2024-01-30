@@ -1,34 +1,19 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyObject = Record<string, any>;
+import { Enum } from "./constants";
 
-type NumericKeys<T> = {
-  [K in keyof T]: T[K] extends number ? K : never
-}[keyof T];
 
-export type IEnumMap<T = AnyObject> = {
-  [K in NumericKeys<T>]: T[K]
-};
+export function enumToMap(
+  obj: Enum,
+  filter: ReadonlyArray<number> = [],
+  exceptions: ReadonlyArray<number> = [],
+): Enum {
+  const emptyFilter = (filter?.length ?? 0) === 0
+  const emptyExceptions = (exceptions?.length ?? 0) === 0
 
-export function enumToMap<T extends AnyObject>(
-  obj: T,
-  filter?: ReadonlyArray<number>,
-  exceptions?: ReadonlyArray<number>,
-): IEnumMap<T> {
-  const res: Record<string, number> = {};
-
-  for (const key of Object.keys(obj)) {
-    const value = obj[key];
-    if (typeof value !== 'number') {
-      continue;
-    }
-    if (filter && !filter.includes(value)) {
-      continue;
-    }
-    if (exceptions && exceptions.includes(value)) {
-      continue;
-    }
-    res[key] = value;
-  }
-
-  return res as IEnumMap<T>;
+  return Object.fromEntries(Object.entries(obj).filter(([key, value]) => {
+    return (
+      typeof value === 'number' && 
+      (emptyFilter || filter.includes(value)) && 
+      (emptyExceptions || !exceptions.includes(value))
+    );
+  }));
 }

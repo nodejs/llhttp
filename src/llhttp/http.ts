@@ -437,7 +437,7 @@ export class HTTP {
           this.update('http_minor', 9, onUrlCompleteHTTP09)),
       );
 
-    const checkMethod = (methods: METHODS[], error: string): Node => {
+    const checkMethod = (methods: number[], error: string): Node => {
       const success = n('req_http_version');
       const failure = p.error(ERROR.INVALID_CONSTANT, error);
 
@@ -1169,17 +1169,17 @@ export class HTTP {
     return span.start(span.end(this.node(next)));
   }
 
-  private unsetFlag(flag: FLAGS, next: string | Node): Node {
+  private unsetFlag(flag: number, next: string | Node): Node {
     const p = this.llparse;
     return p.invoke(p.code.and('flags', ~flag), this.node(next));
   }
 
-  private setFlag(flag: FLAGS, next: string | Node): Node {
+  private setFlag(flag: number, next: string | Node): Node {
     const p = this.llparse;
     return p.invoke(p.code.or('flags', flag), this.node(next));
   }
 
-  private testFlags(flag: FLAGS, map: { [key: number]: Node },
+  private testFlags(flag: number, map: { [key: number]: Node },
                     next?: string | Node): Node {
     const p = this.llparse;
     const res = p.invoke(p.code.test('flags', flag), map);
@@ -1189,7 +1189,7 @@ export class HTTP {
     return res;
   }
 
-  private testLenientFlags(flag: LENIENT_FLAGS, map: { [key: number]: Node },
+  private testLenientFlags(flag: number, map: { [key: number]: Node },
                            next?: string | Node): Node {
     const p = this.llparse;
     const res = p.invoke(p.code.test('lenient_flags', flag), map);
@@ -1240,7 +1240,7 @@ export class HTTP {
     return res;
   }
 
-  private invokePausable(name: string, errorCode: ERROR, next: string | Node): Node {
+  private invokePausable(name: string, errorCode: number, next: string | Node): Node {
     let cb;
 
     switch (name) {

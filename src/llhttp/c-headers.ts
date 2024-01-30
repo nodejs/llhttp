@@ -1,5 +1,5 @@
 import * as constants from './constants';
-import { enumToMap, IEnumMap } from './utils';
+import { enumToMap } from './utils';
 
 type Encoding = 'none' | 'hex';
 
@@ -64,7 +64,7 @@ export class CHeaders {
     return res;
   }
 
-  private buildEnum(name: string, prefix: string, map: IEnumMap,
+  private buildEnum(name: string, prefix: string, map: constants.Enum,
                     encoding: Encoding = 'none'): string {
     let res = '';
 
@@ -92,7 +92,7 @@ export class CHeaders {
     return res;
   }
 
-  private buildMap(name: string, map: IEnumMap): string {
+  private buildMap(name: string, map: constants.Enum): string {
     let res = '';
 
     res += `#define ${name}_MAP(XX) \\\n`;
