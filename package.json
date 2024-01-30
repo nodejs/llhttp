@@ -43,7 +43,6 @@
   "devDependencies": {
     "@types/mocha": "^5.2.7",
     "@types/node": "^20.11.10",
-    "javascript-stringify": "^2.0.1",
     "llparse-dot": "^1.0.1",
     "llparse-test-fixture": "^5.0.1",
     "mdgator": "^1.1.2",
