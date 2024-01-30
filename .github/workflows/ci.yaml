@@ -92,8 +92,6 @@ jobs:
 
       # Custom script, because progress looks not good in CI
       - name: Run tests
-        env:
-          CFLAGS: -O0
         run: npm run test
 
   lint:

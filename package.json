@@ -19,7 +19,7 @@
     "prepare": "npm run clean && npm run build-ts",
     "lint": "tslint -c tslint.json bin/*.ts src/*.ts src/**/*.ts test/*.ts test/**/*.ts",
     "lint-fix": "tslint --fix -c tslint.json bin/*.ts src/*.ts src/**/*.ts test/*.ts test/**/*.ts",
-    "test": "node -r ts-node/register/type-check --test test/*-test.ts",
+    "test": "node -r ts-node/register/type-check --test ./test/*-test.ts",
     "postversion": "RELEASE=`node -e \"process.stdout.write(require('./package').version)\"` make -B postversion",
     "github-release": "RELEASE_V=`node -e \"process.stdout.write('v' + require('./package').version)\"` make github-release"
   },
