@@ -8,6 +8,8 @@ import * as path from 'path';
 
 import * as llhttp from '../../src/llhttp';
 
+export type Node = Parameters<LLParse['build']>['0'];
+
 export { FixtureResult };
 
 export type TestType = 'request' | 'response' | 'request-finish' | 'response-finish' |
@@ -73,12 +75,12 @@ const fixtures = new Fixture({
   maxParallel: process.env.LLPARSE_DEBUG ? 1 : undefined,
 });
 
-const cache: Map<any, ICompilerResult> = new Map();
+const cache: Map<Node, ICompilerResult> = new Map();
 
 export async function build(
-    llparse: LLParse, node: any, outFile: string,
-    options: IFixtureBuildOptions = {},
-    ty: TestType = 'none'): Promise<FixtureResult> {
+  llparse: LLParse, node: Node, outFile: string,
+  options: IFixtureBuildOptions = {},
+  ty: TestType = 'none'): Promise<FixtureResult> {
   const dot = new Dot();
   fs.writeFileSync(path.join(BUILD_DIR, outFile + '.dot'),
     dot.build(node));

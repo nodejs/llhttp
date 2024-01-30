@@ -46,7 +46,7 @@ export enum ERROR {
 }
 
 export enum TYPE {
-  BOTH = 0,  // default
+  BOTH = 0, // default
   REQUEST = 1,
   RESPONSE = 2,
 }
@@ -511,11 +511,11 @@ export const HTAB_SP_VCHAR_OBS_TEXT: CharList = [ '\t', ' ' ];
 
 // VCHAR: https://tools.ietf.org/html/rfc5234#appendix-B.1
 for (let i = 0x21; i <= 0x7E; i++) {
-    HTAB_SP_VCHAR_OBS_TEXT.push(i);
+  HTAB_SP_VCHAR_OBS_TEXT.push(i);
 }
 // OBS_TEXT: https://datatracker.ietf.org/doc/html/rfc9110#name-collected-abnf
 for (let i = 0x80; i <= 0xff; i++) {
-    HTAB_SP_VCHAR_OBS_TEXT.push(i);
+  HTAB_SP_VCHAR_OBS_TEXT.push(i);
 }
 
 export const MAJOR = NUM_MAP;
