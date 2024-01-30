@@ -24,8 +24,8 @@ if (process.argv[2] === '--setup') {
   try {
     mkdirSync(join(WASM_SRC, 'build'));
     process.exit(0);
-  } catch (error: any) {
-    if (error.code !== 'EEXIST') {
+  } catch (error: unknown) {
+    if (isErrorWithCode(error) && error.code !== 'EEXIST') {
       throw error;
     }
     process.exit(0);
@@ -51,8 +51,8 @@ if (process.argv[2] === '--docker') {
 
 try {
   mkdirSync(WASM_OUT);
-} catch (error: any) {
-  if (error.code !== 'EEXIST') {
+} catch (error: unknown) {
+  if (isErrorWithCode(error) && error.code !== 'EEXIST') {
     throw error;
   }
 }
@@ -93,3 +93,7 @@ copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'constants.d.ts'), join(WASM_OUT, '
 copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'utils.js'), join(WASM_OUT, 'utils.js'));
 copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'utils.js.map'), join(WASM_OUT, 'utils.js.map'));
 copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'utils.d.ts'), join(WASM_OUT, 'utils.d.ts'));
+
+function isErrorWithCode(error: unknown): error is Error & { code: string } {
+  return typeof error === 'object' && error !== null && 'code' in error;
+}
