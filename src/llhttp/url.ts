@@ -90,7 +90,7 @@ export class URL {
       .match('//', this.spanStart('host', server))
       .otherwise(p.error(ERROR.INVALID_URL, 'Unexpected char in url schema'));
 
-    for (const node of [server, serverWithAt]) {
+    for (const node of [ server, serverWithAt ]) {
       node
         .peek('/', this.spanEnd('host', this.spanStart('path').skipTo(path)))
         .match('?', this.spanEnd('host', this.spanStart('query', query)))
@@ -150,7 +150,7 @@ export class URL {
       .match('\r\n', toHTTP09)
       .otherwise(p.error(ERROR.INVALID_URL, 'Expected CRLF'));
 
-    for (const node of [server, serverWithAt, queryOrFragment, queryStart, query, fragment]) {
+    for (const node of [ server, serverWithAt, queryOrFragment, queryStart, query, fragment ]) {
       let spanName: SpanName | undefined;
 
       if (node === server || node === serverWithAt) {
