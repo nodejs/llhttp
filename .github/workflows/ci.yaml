@@ -92,9 +92,7 @@ jobs:
 
       # Custom script, because progress looks not good in CI
       - name: Run tests
-        env:
-          CFLAGS: -O0
-        run: npx mocha --timeout 30000 -r ts-node/register/type-check test/*-test.ts
+        run: npm run test
 
   lint:
     name: Run ESLint
