@@ -1,10 +1,10 @@
-import { Enum } from './constants';
+import { IntDict } from './constants';
 
 export function enumToMap(
-  obj: Enum,
+  obj: IntDict,
   filter: ReadonlyArray<number> = [],
   exceptions: ReadonlyArray<number> = [],
-): Enum {
+): IntDict {
   const emptyFilter = (filter?.length ?? 0) === 0;
   const emptyExceptions = (exceptions?.length ?? 0) === 0;
 

@@ -64,7 +64,7 @@ export class CHeaders {
     return res;
   }
 
-  private buildEnum(name: string, prefix: string, map: constants.Enum,
+  private buildEnum(name: string, prefix: string, map: constants.IntDict,
                     encoding: Encoding = 'none'): string {
     let res = '';
 
@@ -92,7 +92,7 @@ export class CHeaders {
     return res;
   }
 
-  private buildMap(name: string, map: constants.Enum): string {
+  private buildMap(name: string, map: constants.IntDict): string {
     let res = '';
 
     res += `#define ${name}_MAP(XX) \\\n`;

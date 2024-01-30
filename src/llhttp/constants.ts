@@ -1,10 +1,10 @@
 import { enumToMap } from './utils';
 
-export type Enum = Record<string, number>;
+export type IntDict = Record<string, number>;
 
 // Emums
 
-export const ERROR: Enum = {
+export const ERROR: IntDict = {
   OK: 0,
   INTERNAL: 1,
   STRICT: 2,
@@ -47,13 +47,13 @@ export const ERROR: Enum = {
   CB_RESET: 31,
 };
 
-export const TYPE: Enum = {
+export const TYPE: IntDict = {
   BOTH: 0, // default
   REQUEST: 1,
   RESPONSE: 2,
 };
 
-export const FLAGS: Enum = {
+export const FLAGS: IntDict = {
   CONNECTION_KEEP_ALIVE: 1 << 0,
   CONNECTION_CLOSE: 1 << 1,
   CONNECTION_UPGRADE: 1 << 2,
@@ -66,7 +66,7 @@ export const FLAGS: Enum = {
   TRANSFER_ENCODING: 1 << 9,
 };
 
-export const LENIENT_FLAGS: Enum = {
+export const LENIENT_FLAGS: IntDict = {
   HEADERS: 1 << 0,
   CHUNKED_LENGTH: 1 << 1,
   KEEP_ALIVE: 1 << 2,
@@ -79,7 +79,7 @@ export const LENIENT_FLAGS: Enum = {
   SPACES_AFTER_CHUNK_SIZE: 1 << 9,
 };
 
-export const METHODS: Enum = {
+export const METHODS: IntDict = {
   'DELETE': 0,
   'GET': 1,
   'HEAD': 2,
@@ -141,7 +141,7 @@ export const METHODS: Enum = {
   'QUERY': 46,
 };
 
-export const STATUSES: Enum = {
+export const STATUSES: IntDict = {
   CONTINUE: 100,
   SWITCHING_PROTOCOLS: 101,
   PROCESSING: 102,
@@ -243,13 +243,13 @@ export const STATUSES: Enum = {
   NETWORK_CONNECT_TIMEOUT: 599, // Unofficial
 };
 
-export const FINISH: Enum = {
+export const FINISH: IntDict = {
   SAFE: 0,
   SAFE_WITH_CB: 1,
   UNSAFE: 2,
 };
 
-export const HEADER_STATE: Enum = {
+export const HEADER_STATE: IntDict = {
   GENERAL: 0,
   CONNECTION: 1,
   CONTENT_LENGTH: 2,
