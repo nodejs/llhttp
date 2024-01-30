@@ -17,7 +17,7 @@
     "wasm": "ts-node bin/build_wasm.ts",
     "clean": "rm -rf lib && rm -rf test/tmp",
     "prepare": "npm run clean && npm run build-ts",
-    "test": "node -r ts-node/register/type-check --test ./test/*-test.ts",
+    "test": "node -r ts-node/register/type-check -r ./test/md-test.ts",
     "lint": "eslint -c eslint.json bin/*.ts src/*.ts src/**/*.ts test/*.ts test/**/*.ts",
     "lint-fix": "eslint --fix -c eslint.json bin/*.ts src/*.ts src/**/*.ts test/*.ts test/**/*.ts",
     "postversion": "RELEASE=`node -e \"process.stdout.write(require('./package').version)\"` make -B postversion",
