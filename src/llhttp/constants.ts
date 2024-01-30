@@ -207,8 +207,8 @@ export const METHOD_MAP = enumToMap(METHODS);
 export const H_METHOD_MAP: IEnumMap = {};
 
 for (const key of Object.keys(METHOD_MAP)) {
-  if (/^H/.test(key)) {
-    H_METHOD_MAP[key] = METHOD_MAP[key];
+  if (key[0] === 'H') {
+    H_METHOD_MAP[key] = METHOD_MAP[key as keyof typeof METHOD_MAP];
   }
 }
 
