@@ -20,7 +20,6 @@
     "test": "node -r ts-node/register/type-check --test ./test/*-test.ts",
     "lint": "eslint -c eslint.json bin/*.ts src/*.ts src/**/*.ts test/*.ts test/**/*.ts",
     "lint-fix": "eslint --fix -c eslint.json bin/*.ts src/*.ts src/**/*.ts test/*.ts test/**/*.ts",
-    "mocha": "mocha --timeout=10000 -r ts-node/register/type-check --reporter progress test/*-test.ts",
     "postversion": "RELEASE=`node -e \"process.stdout.write(require('./package').version)\"` make -B postversion",
     "github-release": "RELEASE_V=`node -e \"process.stdout.write('v' + require('./package').version)\"` make github-release"
   },
