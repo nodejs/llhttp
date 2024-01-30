@@ -3,8 +3,10 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { LLParse } from 'llparse';
 import { dirname, resolve } from 'path';
-import { parse } from 'semver';
 import { CHeaders, HTTP } from '../src/llhttp';
+
+// https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+const semverRE = /^(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/
 
 const C_FILE = resolve(__dirname, '../build/c/llhttp.c');
 const HEADER_FILE = resolve(__dirname, '../build/llhttp.h');
@@ -12,7 +14,8 @@ const HEADER_FILE = resolve(__dirname, '../build/llhttp.h');
 const pkg = JSON.parse(
   readFileSync(resolve(__dirname, '..', 'package.json')).toString(),
 );
-const version = parse(pkg.version)!;
+
+const version = pkg.version.match(semverRE)?.groups;
 const llparse = new LLParse('llhttp__internal');
 
 const cHeaders = new CHeaders();
