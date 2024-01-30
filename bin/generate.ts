@@ -6,7 +6,8 @@ import { dirname, resolve } from 'path';
 import { CHeaders, HTTP } from '../src/llhttp';
 
 // https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-const semverRE = /^(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/
+// eslint-disable-next-line max-len
+const semverRE = /^(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
 
 const C_FILE = resolve(__dirname, '../build/c/llhttp.c');
 const HEADER_FILE = resolve(__dirname, '../build/llhttp.h');
