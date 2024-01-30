@@ -1,4 +1,5 @@
-import * as assert from 'assert';
+import * as assert from 'node:assert';
+import { describe, test } from 'node:test';
 import * as fs from 'fs';
 import { LLParse } from 'llparse';
 import { Group, MDGator, Metadata, Test } from 'mdgator';
@@ -92,7 +93,7 @@ function run(name: string): void {
   function runSingleTest(ty: TestType, meta: Metadata,
                          input: string,
                          expected: ReadonlyArray<string | RegExp>): void {
-    it(`should pass for type="${ty}"`, async () => {
+    test(`should pass for type="${ty}"`, { timeout: 60000 }, async () => {
       const binary = await buildMode(ty, meta);
       await binary.check(input, expected, {
         noScan: meta.noScan === true,
@@ -208,8 +209,6 @@ function run(name: string): void {
 
   function runGroup(group: Group) {
     describe(group.name + ` at ${name}.md:${group.line + 1}`, function () {
-      this.timeout(60000);
-
       for (const child of group.children) {
         runGroup(child);
       }
