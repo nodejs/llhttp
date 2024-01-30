@@ -1,4 +1,4 @@
-import { enumToMap } from "./utils";
+import { enumToMap } from './utils';
 
 export type Enum = Record<string, number>;
 
@@ -80,65 +80,65 @@ export const LENIENT_FLAGS: Enum = {
 };
 
 export const METHODS: Enum = {
-  DELETE: 0,
-  GET: 1,
-  HEAD: 2,
-  POST: 3,
-  PUT: 4,
+  'DELETE': 0,
+  'GET': 1,
+  'HEAD': 2,
+  'POST': 3,
+  'PUT': 4,
   /* pathological */
-  CONNECT: 5,
-  OPTIONS: 6,
-  TRACE: 7,
+  'CONNECT': 5,
+  'OPTIONS': 6,
+  'TRACE': 7,
   /* WebDAV */
-  COPY: 8,
-  LOCK: 9,
-  MKCOL: 10,
-  MOVE: 11,
-  PROPFIND: 12,
-  PROPPATCH: 13,
-  SEARCH: 14,
-  UNLOCK: 15,
-  BIND: 16,
-  REBIND: 17,
-  UNBIND: 18,
-  ACL: 19,
+  'COPY': 8,
+  'LOCK': 9,
+  'MKCOL': 10,
+  'MOVE': 11,
+  'PROPFIND': 12,
+  'PROPPATCH': 13,
+  'SEARCH': 14,
+  'UNLOCK': 15,
+  'BIND': 16,
+  'REBIND': 17,
+  'UNBIND': 18,
+  'ACL': 19,
   /* subversion */
-  REPORT: 20,
-  MKACTIVITY: 21,
-  CHECKOUT: 22,
-  MERGE: 23,
+  'REPORT': 20,
+  'MKACTIVITY': 21,
+  'CHECKOUT': 22,
+  'MERGE': 23,
   /* upnp */
-  "M-SEARCH": 24,
-  NOTIFY: 25,
-  SUBSCRIBE: 26,
-  UNSUBSCRIBE: 27,
+  'M-SEARCH': 24,
+  'NOTIFY': 25,
+  'SUBSCRIBE': 26,
+  'UNSUBSCRIBE': 27,
   /* RFC-5789 */
-  PATCH: 28,
-  PURGE: 29,
+  'PATCH': 28,
+  'PURGE': 29,
   /* CalDAV */
-  MKCALENDAR: 30,
+  'MKCALENDAR': 30,
   /* RFC-2068, section 19.6.1.2 */
-  LINK: 31,
-  UNLINK: 32,
+  'LINK': 31,
+  'UNLINK': 32,
   /* icecast */
-  SOURCE: 33,
+  'SOURCE': 33,
   /* RFC-7540, section 11.6 */
-  PRI: 34,
+  'PRI': 34,
   /* RFC-2326 RTSP */
-  DESCRIBE: 35,
-  ANNOUNCE: 36,
-  SETUP: 37,
-  PLAY: 38,
-  PAUSE: 39,
-  TEARDOWN: 40,
-  GET_PARAMETER: 41,
-  SET_PARAMETER: 42,
-  REDIRECT: 43,
-  RECORD: 44,
+  'DESCRIBE': 35,
+  'ANNOUNCE': 36,
+  'SETUP': 37,
+  'PLAY': 38,
+  'PAUSE': 39,
+  'TEARDOWN': 40,
+  'GET_PARAMETER': 41,
+  'SET_PARAMETER': 42,
+  'REDIRECT': 43,
+  'RECORD': 44,
   /* RAOP */
-  FLUSH: 45,
+  'FLUSH': 45,
   /* DRAFT https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-02.html */
-  QUERY: 46,
+  'QUERY': 46,
 };
 
 export const STATUSES: Enum = {
@@ -287,7 +287,7 @@ export const METHODS_HTTP = [
   METHODS.MKACTIVITY,
   METHODS.CHECKOUT,
   METHODS.MERGE,
-  METHODS["M-SEARCH"],
+  METHODS['M-SEARCH'],
   METHODS.NOTIFY,
   METHODS.SUBSCRIBE,
   METHODS.UNSUBSCRIBE,
@@ -329,7 +329,7 @@ export const METHODS_RTSP = [
 export const METHOD_MAP = enumToMap(METHODS);
 
 export const H_METHOD_MAP = Object.fromEntries(
-  Object.entries(METHODS).filter(([k]) => k.startsWith("H"))
+  Object.entries(METHODS).filter(([ k ]) => k.startsWith('H'))
 );
 
 export const STATUSES_HTTP = [
