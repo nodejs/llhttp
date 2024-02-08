@@ -35,7 +35,7 @@ jobs:
         key: ubuntu-latest-node-${{ hashFiles('vendor/llhttp/**/package-lock.json') }}
         restore-keys: ubuntu-latest-node-
     - name: Install llhttp dependencies
-      run: npm install --ignore-scripts
+      run: npm ci --ignore-scripts
       working-directory: vendor/llhttp
     - name: Build llhttp
       run: make
