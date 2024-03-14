@@ -605,3 +605,88 @@ off=126 header_value complete
 off=127 chunk complete
 off=127 message complete
 ```
+
+### Spaces before headers
+
+<!-- meta={ "type": "request" } -->
+
+```http
+POST /hello HTTP/1.1
+Host: localhost
+Foo: bar
+ Content-Length: 38
+
+GET /bye HTTP/1.1
+Host: localhost
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
+off=5 len=6 span[url]="/hello"
+off=12 url complete
+off=17 len=3 span[version]="1.1"
+off=20 version complete
+off=22 len=4 span[header_field]="Host"
+off=27 header_field complete
+off=28 len=9 span[header_value]="localhost"
+off=39 header_value complete
+off=39 len=3 span[header_field]="Foo"
+off=43 header_field complete
+off=44 len=3 span[header_value]="bar"
+off=49 error code=10 reason="Unexpected whitespace after header value"
+```
+
+### Spaces before headers (lenient)
+
+<!-- meta={ "type": "request-lenient-headers" } -->
+
+```http
+POST /hello HTTP/1.1
+Host: localhost
+Foo: bar
+ Content-Length: 38
+
+GET /bye HTTP/1.1
+Host: localhost
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
+off=5 len=6 span[url]="/hello"
+off=12 url complete
+off=17 len=3 span[version]="1.1"
+off=20 version complete
+off=22 len=4 span[header_field]="Host"
+off=27 header_field complete
+off=28 len=9 span[header_value]="localhost"
+off=39 header_value complete
+off=39 len=3 span[header_field]="Foo"
+off=43 header_field complete
+off=44 len=3 span[header_value]="bar"
+off=49 len=19 span[header_value]=" Content-Length: 38"
+off=70 header_value complete
+off=72 headers complete method=3 v=1/1 flags=0 content_length=0
+off=72 message complete
+off=72 reset
+off=72 message begin
+off=72 len=3 span[method]="GET"
+off=75 method complete
+off=76 len=4 span[url]="/bye"
+off=81 url complete
+off=86 len=3 span[version]="1.1"
+off=89 version complete
+off=91 len=4 span[header_field]="Host"
+off=96 header_field complete
+off=97 len=9 span[header_value]="localhost"
+off=108 header_value complete
+off=110 headers complete method=1 v=1/1 flags=0 content_length=0
+off=110 message complete
+```

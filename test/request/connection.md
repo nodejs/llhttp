@@ -374,7 +374,7 @@ off=75 message complete
 
 ### Multiple tokens with folding
 
-<!-- meta={"type": "request"} -->
+<!-- meta={"type": "request-lenient-headers"} -->
 ```http
 GET /demo HTTP/1.1
 Host: example.com
@@ -465,7 +465,7 @@ off=75 error code=22 reason="Pause on CONNECT/Upgrade"
 
 ### Multiple tokens with folding, LWS, and CRLF
 
-<!-- meta={"type": "request"} -->
+<!-- meta={"type": "request-lenient-headers"} -->
 ```http
 GET /demo HTTP/1.1
 Connection: keep-alive, \r\n upgrade
