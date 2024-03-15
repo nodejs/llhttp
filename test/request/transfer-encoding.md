@@ -605,7 +605,7 @@ off=50 error code=12 reason="Invalid character in chunk size"
 
 ## Invalid OBS fold after chunked value
 
-<!-- meta={"type": "request", "mode": "strict"} -->
+<!-- meta={"type": "request-lenient-headers", "mode": "strict"} -->
 ```http
 PUT /url HTTP/1.1
 Transfer-Encoding: chunked
