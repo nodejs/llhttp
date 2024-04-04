@@ -756,11 +756,14 @@ export class HTTP {
         'Missing expected LF after header value'));
 
     n('header_value_lws')
-      .peek([ ' ', '\t' ],
-        this.load('header_state', {
-          [HEADER_STATE.TRANSFER_ENCODING_CHUNKED]:
-            this.resetHeaderState(span.headerValue.start(n('header_value_start'))),
-        }, span.headerValue.start(n('header_value_start'))))
+      .peek(
+        [ ' ', '\t' ],
+        this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
+          1: this.load('header_state', {
+            [HEADER_STATE.TRANSFER_ENCODING_CHUNKED]:
+              this.resetHeaderState(span.headerValue.start(n('header_value_start'))),
+          }, span.headerValue.start(n('header_value_start'))),
+        }, p.error(ERROR.INVALID_HEADER_TOKEN, 'Unexpected whitespace after header value')))
       .otherwise(this.setHeaderFlags(onHeaderValueComplete));
 
     const checkTrailing = this.testFlags(FLAGS.TRAILING, {
