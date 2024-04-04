@@ -140,7 +140,7 @@ off=78 len=1 span[body]=lf
 
 ## Invalid OBS fold after chunked value
 
-<!-- meta={"type": "response" } -->
+<!-- meta={"type": "response-lenient-headers"} -->
 ```http
 HTTP/1.1 200 OK
 Transfer-Encoding: chunked
