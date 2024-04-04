@@ -370,7 +370,7 @@ off=101 error code=2 reason="Invalid character in chunk extensions quoted value"
 
 ## Invalid OBS fold after chunked value
 
-<!-- meta={"type": "response" } -->
+<!-- meta={"type": "response-lenient-headers" } -->
 ```http
 HTTP/1.1 200 OK
 Transfer-Encoding: chunked

@@ -540,7 +540,7 @@ off=61 message complete
 
 See nodejs/test/parallel/test-http-headers-obstext.js
 
-<!-- meta={"type": "request"} -->
+<!-- meta={"type": "request-lenient-headers"} -->
 ```http
 GET / HTTP/1.1
 X-SSL-Nonsense:   -----BEGIN CERTIFICATE-----
