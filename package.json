@@ -18,8 +18,8 @@
     "clean": "rm -rf lib && rm -rf test/tmp",
     "prepare": "npm run clean && npm run build-ts",
     "test": "node -r ts-node/register/type-check ./test/md-test.ts",
-    "lint": "eslint -c eslint.json bin/*.ts src/*.ts src/**/*.ts test/*.ts test/**/*.ts",
-    "lint-fix": "eslint --fix -c eslint.json bin/*.ts src/*.ts src/**/*.ts test/*.ts test/**/*.ts",
+    "lint": "eslint",
+    "lint-fix": "eslint --fix",
     "postversion": "RELEASE=`node -e \"process.stdout.write(require('./package').version)\"` make -B postversion",
     "github-release": "RELEASE_V=`node -e \"process.stdout.write('v' + require('./package').version)\"` make github-release"
   },
@@ -40,7 +40,9 @@
   },
   "homepage": "https://github.com/nodejs/llhttp#readme",
   "devDependencies": {
+    "@eslint/js": "10.0.0",
     "@stylistic/eslint-plugin": "^2.1.0",
+    "@types/eslint__js": "^8.42.3",
     "@types/node": "^22.1.0",
     "@typescript-eslint/eslint-plugin": "^8.0.1",
     "@typescript-eslint/parser": "^8.0.1",
@@ -49,7 +51,8 @@
     "llparse-test-fixture": "^5.0.2",
     "mdgator": "^1.1.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.1"
   },
   "dependencies": {
     "llparse": "^7.1.1"

@@ -436,7 +436,7 @@ export const STATUSES_HTTP = [
 
 // Internal
 
-export type CharList = Array<string | number>;
+export type CharList = (string | number)[];
 
 export const ALPHA: CharList = [];
 
@@ -540,3 +540,37 @@ export const SPECIAL_HEADERS = {
   'transfer-encoding': HEADER_STATE.TRANSFER_ENCODING,
   'upgrade': HEADER_STATE.UPGRADE,
 };
+
+export default {
+  ERROR,
+  TYPE,
+  FLAGS,
+  LENIENT_FLAGS,
+  METHODS,
+  STATUSES,
+  FINISH,
+  HEADER_STATE,
+  ALPHA,
+  NUM_MAP,
+  HEX_MAP,
+  NUM,
+  ALPHANUM,
+  MARK,
+  USERINFO_CHARS,
+  URL_CHAR,
+  HEX,
+  TOKEN,
+  HEADER_CHARS,
+  CONNECTION_TOKEN_CHARS,
+  QUOTED_STRING,
+  HTAB_SP_VCHAR_OBS_TEXT,
+  MAJOR,
+  MINOR,
+  SPECIAL_HEADERS,
+  METHODS_HTTP,
+  METHODS_ICE,
+  METHODS_RTSP,
+  METHOD_MAP,
+  H_METHOD_MAP,
+  STATUSES_HTTP,
+}

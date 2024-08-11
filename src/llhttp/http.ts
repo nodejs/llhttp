@@ -1,11 +1,11 @@
-import * as assert from 'assert';
-import { LLParse, source } from 'llparse';
+import assert from 'assert';
+import { type LLParse, source } from 'llparse';
 
 import Match = source.node.Match;
 import Node = source.node.Node;
 
 import {
-  CharList,
+  type CharList,
   CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, H_METHOD_MAP, HEADER_CHARS,
   HEADER_STATE, HEX_MAP, HTAB_SP_VCHAR_OBS_TEXT,
   LENIENT_FLAGS,
@@ -15,7 +15,7 @@ import {
 } from './constants';
 import { URL } from './url';
 
-const NODES: ReadonlyArray<string> = [
+const NODES: readonly string[] = [
   'start',
   'after_start',
   'start_req',
@@ -164,7 +164,7 @@ export class HTTP {
   private readonly TOKEN: CharList;
   private readonly span: ISpanMap;
   private readonly callback: ICallbackMap;
-  private readonly nodes: Map<string, Match> = new Map();
+  private readonly nodes = new Map<string, Match>();
 
   constructor(private readonly llparse: LLParse) {
     const p = llparse;
@@ -183,7 +183,6 @@ export class HTTP {
       version: p.span(p.code.span('llhttp__on_version')),
     };
 
-    /* tslint:disable:object-literal-sort-keys */
     this.callback = {
       // User callbacks
       onUrlComplete: p.code.match('llhttp__on_url_complete'),
@@ -207,8 +206,7 @@ export class HTTP {
       afterHeadersComplete: p.code.match('llhttp__after_headers_complete'),
       afterMessageComplete: p.code.match('llhttp__after_message_complete'),
     };
-    /* tslint:enable:object-literal-sort-keys */
-
+   
     for (const name of NODES) {
       this.nodes.set(name, p.node(name) as Match);
     }
@@ -441,7 +439,7 @@ export class HTTP {
       const success = n('req_http_version');
       const failure = p.error(ERROR.INVALID_CONSTANT, error);
 
-      const map: { [key: number]: Node } = {};
+      const map: Record<number, Node> = {};
       for (const method of methods) {
         map[method] = success;
       }
@@ -1133,7 +1131,7 @@ export class HTTP {
     return this.nodes.get(name) as unknown as T;
   }
 
-  private load(field: string, map: { [key: number]: Node },
+  private load(field: string, map: Record<number, Node>,
                next?: string | Node): Node {
     const p = this.llparse;
 
@@ -1182,7 +1180,7 @@ export class HTTP {
     return p.invoke(p.code.or('flags', flag), this.node(next));
   }
 
-  private testFlags(flag: number, map: { [key: number]: Node },
+  private testFlags(flag: number, map: Record<number, Node>,
                     next?: string | Node): Node {
     const p = this.llparse;
     const res = p.invoke(p.code.test('flags', flag), map);
@@ -1192,7 +1190,7 @@ export class HTTP {
     return res;
   }
 
-  private testLenientFlags(flag: number, map: { [key: number]: Node },
+  private testLenientFlags(flag: number, map: Record<number, Node>,
                            next?: string | Node): Node {
     const p = this.llparse;
     const res = p.invoke(p.code.test('lenient_flags', flag), map);
