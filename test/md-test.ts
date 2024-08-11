@@ -1,12 +1,12 @@
-import * as assert from 'node:assert';
+import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import * as fs from 'fs';
+import fs from 'fs';
 import { LLParse } from 'llparse';
 import { Group, MDGator, Metadata, Test } from 'mdgator';
-import * as path from 'path';
-import * as vm from 'vm';
+import path from 'path';
+import vm from 'vm';
 
-import * as llhttp from '../src/llhttp';
+import llhttp from '../src/llhttp';
 import { allowedTypes, build, FixtureResult, Node, TestType } from './fixtures';
 
 //
@@ -92,7 +92,7 @@ function run(name: string): void {
 
   function runSingleTest(ty: TestType, meta: Metadata,
                          input: string,
-                         expected: ReadonlyArray<string | RegExp>): void {
+                         expected: readonly (string | RegExp)[]): void {
     test(`should pass for type="${ty}"`, { timeout: 60000 }, async () => {
       const binary = await buildMode(ty, meta);
       await binary.check(input, expected, {

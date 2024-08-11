@@ -1,5 +1,15 @@
 {
-  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "strict": true,
+    "target": "es2018",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "outDir": "./lib",
+    "declaration": true,
+    "pretty": true,
+    "sourceMap": true
+  },
   "include": [
     "src/**/*.ts"
   ]

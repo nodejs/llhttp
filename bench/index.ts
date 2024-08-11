@@ -1,4 +1,4 @@
-import * as assert from "assert";
+import assert from "assert";
 import { spawnSync } from "child_process";
 import { existsSync } from "fs";
 import { resolve } from "path";

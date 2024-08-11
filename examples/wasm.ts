@@ -7,7 +7,7 @@
  */
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import * as constants from '../build/wasm/constants';
+import constants from '../build/wasm/constants';
 
 const bin = readFileSync(resolve(__dirname, '../build/wasm/llhttp.wasm'));
 const mod = new WebAssembly.Module(bin);
