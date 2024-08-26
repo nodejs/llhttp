@@ -112,6 +112,7 @@ The following callbacks can return `0` (proceed normally), `-1` (error) or `HPE_
 * `on_message_complete`: Invoked when a request/response has been completedly parsed.
 * `on_url_complete`: Invoked after the URL has been parsed.
 * `on_method_complete`: Invoked after the HTTP method has been parsed.
+* `on_protocol_complete`: Invoked after the HTTP version has been parsed.
 * `on_version_complete`: Invoked after the HTTP version has been parsed.
 * `on_status_complete`: Invoked after the status code has been parsed.
 * `on_header_field_complete`: Invoked after a header name has been parsed.
@@ -130,6 +131,7 @@ The following callbacks can return `0` (proceed normally), `-1` (error) or `HPE_
 * `on_method`: Invoked when another character of the method is received. 
    When parser is created with `HTTP_BOTH` and the input is a response, this also invoked for the sequence `HTTP/`
    of the first message.
+* `on_protocol`: Invoked when another character of the protocol is received.
 * `on_version`: Invoked when another character of the version is received.
 * `on_header_field`: Invoked when another character of a header name is received.
 * `on_header_value`: Invoked when another character of a header value is received.

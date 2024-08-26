@@ -90,10 +90,11 @@ function run(name: string): void {
   const raw = fs.readFileSync(path.join(__dirname, name + '.md')).toString();
   const groups = md.parse(raw);
 
-  function runSingleTest(ty: TestType, meta: Metadata,
-                         input: string,
-                         expected: readonly (string | RegExp)[]): void {
-    test(`should pass for type="${ty}"`, { timeout: 60000 }, async () => {
+  function runSingleTest(
+    location: string, ty: TestType, meta: Metadata, 
+    input: string, expected: readonly (string | RegExp)[]
+  ): void {
+    test(`should pass for type="${ty}" (location=${location})`, { timeout: 60000 }, async () => {
       const binary = await buildMode(ty, meta);
       await binary.check(input, expected, {
         noScan: meta.noScan === true,
@@ -103,6 +104,8 @@ function run(name: string): void {
 
   function runTest(test: Test) {
     describe(test.name + ` at ${name}.md:${test.line + 1}`, () => {
+      const location = `${name}.md:${test.line + 1}`
+
       let types: TestType[] = [];
 
       const isURL = test.values.has('url');
@@ -202,7 +205,7 @@ function run(name: string): void {
           continue;
         }
 
-        runSingleTest(ty, meta, input, fullExpected);
+        runSingleTest(location, ty, meta, input, fullExpected);
       }
     });
   }

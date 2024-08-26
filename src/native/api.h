@@ -49,6 +49,7 @@ struct llhttp_settings_s {
 
   /* Possible return values 0, -1, `HPE_PAUSED` */
   llhttp_cb      on_message_complete;
+  llhttp_cb      on_protocol_complete;
   llhttp_cb      on_url_complete;
   llhttp_cb      on_status_complete;
   llhttp_cb      on_method_complete;

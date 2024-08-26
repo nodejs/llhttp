@@ -341,6 +341,20 @@ int llhttp__on_message_begin(llhttp_t* s, const char* p, const char* endp) {
 }
 
 
+int llhttp__on_protocol(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  SPAN_CALLBACK_MAYBE(s, on_protocol, p, endp - p);
+  return err;
+}
+
+
+int llhttp__on_protocol_complete(llhttp_t* s, const char* p, const char* endp) {
+  int err;
+  CALLBACK_MAYBE(s, on_protocol_complete);
+  return err;
+}
+
+
 int llhttp__on_url(llhttp_t* s, const char* p, const char* endp) {
   int err;
   SPAN_CALLBACK_MAYBE(s, on_url, p, endp - p);
