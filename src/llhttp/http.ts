@@ -214,7 +214,7 @@ export class HTTP {
       afterHeadersComplete: p.code.match('llhttp__after_headers_complete'),
       afterMessageComplete: p.code.match('llhttp__after_message_complete'),
     };
-   
+
     for (const name of NODES) {
       this.nodes.set(name, p.node(name) as Match);
     }
@@ -331,9 +331,7 @@ export class HTTP {
       .otherwise(this.span.protocol.start(n('res_after_start')));
 
     n('res_after_start')
-      .match('HTTP', endResponseProtocol())
-      .match('RTSP', endResponseProtocol())
-      .match('ICE', endResponseProtocol())
+      .match([ 'HTTP', 'RTSP', 'ICE' ], endResponseProtocol())
       .otherwise(this.span.protocol.end(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/')));
 
     n('res_after_protocol')
