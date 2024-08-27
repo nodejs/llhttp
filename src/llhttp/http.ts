@@ -25,6 +25,8 @@ const NODES: readonly string[] = [
 
   'req_or_res_method',
 
+  'res_after_start',
+  'res_after_protocol',
   'res_http_major',
   'res_http_dot',
   'res_http_minor',
@@ -41,6 +43,8 @@ const NODES: readonly string[] = [
   'req_first_space_before_url',
   'req_spaces_before_url',
   'req_http_start',
+  'req_after_http_start',
+  'req_after_protocol',
   'req_http_version',
   'req_http_major',
   'req_http_dot',
@@ -109,6 +113,7 @@ const NODES: readonly string[] = [
 ];
 
 interface ISpanMap {
+  readonly protocol: source.Span;
   readonly status: source.Span;
   readonly method: source.Span;
   readonly version: source.Span;
@@ -121,6 +126,7 @@ interface ISpanMap {
 
 interface ICallbackMap {
   readonly onMessageBegin: source.code.Code;
+  readonly onProtocolComplete: source.code.Code;
   readonly onUrlComplete: source.code.Code;
   readonly onMethodComplete: source.code.Code;
   readonly onVersionComplete: source.code.Code;
@@ -178,6 +184,7 @@ export class HTTP {
       chunkExtensionValue: p.span(p.code.span('llhttp__on_chunk_extension_value')),
       headerField: p.span(p.code.span('llhttp__on_header_field')),
       headerValue: p.span(p.code.span('llhttp__on_header_value')),
+      protocol: p.span(p.code.span('llhttp__on_protocol')),
       method: p.span(p.code.span('llhttp__on_method')),
       status: p.span(p.code.span('llhttp__on_status')),
       version: p.span(p.code.span('llhttp__on_version')),
@@ -185,6 +192,7 @@ export class HTTP {
 
     this.callback = {
       // User callbacks
+      onProtocolComplete: p.code.match('llhttp__on_protocol_complete'),
       onUrlComplete: p.code.match('llhttp__on_url_complete'),
       onStatusComplete: p.code.match('llhttp__on_status_complete'),
       onMethodComplete: p.code.match('llhttp__on_method_complete'),
@@ -206,7 +214,7 @@ export class HTTP {
       afterHeadersComplete: p.code.match('llhttp__after_headers_complete'),
       afterMessageComplete: p.code.match('llhttp__after_message_complete'),
     };
-   
+
     for (const name of NODES) {
       this.nodes.set(name, p.node(name) as Match);
     }
@@ -313,9 +321,22 @@ export class HTTP {
     };
 
     // Response
+    const endResponseProtocol = () => {
+      return this.span.protocol.end(
+        this.invokePausable('on_protocol_complete', ERROR.CB_PROTOCOL_COMPLETE, n('res_after_protocol'),
+        ));
+    }
+
     n('start_res')
-      .match('HTTP/', span.version.start(n('res_http_major')))
-      .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
+      .otherwise(this.span.protocol.start(n('res_after_start')));
+
+    n('res_after_start')
+      .match([ 'HTTP', 'RTSP', 'ICE' ], endResponseProtocol())
+      .otherwise(this.span.protocol.end(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/, RTSP/ or ICE/')));
+
+    n('res_after_protocol')
+      .match('/', span.version.start(n('res_http_major')))
+      .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/, RTSP/ or ICE/'));
 
     n('res_http_major')
       .select(MAJOR, this.store('http_major', 'res_http_dot'))
@@ -436,7 +457,7 @@ export class HTTP {
       );
 
     const checkMethod = (methods: number[], error: string): Node => {
-      const success = n('req_http_version');
+      const success = n('req_after_protocol');
       const failure = p.error(ERROR.INVALID_CONSTANT, error);
 
       const map: Record<number, Node> = {};
@@ -444,18 +465,27 @@ export class HTTP {
         map[method] = success;
       }
 
-      return this.load('method', map, failure);
+      return this.span.protocol.end(
+        this.invokePausable('on_protocol_complete', ERROR.CB_PROTOCOL_COMPLETE, this.load('method', map, failure)),
+      );
     };
 
     n('req_http_start')
-      .match('HTTP/', checkMethod(METHODS_HTTP,
-        'Invalid method for HTTP/x.x request'))
-      .match('RTSP/', checkMethod(METHODS_RTSP,
-        'Invalid method for RTSP/x.x request'))
-      .match('ICE/', checkMethod(METHODS_ICE,
-        'Expected SOURCE method for ICE/x.x request'))
       .match(' ', n('req_http_start'))
-      .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
+      .otherwise(this.span.protocol.start(n('req_after_http_start')));
+
+    n('req_after_http_start')
+      .match('HTTP', checkMethod(METHODS_HTTP,
+        'Invalid method for HTTP/x.x request'))
+      .match('RTSP', checkMethod(METHODS_RTSP,
+        'Invalid method for RTSP/x.x request'))
+      .match('ICE', checkMethod(METHODS_ICE,
+        'Expected SOURCE method for ICE/x.x request'))
+      .otherwise(this.span.protocol.end(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/, RTSP/ or ICE/')));
+
+    n('req_after_protocol')
+      .match('/', n('req_http_version'))
+      .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/, RTSP/ or ICE/'));
 
     n('req_http_version').otherwise(span.version.start(n('req_http_major')));
 
@@ -1247,6 +1277,9 @@ export class HTTP {
     switch (name) {
       case 'on_message_begin':
         cb = this.callback.onMessageBegin;
+        break;
+      case 'on_protocol_complete':
+        cb = this.callback.onProtocolComplete;
         break;
       case 'on_url_complete':
         cb = this.callback.onUrlComplete;
