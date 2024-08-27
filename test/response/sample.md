@@ -92,7 +92,7 @@ HTTPER/1.1 200 OK
 off=0 message begin
 off=0 len=4 span[protocol]="HTTP"
 off=4 protocol complete
-off=4 error code=8 reason="Expected HTTP/"
+off=4 error code=8 reason="Expected HTTP/, RTSP/ or ICE/"
 ```
 
 ## Empty body should not trigger spurious span callbacks

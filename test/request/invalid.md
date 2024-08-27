@@ -39,7 +39,7 @@ off=3 method complete
 off=4 len=18 span[url]="/music/sweet/music"
 off=23 url complete
 off=23 len=1 span[protocol]="I"
-off=24 error code=8 reason="Expected HTTP/"
+off=24 error code=8 reason="Expected HTTP/, RTSP/ or ICE/"
 ```
 
 ### RTSP protocol and PUT method

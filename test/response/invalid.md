@@ -13,7 +13,7 @@ HTP/1.1 200 OK
 ```log
 off=0 message begin
 off=0 len=2 span[protocol]="HT"
-off=2 error code=8 reason="Expected HTTP/"
+off=2 error code=8 reason="Expected HTTP/, RTSP/ or ICE/"
 ```
 
 ### Extra digit in HTTP major version

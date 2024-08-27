@@ -258,5 +258,5 @@ off=3 method complete
 off=4 len=4 span[url]="/foo"
 off=9 url complete
 off=9 len=0 span[protocol]=""
-off=9 error code=8 reason="Expected HTTP/"
+off=9 error code=8 reason="Expected HTTP/, RTSP/ or ICE/"
 ```

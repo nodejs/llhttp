@@ -332,11 +332,11 @@ export class HTTP {
 
     n('res_after_start')
       .match([ 'HTTP', 'RTSP', 'ICE' ], endResponseProtocol())
-      .otherwise(this.span.protocol.end(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/')));
+      .otherwise(this.span.protocol.end(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/, RTSP/ or ICE/')));
 
     n('res_after_protocol')
       .match('/', span.version.start(n('res_http_major')))
-      .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
+      .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/, RTSP/ or ICE/'));
 
     n('res_http_major')
       .select(MAJOR, this.store('http_major', 'res_http_dot'))
@@ -481,11 +481,11 @@ export class HTTP {
         'Invalid method for RTSP/x.x request'))
       .match('ICE', checkMethod(METHODS_ICE,
         'Expected SOURCE method for ICE/x.x request'))
-      .otherwise(this.span.protocol.end(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/')));
+      .otherwise(this.span.protocol.end(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/, RTSP/ or ICE/')));
 
     n('req_after_protocol')
       .match('/', n('req_http_version'))
-      .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
+      .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/, RTSP/ or ICE/'));
 
     n('req_http_version').otherwise(span.version.start(n('req_http_major')));
 
