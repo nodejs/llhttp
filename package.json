@@ -6,7 +6,8 @@
   "types": "lib/llhttp.d.ts",
   "files": [
     "lib",
-    "src"
+    "src",
+    "build"
   ],
   "scripts": {
     "bench": "ts-node bench/",
@@ -14,7 +15,7 @@
     "build-ts": "tsc",
     "prebuild-wasm": "npm run wasm -- --prebuild && npm run wasm -- --setup",
     "build-wasm": "npm run wasm -- --docker",
-    "wasm": "ts-node bin/build_wasm.ts",
+    "wasm": "bash bin/build_wasm.sh",
     "clean": "rm -rf lib && rm -rf test/tmp",
     "prepare": "npm run clean && npm run build-ts",
     "test": "node -r ts-node/register/type-check ./test/md-test.ts",
