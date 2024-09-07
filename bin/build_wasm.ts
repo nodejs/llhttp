@@ -3,6 +3,7 @@ import { copyFileSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
 
 let platform = process.env.WASM_PLATFORM ?? '';
+const IS_CI = 'CI' in process.env;
 const WASM_OUT = resolve(__dirname, '../build/wasm');
 const WASM_SRC = resolve(__dirname, '../');
 
@@ -11,7 +12,7 @@ if (!platform && process.argv[2]) {
 }
 
 if (process.argv[2] === '--prebuild') {
-  const cmd = `docker build --platform=${platform.toString().trim()} -t llhttp_wasm_builder .`;
+  const cmd = `docker build --platform=${platform.toString().trim()} -t llhttp_wasm_builder . --load`;
 
   console.log(`> ${cmd}\n\n`);
   execSync(cmd, { stdio: 'inherit' });
@@ -32,7 +33,10 @@ if (process.argv[2] === '--setup') {
 }
 
 if (process.argv[2] === '--docker') {
-  let cmd = `docker run --rm -it --platform=${platform.toString().trim()}`;
+  let cmd = `docker run --rm --platform=${platform.toString().trim()}`;
+  if (!IS_CI) {
+    cmd += ' -it';
+  }
   // Try to avoid root permission problems on compiled assets
   // when running on linux.
   // It will work flawessly if uid === gid === 1000
