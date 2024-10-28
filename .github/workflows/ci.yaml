@@ -36,7 +36,7 @@ jobs:
 
       # Skip macOS & Windows, cache there is slower
       - name: Restore node_modules cache for Linux
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         if: runner.os == 'Linux'
         with:
           path: ~/.npm
@@ -79,7 +79,7 @@ jobs:
 
       # Skip macOS & Windows, cache there is slower
       - name: Restore node_modules cache for Linux
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         if: runner.os == 'Linux'
         with:
           path: ~/.npm
@@ -104,7 +104,7 @@ jobs:
           fetch-depth: 1
 
       - name: Restore node_modules cache
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
