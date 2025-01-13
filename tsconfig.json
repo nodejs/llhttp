@@ -12,5 +12,5 @@
     "pretty": true,
     "sourceMap": true,
   },
-  "include": ["bin/**/*.ts", "src/**/*.ts", "test/**/*.ts"],
+  "include": ["src/**/*.ts"],
 }

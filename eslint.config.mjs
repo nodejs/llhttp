@@ -1,26 +1,32 @@
+// @ts-check
+
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import stylistic from "@stylistic/eslint-plugin";
 
 export default tseslint.config(
-  { 
-    ignores: ["build", "lib", "examples", "bench", "eslint.config.mjs"] 
-  },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    languageOptions: {
-      parser: tseslint.parser,
-      parserOptions: {
-        projectService: true
-      },
-    },
+    ignores: ["lib"],
   },
   {
+    files: [
+      "bin/**/*.ts",
+      "bench/**/*.ts",
+      "src/**/*.ts",
+      "test/**/*.ts",
+      "eslint.config.js",
+    ],    
     plugins: {
       "@stylistic": stylistic,
     },
-    files: ["bin/**/*.ts", "bench/**/*.ts", "src/**/*.ts", "test/**/*.ts"],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        project: "./tsconfig.test.json",
+      },
+    },
     rules: {
       "@stylistic/max-len": [
         2,
