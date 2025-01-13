@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   ci:
-    name: CI
+    name: Build, Test and Lint
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -36,6 +36,7 @@ jobs:
 
       - name: Setup Docker
         uses: docker/setup-buildx-action@v1 
+        if: runner.os == 'Linux'
 
       - name: Fetch
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -59,6 +60,7 @@ jobs:
 
       - name: Build WebAssembly
         run: npm run build-wasm
+        if: runner.os == 'Linux'
 
       - name: Run tests
         run: npm run test
