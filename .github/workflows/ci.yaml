@@ -67,3 +67,4 @@ jobs:
 
       - name: Lint Code
         run: npm run lint
+        if: runner.os == 'Linux'
