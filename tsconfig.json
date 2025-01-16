@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "target": "es2018",
+    "lib": ["es2023"],
     "module": "commonjs",
-    "esModuleInterop": true,
     "moduleResolution": "node",
+    "target": "es2022",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "outDir": "./lib",
     "declaration": true,
     "pretty": true,
-    "sourceMap": true
+    "sourceMap": true,
   },
-  "include": [
-    "src/**/*.ts"
-  ]
+  "include": ["src/**/*.ts"],
 }

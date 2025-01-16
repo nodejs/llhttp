@@ -32,7 +32,7 @@ if (process.argv[2] === '--setup') {
 }
 
 if (process.argv[2] === '--docker') {
-  let cmd = `docker run --rm -it --platform=${platform.toString().trim()}`;
+  let cmd = `docker run --rm --platform=${platform.toString().trim()}`;
   // Try to avoid root permission problems on compiled assets
   // when running on linux.
   // It will work flawessly if uid === gid === 1000
