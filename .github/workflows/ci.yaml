@@ -35,7 +35,7 @@ jobs:
           node-version: 20.18.0
 
       - name: Setup Docker
-        uses: docker/setup-buildx-action@v1 
+        uses: docker/setup-buildx-action@v3 
         if: runner.os == 'Linux'
 
       - name: Fetch
