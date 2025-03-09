@@ -94,7 +94,7 @@ int main() {
 	if (err == HPE_OK) {
 		fprintf(stdout, "Successfully parsed!\n");
 	} else {
-		fprintf(stderr, "Parse error: %s %s\n", llhttp_errno_name(err), parser.reason);
+		fprintf(stderr, "Parse error: %s %s\n", llhttp_errno_name(err), llhttp_get_error_reason(&parser));
 	}
 }
 ```
@@ -189,7 +189,8 @@ Parse full or partial request/response, invoking user callbacks along the way.
 
 If any of `llhttp_data_cb` returns errno not equal to `HPE_OK` - the parsing interrupts, 
 and such errno is returned from `llhttp_execute()`. If `HPE_PAUSED` was used as a errno, 
-the execution can be resumed with `llhttp_resume()` call.
+the execution can be resumed with `llhttp_resume()` call. In that case the input should be advanced 
+to the last processed byte from the parser, which can be obtained via `llhttp_get_error_pos()`.
 
 In a special case of CONNECT/Upgrade request/response `HPE_PAUSED_UPGRADE` is returned 
 after fully parsing the request/response. If the user wishes to continue parsing, 
@@ -197,6 +198,8 @@ they need to invoke `llhttp_resume_after_upgrade()`.
 
 **if this function ever returns a non-pause type error, it will continue to return 
 the same error upon each successive call up until `llhttp_init()` is called.**
+
+If this function returns `HPE_OK`, it means all the input has been consumed and parsed.
 
 ### `llhttp_errno_t llhttp_finish(llhttp_t* parser)`
 
