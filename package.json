@@ -52,6 +52,6 @@
     "typescript-eslint": "^8.19.1"
   },
   "dependencies": {
-    "llparse": "^7.1.1"
+    "llparse": "^7.3.0"
   }
 }
