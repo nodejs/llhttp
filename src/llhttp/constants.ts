@@ -1,6 +1,6 @@
 import { enumToMap } from './utils';
 
-export type IntDict = Record<string, number>;
+export type IntDict = Readonly<Record<string, number>>;
 
 // Emums
 
