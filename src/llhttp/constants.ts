@@ -455,15 +455,16 @@ export const STATUSES_HTTP = [
 
 export type CharList = (string | number)[];
 
-export const ALPHA: CharList = [];
-
-for (let i = 'A'.charCodeAt(0); i <= 'Z'.charCodeAt(0); i++) {
-  // Upper case
-  ALPHA.push(String.fromCharCode(i));
-
-  // Lower case
-  ALPHA.push(String.fromCharCode(i + 0x20));
-}
+// ALPHA: https://tools.ietf.org/html/rfc5234#appendix-B.1
+export const ALPHA = [
+  "A", "a", "B", "b", "C", "c", "D", "d",
+  "E", "e", "F", "f", "G", "g", "H", "h",
+  "I", "i", "J", "j", "K", "k", "L", "l",
+  "M", "m", "N", "n", "O", "o", "P", "p",
+  "Q", "q", "R", "r", "S", "s", "T", "t",
+  "U", "u", "V", "v", "W", "w", "X", "x",
+  "Y", "y", "Z", "z",
+] as const;
 
 export const NUM_MAP = {
   0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
@@ -477,11 +478,12 @@ export const HEX_MAP = {
   a: 0xa, b: 0xb, c: 0xc, d: 0xd, e: 0xe, f: 0xf,
 } as const;
 
-export const NUM = [
+// DIGIT: https://tools.ietf.org/html/rfc5234#appendix-B.1
+export const DIGIT = [
   '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 ] as const;
 
-export const ALPHANUM = [ ...ALPHA, ...NUM ] as const;
+export const ALPHANUM = [ ...ALPHA, ...DIGIT ] as const;
 export const MARK = [ '-', '_', '.', '!', '~', '*', '\'', '(', ')' ] as const;
 export const USERINFO_CHARS = [ ...ALPHANUM, ...MARK, '%', ';', ':', '&', '=', '+', '$', ',' ] as const;
 
@@ -496,7 +498,7 @@ export const URL_CHAR = [
   ...ALPHANUM
 ] as const;
 
-export const HEX = [ ...NUM, 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F' ] as const;
+export const HEX = [ ...DIGIT, 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F' ] as const;
 
 /* Tokens as defined by rfc 2616. Also lowercases them.
  *        token       = 1*<any CHAR except CTLs or separators>
@@ -519,16 +521,15 @@ export const HTAB = [ '\t' ] as const;
 // SP: https://tools.ietf.org/html/rfc5234#appendix-B.1
 export const SP = [ ' ' ] as const;
 
-/*
- * Verify that a char is a valid visible (printable) US-ASCII
- * character or %x80-FF
- */
-export const HEADER_CHARS: CharList = [ '\t' ];
-for (let i = 32; i <= 255; i++) {
-  if (i !== 127) {
-    HEADER_CHARS.push(i);
-  }
-}
+// VCHAR: https://tools.ietf.org/html/rfc5234#appendix-B.1
+const VCHAR = createNumberRange(0x21, 0x7e);
+
+// OBS_TEXT: https://datatracker.ietf.org/doc/html/rfc9110#name-collected-abnf
+const OBS_TEXT = createNumberRange(0x80, 0xff);
+
+export const HTAB_SP_VCHAR_OBS_TEXT = [ ...HTAB, ...SP, ...VCHAR, ...OBS_TEXT ] as const;
+
+export const HEADER_CHARS = HTAB_SP_VCHAR_OBS_TEXT;
 
 // ',' = \x44
 export const CONNECTION_TOKEN_CHARS: CharList =
@@ -540,14 +541,6 @@ for (let i = 0x21; i <= 0xff; i++) {
     QUOTED_STRING.push(i);
   }
 }
-
-// VCHAR: https://tools.ietf.org/html/rfc5234#appendix-B.1
-const VCHAR = createNumberRange(0x21, 0x7e);
-
-// OBS_TEXT: https://datatracker.ietf.org/doc/html/rfc9110#name-collected-abnf
-const OBS_TEXT = createNumberRange(0x80, 0xff);
-
-export const HTAB_SP_VCHAR_OBS_TEXT = [ ...HTAB, ...SP, ...VCHAR, ...OBS_TEXT ] as const;
 
 export const MAJOR = NUM_MAP;
 export const MINOR = MAJOR;
@@ -572,7 +565,7 @@ export default {
   ALPHA,
   NUM_MAP,
   HEX_MAP,
-  NUM,
+  DIGIT,
   ALPHANUM,
   MARK,
   USERINFO_CHARS,
