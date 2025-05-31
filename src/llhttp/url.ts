@@ -5,7 +5,6 @@ import Node = source.node.Node;
 
 import {
   ALPHA,
-  type CharList,
   ERROR,
   URL_CHAR,
   USERINFO_CHARS,
@@ -29,7 +28,7 @@ type SpanTable = Map<SpanName, source.Span>;
 export class URL {
   private readonly spanTable: SpanTable = new Map();
   private readonly errorInvalid: Node;
-  private readonly URL_CHAR: CharList;
+  private readonly URL_CHAR: typeof URL_CHAR;
 
   constructor(private readonly llparse: LLParse, separateSpans = false) {
     const p = this.llparse;

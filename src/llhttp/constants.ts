@@ -306,7 +306,7 @@ export const METHODS_HTTP = [
 
 export const METHODS_ICE = [
   METHODS.SOURCE,
-];
+] as const;
 
 export const METHODS_RTSP = [
   METHODS.OPTIONS,
@@ -325,7 +325,7 @@ export const METHODS_RTSP = [
   // For AirPlay
   METHODS.GET,
   METHODS.POST,
-];
+] as const;
 
 export const METHOD_MAP = enumToMap(METHODS);
 
@@ -433,7 +433,7 @@ export const STATUSES_HTTP = [
   STATUSES.IDENTITY_PROVIDER_AUTHENTICATION_ERROR,
   STATUSES.NETWORK_READ_TIMEOUT,
   STATUSES.NETWORK_CONNECT_TIMEOUT,
-];
+] as const;
 
 // Internal
 
@@ -452,37 +452,35 @@ for (let i = 'A'.charCodeAt(0); i <= 'Z'.charCodeAt(0); i++) {
 export const NUM_MAP = {
   0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
   5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
-};
+} as const;
 
 export const HEX_MAP = {
   0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
   5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
   A: 0XA, B: 0XB, C: 0XC, D: 0XD, E: 0XE, F: 0XF,
   a: 0xa, b: 0xb, c: 0xc, d: 0xd, e: 0xe, f: 0xf,
-};
+} as const;
 
-export const NUM: CharList = [
+export const NUM = [
   '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-];
+] as const;
 
-export const ALPHANUM: CharList = ALPHA.concat(NUM);
-export const MARK: CharList = [ '-', '_', '.', '!', '~', '*', '\'', '(', ')' ];
-export const USERINFO_CHARS: CharList = ALPHANUM
-  .concat(MARK)
-  .concat([ '%', ';', ':', '&', '=', '+', '$', ',' ]);
+export const ALPHANUM = [ ...ALPHA, ...NUM ] as const;
+export const MARK = [ '-', '_', '.', '!', '~', '*', '\'', '(', ')' ] as const;
+export const USERINFO_CHARS = [ ...ALPHANUM, ...MARK, '%', ';', ':', '&', '=', '+', '$', ',' ] as const;
 
 // TODO(indutny): use RFC
-export const URL_CHAR: CharList = ([
+export const URL_CHAR = [
   '!', '"', '$', '%', '&', '\'',
   '(', ')', '*', '+', ',', '-', '.', '/',
   ':', ';', '<', '=', '>',
   '@', '[', '\\', ']', '^', '_',
   '`',
   '{', '|', '}', '~',
-] as CharList).concat(ALPHANUM);
+  ...ALPHANUM
+] as const;
 
-export const HEX: CharList = NUM.concat(
-  [ 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F' ]);
+export const HEX = [ ...NUM, 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F' ] as const;
 
 /* Tokens as defined by rfc 2616. Also lowercases them.
  *        token       = 1*<any CHAR except CTLs or separators>
@@ -491,12 +489,13 @@ export const HEX: CharList = NUM.concat(
  *                    | "/" | "[" | "]" | "?" | "="
  *                    | "{" | "}" | SP | HT
  */
-export const TOKEN: CharList = ([
+export const TOKEN = [
   '!', '#', '$', '%', '&', '\'',
   '*', '+', '-', '.',
   '^', '_', '`',
   '|', '~',
-] as CharList).concat(ALPHANUM);
+  ...ALPHANUM
+] as const;
 
 /*
  * Verify that a char is a valid visible (printable) US-ASCII
@@ -520,7 +519,9 @@ for (let i = 0x21; i <= 0xff; i++) {
   }
 }
 
-export const HTAB_SP_VCHAR_OBS_TEXT: CharList = [ '\t', ' ' ];
+export const HTAB_SP = [ '\t', ' ' ] as const;
+
+export const HTAB_SP_VCHAR_OBS_TEXT: CharList = [ ...HTAB_SP ];
 
 // VCHAR: https://tools.ietf.org/html/rfc5234#appendix-B.1
 for (let i = 0x21; i <= 0x7E; i++) {
@@ -540,7 +541,7 @@ export const SPECIAL_HEADERS = {
   'proxy-connection': HEADER_STATE.CONNECTION,
   'transfer-encoding': HEADER_STATE.TRANSFER_ENCODING,
   'upgrade': HEADER_STATE.UPGRADE,
-};
+} as const;
 
 export default {
   ERROR,

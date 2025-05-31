@@ -5,7 +5,6 @@ import Match = source.node.Match;
 import Node = source.node.Node;
 
 import {
-  type CharList,
   CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, H_METHOD_MAP, HEADER_CHARS,
   HEADER_STATE, HEX_MAP, HTAB_SP_VCHAR_OBS_TEXT,
   LENIENT_FLAGS,
@@ -167,7 +166,7 @@ export interface IHTTPResult {
 
 export class HTTP {
   private readonly url: URL;
-  private readonly TOKEN: CharList;
+  private readonly TOKEN: typeof TOKEN;
   private readonly span: ISpanMap;
   private readonly callback: ICallbackMap;
   private readonly nodes = new Map<string, Match>();
