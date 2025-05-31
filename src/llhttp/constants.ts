@@ -1,5 +1,12 @@
 export type IntDict = Readonly<Record<string, number>>;
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+type Simplify<T> = T extends any[] | Date
+  ? T
+  : {
+    [K in keyof T]: T[K];
+  } & {};
+
 // Emums
 
 export const ERROR = {
@@ -325,9 +332,12 @@ export const METHODS_RTSP = [
   METHODS.POST,
 ] as const;
 
-export const H_METHOD_MAP = Object.fromEntries(
-  Object.entries(METHODS).filter(([ k ]) => k.startsWith('H'))
-);
+export const H_METHOD_MAP: Simplify<Pick<
+  typeof METHODS,
+  Extract<keyof typeof METHODS, `H${string}`>
+>> = {
+  HEAD: 2,
+} as const;
 
 export const STATUSES_HTTP = [
   STATUSES.CONTINUE,
