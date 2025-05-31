@@ -7,6 +7,16 @@ type Simplify<T> = T extends any[] | Date
     [K in keyof T]: T[K];
   } & {};
 
+type Enumerate<N extends number, Acc extends number[] = []> = Acc['length'] extends N
+  ? Acc[number]
+  : Enumerate<N, [...Acc, Acc['length']]>
+
+type IntRange<F extends number, T extends number> = F | Exclude<Enumerate<T>, Enumerate<F>> | T
+
+function createNumberRange<F extends number, T extends number>(from: F, to: T): IntRange<F, T>[] {
+  return Array.from({ length: to - from + 1 }, (_, i) => i + from) as IntRange<F, T>[];
+}
+
 // Emums
 
 export const ERROR = {
@@ -503,6 +513,12 @@ export const TOKEN = [
   ...ALPHANUM
 ] as const;
 
+// HTAB: https://tools.ietf.org/html/rfc5234#appendix-B.1
+export const HTAB = [ '\t' ] as const;
+
+// SP: https://tools.ietf.org/html/rfc5234#appendix-B.1
+export const SP = [ ' ' ] as const;
+
 /*
  * Verify that a char is a valid visible (printable) US-ASCII
  * character or %x80-FF
@@ -518,25 +534,20 @@ for (let i = 32; i <= 255; i++) {
 export const CONNECTION_TOKEN_CHARS: CharList =
   HEADER_CHARS.filter((c: string | number) => c !== 44);
 
-export const QUOTED_STRING: CharList = [ '\t', ' ' ];
+export const QUOTED_STRING: CharList = [ ...HTAB, ...SP ];
 for (let i = 0x21; i <= 0xff; i++) {
   if (i !== 0x22 && i !== 0x5c) { // All characters in ASCII except \ and "
     QUOTED_STRING.push(i);
   }
 }
 
-export const HTAB_SP = [ '\t', ' ' ] as const;
-
-export const HTAB_SP_VCHAR_OBS_TEXT: CharList = [ ...HTAB_SP ];
-
 // VCHAR: https://tools.ietf.org/html/rfc5234#appendix-B.1
-for (let i = 0x21; i <= 0x7E; i++) {
-  HTAB_SP_VCHAR_OBS_TEXT.push(i);
-}
+const VCHAR = createNumberRange(0x21, 0x7e);
+
 // OBS_TEXT: https://datatracker.ietf.org/doc/html/rfc9110#name-collected-abnf
-for (let i = 0x80; i <= 0xff; i++) {
-  HTAB_SP_VCHAR_OBS_TEXT.push(i);
-}
+const OBS_TEXT = createNumberRange(0x80, 0xff);
+
+export const HTAB_SP_VCHAR_OBS_TEXT = [ ...HTAB, ...SP, ...VCHAR, ...OBS_TEXT ] as const;
 
 export const MAJOR = NUM_MAP;
 export const MINOR = MAJOR;
