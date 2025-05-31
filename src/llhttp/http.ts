@@ -15,7 +15,7 @@ import {
 } from './constants';
 import { URL } from './url';
 
-const NODES: readonly string[] = [
+const NODES = [
   'start',
   'after_start',
   'start_req',
@@ -110,7 +110,7 @@ const NODES: readonly string[] = [
   'cleanup',
   'closed',
   'restart',
-];
+] as const;
 
 interface ISpanMap {
   readonly protocol: source.Span;
@@ -456,7 +456,7 @@ export class HTTP {
           this.update('http_minor', 9, onUrlCompleteHTTP09)),
       );
 
-    const checkMethod = (methods: number[], error: string): Node => {
+    const checkMethod = (methods: readonly number[], error: string): Node => {
       const success = n('req_after_protocol');
       const failure = p.error(ERROR.INVALID_CONSTANT, error);
 

@@ -4,7 +4,7 @@ export type IntDict = Record<string, number>;
 
 // Emums
 
-export const ERROR: IntDict = {
+export const ERROR = {
   OK: 0,
   INTERNAL: 1,
   STRICT: 2,
@@ -46,15 +46,15 @@ export const ERROR: IntDict = {
   CB_CHUNK_EXTENSION_VALUE_COMPLETE: 35,
   CB_RESET: 31,
   CB_PROTOCOL_COMPLETE: 38,
-};
+} as const;
 
-export const TYPE: IntDict = {
+export const TYPE = {
   BOTH: 0, // default
   REQUEST: 1,
   RESPONSE: 2,
-};
+} as const;
 
-export const FLAGS: IntDict = {
+export const FLAGS = {
   CONNECTION_KEEP_ALIVE: 1 << 0,
   CONNECTION_CLOSE: 1 << 1,
   CONNECTION_UPGRADE: 1 << 2,
@@ -65,9 +65,9 @@ export const FLAGS: IntDict = {
   TRAILING: 1 << 7,
   // 1 << 8 is unused
   TRANSFER_ENCODING: 1 << 9,
-};
+} as const;
 
-export const LENIENT_FLAGS: IntDict = {
+export const LENIENT_FLAGS = {
   HEADERS: 1 << 0,
   CHUNKED_LENGTH: 1 << 1,
   KEEP_ALIVE: 1 << 2,
@@ -78,9 +78,9 @@ export const LENIENT_FLAGS: IntDict = {
   OPTIONAL_CRLF_AFTER_CHUNK: 1 << 7,
   OPTIONAL_CR_BEFORE_LF: 1 << 8,
   SPACES_AFTER_CHUNK_SIZE: 1 << 9,
-};
+} as const;
 
-export const METHODS: IntDict = {
+export const METHODS = {
   'DELETE': 0,
   'GET': 1,
   'HEAD': 2,
@@ -140,9 +140,9 @@ export const METHODS: IntDict = {
   'FLUSH': 45,
   /* DRAFT https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-02.html */
   'QUERY': 46,
-};
+} as const;
 
-export const STATUSES: IntDict = {
+export const STATUSES = {
   CONTINUE: 100,
   SWITCHING_PROTOCOLS: 101,
   PROCESSING: 102,
@@ -242,15 +242,15 @@ export const STATUSES: IntDict = {
   IDENTITY_PROVIDER_AUTHENTICATION_ERROR: 561, // Unofficial
   NETWORK_READ_TIMEOUT: 598, // Unofficial
   NETWORK_CONNECT_TIMEOUT: 599, // Unofficial
-};
+} as const;
 
-export const FINISH: IntDict = {
+export const FINISH = {
   SAFE: 0,
   SAFE_WITH_CB: 1,
   UNSAFE: 2,
-};
+} as const;
 
-export const HEADER_STATE: IntDict = {
+export const HEADER_STATE = {
   GENERAL: 0,
   CONNECTION: 1,
   CONTENT_LENGTH: 2,
@@ -260,7 +260,7 @@ export const HEADER_STATE: IntDict = {
   CONNECTION_CLOSE: 6,
   CONNECTION_UPGRADE: 7,
   TRANSFER_ENCODING_CHUNKED: 8,
-};
+} as const;
 
 // C headers
 export const METHODS_HTTP = [
@@ -302,7 +302,7 @@ export const METHODS_HTTP = [
   // TODO(indutny): should we allow it with HTTP?
   METHODS.SOURCE,
   METHODS.QUERY,
-];
+] as const;
 
 export const METHODS_ICE = [
   METHODS.SOURCE,
