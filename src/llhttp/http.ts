@@ -9,7 +9,7 @@ import {
   HEADER_STATE, HEX_MAP, HTAB_SP_VCHAR_OBS_TEXT,
   LENIENT_FLAGS,
   MAJOR, METHODS, METHODS_HTTP, METHODS_ICE, METHODS_RTSP,
-  MINOR, NUM_MAP, QUOTED_STRING, SPECIAL_HEADERS,
+  MINOR, NUM_MAP, QDTEXT, SPECIAL_HEADERS,
   TOKEN, TYPE,
 } from './constants';
 import { URL } from './url';
@@ -1015,7 +1015,7 @@ export class HTTP {
       ));
 
     n('chunk_extension_quoted_value')
-      .match(QUOTED_STRING, n('chunk_extension_quoted_value'))
+      .match(QDTEXT, n('chunk_extension_quoted_value'))
       .match('"', this.span.chunkExtensionValue.end(
         onChunkExtensionValueCompleted(n('chunk_extension_quoted_value_done')),
       ))
