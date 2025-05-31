@@ -8,7 +8,7 @@ import {
   CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, H_METHOD_MAP, HEADER_CHARS,
   HEADER_STATE, HEX_MAP, HTAB_SP_VCHAR_OBS_TEXT,
   LENIENT_FLAGS,
-  MAJOR, METHOD_MAP, METHODS, METHODS_HTTP, METHODS_ICE, METHODS_RTSP,
+  MAJOR, METHODS, METHODS_HTTP, METHODS_ICE, METHODS_RTSP,
   MINOR, NUM_MAP, QUOTED_STRING, SPECIAL_HEADERS,
   TOKEN, TYPE,
 } from './constants';
@@ -422,7 +422,7 @@ export class HTTP {
     n('start_req').otherwise(this.span.method.start(n('after_start_req')));
 
     n('after_start_req')
-      .select(METHOD_MAP, this.store('method', this.span.method.end(
+      .select(METHODS, this.store('method', this.span.method.end(
         this.invokePausable('on_method_complete', ERROR.CB_METHOD_COMPLETE, n('req_first_space_before_url'),
         ))))
       .otherwise(p.error(ERROR.INVALID_METHOD, 'Invalid method encountered'));

@@ -1,5 +1,3 @@
-import { enumToMap } from './utils';
-
 export type IntDict = Readonly<Record<string, number>>;
 
 // Emums
@@ -327,8 +325,6 @@ export const METHODS_RTSP = [
   METHODS.POST,
 ] as const;
 
-export const METHOD_MAP = enumToMap(METHODS);
-
 export const H_METHOD_MAP = Object.fromEntries(
   Object.entries(METHODS).filter(([ k ]) => k.startsWith('H'))
 );
@@ -572,7 +568,6 @@ export default {
   METHODS_HTTP,
   METHODS_ICE,
   METHODS_RTSP,
-  METHOD_MAP,
   H_METHOD_MAP,
   STATUSES_HTTP,
 }

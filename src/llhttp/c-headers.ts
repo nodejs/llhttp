@@ -17,41 +17,37 @@ export class CHeaders {
 
     res += '\n';
 
-    const errorMap = enumToMap(constants.ERROR);
-    const methodMap = enumToMap(constants.METHODS);
     const httpMethodMap = enumToMap(constants.METHODS, constants.METHODS_HTTP, [
       constants.METHODS.PRI,
     ]);
     const rtspMethodMap = enumToMap(constants.METHODS, constants.METHODS_RTSP);
     const statusMap = enumToMap(constants.STATUSES, constants.STATUSES_HTTP);
 
-    res += this.buildEnum('llhttp_errno', 'HPE', errorMap);
+    res += this.buildEnum('llhttp_errno', 'HPE', constants.ERROR);
     res += '\n';
-    res += this.buildEnum('llhttp_flags', 'F', enumToMap(constants.FLAGS),
+    res += this.buildEnum('llhttp_flags', 'F', constants.FLAGS,
       'hex');
     res += '\n';
     res += this.buildEnum('llhttp_lenient_flags', 'LENIENT',
-      enumToMap(constants.LENIENT_FLAGS), 'hex');
+      constants.LENIENT_FLAGS, 'hex');
     res += '\n';
-    res += this.buildEnum('llhttp_type', 'HTTP',
-      enumToMap(constants.TYPE));
+    res += this.buildEnum('llhttp_type', 'HTTP', constants.TYPE);
     res += '\n';
-    res += this.buildEnum('llhttp_finish', 'HTTP_FINISH',
-      enumToMap(constants.FINISH));
+    res += this.buildEnum('llhttp_finish', 'HTTP_FINISH', constants.FINISH);
     res += '\n';
-    res += this.buildEnum('llhttp_method', 'HTTP', methodMap);
+    res += this.buildEnum('llhttp_method', 'HTTP', constants.METHODS);
     res += '\n';
     res += this.buildEnum('llhttp_status', 'HTTP_STATUS', statusMap);
 
     res += '\n';
 
-    res += this.buildMap('HTTP_ERRNO', errorMap);
+    res += this.buildMap('HTTP_ERRNO', constants.ERROR);
     res += '\n';
     res += this.buildMap('HTTP_METHOD', httpMethodMap);
     res += '\n';
     res += this.buildMap('RTSP_METHOD', rtspMethodMap);
     res += '\n';
-    res += this.buildMap('HTTP_ALL_METHOD', methodMap);
+    res += this.buildMap('HTTP_ALL_METHOD', constants.METHODS);
     res += '\n';
     res += this.buildMap('HTTP_STATUS', statusMap);
 
