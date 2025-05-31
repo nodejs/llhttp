@@ -65,7 +65,7 @@ export class CHeaders {
     return res;
   }
 
-  private buildEnum(name: string, prefix: string, map: IntDict,
+  private buildEnum(name: Lowercase<string>, prefix: string, map: IntDict,
                     encoding: Encoding = 'none'): string {
     let res = '';
 
@@ -93,7 +93,7 @@ export class CHeaders {
     return res;
   }
 
-  private buildMap(name: string, map: IntDict): string {
+  private buildMap(name: Uppercase<string>, map: IntDict): string {
     let res = '';
 
     res += `#define ${name}_MAP(XX) \\\n`;
