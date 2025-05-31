@@ -21,7 +21,6 @@ export class CHeaders {
       constants.METHODS.PRI,
     ]);
     const rtspMethodMap = enumToMap(constants.METHODS, constants.METHODS_RTSP);
-    const statusMap = enumToMap(constants.STATUSES, constants.STATUSES_HTTP);
 
     res += this.buildEnum('llhttp_errno', 'HPE', constants.ERROR);
     res += '\n';
@@ -37,7 +36,7 @@ export class CHeaders {
     res += '\n';
     res += this.buildEnum('llhttp_method', 'HTTP', constants.METHODS);
     res += '\n';
-    res += this.buildEnum('llhttp_status', 'HTTP_STATUS', statusMap);
+    res += this.buildEnum('llhttp_status', 'HTTP_STATUS', constants.STATUSES);
 
     res += '\n';
 
@@ -49,7 +48,7 @@ export class CHeaders {
     res += '\n';
     res += this.buildMap('HTTP_ALL_METHOD', constants.METHODS);
     res += '\n';
-    res += this.buildMap('HTTP_STATUS', statusMap);
+    res += this.buildMap('HTTP_STATUS', constants.STATUSES);
 
     res += '\n';
 
