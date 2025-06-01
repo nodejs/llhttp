@@ -1,7 +1,7 @@
-import { type LLParse, source } from 'llparse';
+import { type LLParse, type source } from 'llparse';
 
-import Match = source.node.Match;
-import Node = source.node.Node;
+type Node = source.node.Node;
+type Match = source.node.Match;
 
 import {
   ALPHA,
@@ -30,8 +30,10 @@ export class URL {
   private readonly spanTable: SpanTable = new Map();
   private readonly errorInvalid: Node;
   private readonly URL_CHAR: CharList;
+  private readonly llparse: LLParse;
 
-  constructor(private readonly llparse: LLParse, separateSpans = false) {
+  constructor(llparse: LLParse, separateSpans = false) {
+    this.llparse = llparse;
     const p = this.llparse;
 
     this.errorInvalid = p.error(ERROR.INVALID_URL, 'Invalid characters in url');
