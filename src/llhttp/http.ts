@@ -6,11 +6,11 @@ import Node = source.node.Node;
 
 import {
   type IntDict,
-  CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, H_METHOD_MAP, HEADER_CHARS,
+  CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, HEADER_CHARS,
   HEADER_STATE, HEX_MAP, HTAB_SP_VCHAR_OBS_TEXT,
   LENIENT_FLAGS,
   MAJOR,
-  METHODS, METHODS_HTTP, METHODS_ICECAST, METHODS_RTSP,
+  METHODS, METHODS_HTTP, METHODS_HTTP1_HEAD, METHODS_ICECAST, METHODS_RTSP,
   MINOR, NUM_MAP, QDTEXT, SPECIAL_HEADERS,
   TOKEN, TYPE,
 } from './constants';
@@ -285,7 +285,7 @@ export class HTTP {
       .otherwise(this.update('type', TYPE.REQUEST, 'start_req'));
 
     n('req_or_res_method')
-      .select(H_METHOD_MAP, this.store('method',
+      .select(METHODS_HTTP1_HEAD, this.store('method',
         this.update('type', TYPE.REQUEST, this.span.method.end(
           this.invokePausable('on_method_complete', ERROR.CB_METHOD_COMPLETE, n('req_first_space_before_url')),
         )),

@@ -203,6 +203,10 @@ export const HEADER_STATE = {
   TRANSFER_ENCODING_CHUNKED: 8,
 } as const;
 
+export const METHODS_HTTP1_HEAD = {
+  HEAD: 2,
+} as const;
+
 /**
  * HTTP methods as defined by RFC-9110 and other specifications.
  * @see https://httpwg.org/specs/rfc9110.html#method.definitions
@@ -210,7 +214,7 @@ export const HEADER_STATE = {
 export const METHODS_BASIC_HTTP = {
   DELETE: 0,
   GET: 1,
-  HEAD: 2,
+  ...METHODS_HTTP1_HEAD,
   POST: 3,
   PUT: 4,
   CONNECT: 5,
@@ -330,13 +334,6 @@ export const METHODS = {
   ...METHODS_HTTP1,
   ...METHODS_HTTP2,
   ...METHODS_RTSP,
-} as const;
-
-export const H_METHOD_MAP: Simplify<Pick<
-  typeof METHODS_BASIC_HTTP,
-  "HEAD">
-> = {
-  HEAD: 2,
 } as const;
 
 // ALPHA: https://tools.ietf.org/html/rfc5234#appendix-B.1
@@ -522,9 +519,9 @@ export default {
   SPECIAL_HEADERS,
   METHODS,
   METHODS_HTTP,
+  METHODS_HTTP1_HEAD,
   METHODS_HTTP1,
   METHODS_HTTP2,
   METHODS_ICECAST,
   METHODS_RTSP,
-  H_METHOD_MAP,
 }
