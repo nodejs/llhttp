@@ -81,7 +81,7 @@ postversion: release
 	git checkout main
 
 generate:
-	npx ts-node bin/generate.ts
+	node --import tsx bin/generate.ts
 
 install: build/libllhttp.a build/libllhttp.so
 	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)
