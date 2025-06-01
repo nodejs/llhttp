@@ -1,4 +1,4 @@
-#!/usr/bin/env -S npx ts-node
+#!/usr/bin/env -S node --import tsx
 
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { LLParse } from 'llparse';
