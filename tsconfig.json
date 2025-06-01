@@ -11,6 +11,7 @@
     "declaration": true,
     "pretty": true,
     "sourceMap": true,
+    "erasableSyntaxOnly": true
   },
   "include": ["src/**/*.ts"],
 }
