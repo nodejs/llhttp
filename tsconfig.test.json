@@ -1,4 +1,8 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true
+  },
   "include": ["bench/**/*.ts", "bin/**/*.ts", "src/**/*.ts", "test/**/*.ts", "eslint.config.mjs"],
 }

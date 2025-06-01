@@ -1,8 +1,10 @@
 import assert from 'assert';
 import { type LLParse, source } from 'llparse';
 
-import Match = source.node.Match;
-import Node = source.node.Node;
+const { Node } = source.node;
+
+type Match = source.node.Match;
+type Node = source.node.Node;
 
 import {
   type IntDict,
@@ -172,8 +174,11 @@ export class HTTP {
   private readonly span: ISpanMap;
   private readonly callback: ICallbackMap;
   private readonly nodes = new Map<string, Match>();
+  private readonly llparse: LLParse;
 
-  constructor(private readonly llparse: LLParse) {
+  constructor(llparse: LLParse) {
+    this.llparse = llparse;
+
     const p = llparse;
 
     this.url = new URL(p);
