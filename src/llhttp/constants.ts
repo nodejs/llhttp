@@ -1,10 +1,13 @@
-import { enumToMap } from './utils';
+export type IntDict = Readonly<Record<string, number>>;
 
-export type IntDict = Record<string, number>;
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+type Simplify<T> = T extends any[] | Date
+  ? T
+  : {
+    [K in keyof T]: T[K];
+  } & {};
 
-// Emums
-
-export const ERROR: IntDict = {
+export const ERROR = {
   OK: 0,
   INTERNAL: 1,
   STRICT: 2,
@@ -46,15 +49,15 @@ export const ERROR: IntDict = {
   CB_CHUNK_EXTENSION_VALUE_COMPLETE: 35,
   CB_RESET: 31,
   CB_PROTOCOL_COMPLETE: 38,
-};
+} as const;
 
-export const TYPE: IntDict = {
+export const TYPE = {
   BOTH: 0, // default
   REQUEST: 1,
   RESPONSE: 2,
-};
+} as const;
 
-export const FLAGS: IntDict = {
+export const FLAGS = {
   CONNECTION_KEEP_ALIVE: 1 << 0,
   CONNECTION_CLOSE: 1 << 1,
   CONNECTION_UPGRADE: 1 << 2,
@@ -65,9 +68,9 @@ export const FLAGS: IntDict = {
   TRAILING: 1 << 7,
   // 1 << 8 is unused
   TRANSFER_ENCODING: 1 << 9,
-};
+} as const;
 
-export const LENIENT_FLAGS: IntDict = {
+export const LENIENT_FLAGS = {
   HEADERS: 1 << 0,
   CHUNKED_LENGTH: 1 << 1,
   KEEP_ALIVE: 1 << 2,
@@ -78,71 +81,9 @@ export const LENIENT_FLAGS: IntDict = {
   OPTIONAL_CRLF_AFTER_CHUNK: 1 << 7,
   OPTIONAL_CR_BEFORE_LF: 1 << 8,
   SPACES_AFTER_CHUNK_SIZE: 1 << 9,
-};
+} as const;
 
-export const METHODS: IntDict = {
-  'DELETE': 0,
-  'GET': 1,
-  'HEAD': 2,
-  'POST': 3,
-  'PUT': 4,
-  /* pathological */
-  'CONNECT': 5,
-  'OPTIONS': 6,
-  'TRACE': 7,
-  /* WebDAV */
-  'COPY': 8,
-  'LOCK': 9,
-  'MKCOL': 10,
-  'MOVE': 11,
-  'PROPFIND': 12,
-  'PROPPATCH': 13,
-  'SEARCH': 14,
-  'UNLOCK': 15,
-  'BIND': 16,
-  'REBIND': 17,
-  'UNBIND': 18,
-  'ACL': 19,
-  /* subversion */
-  'REPORT': 20,
-  'MKACTIVITY': 21,
-  'CHECKOUT': 22,
-  'MERGE': 23,
-  /* upnp */
-  'M-SEARCH': 24,
-  'NOTIFY': 25,
-  'SUBSCRIBE': 26,
-  'UNSUBSCRIBE': 27,
-  /* RFC-5789 */
-  'PATCH': 28,
-  'PURGE': 29,
-  /* CalDAV */
-  'MKCALENDAR': 30,
-  /* RFC-2068, section 19.6.1.2 */
-  'LINK': 31,
-  'UNLINK': 32,
-  /* icecast */
-  'SOURCE': 33,
-  /* RFC-7540, section 11.6 */
-  'PRI': 34,
-  /* RFC-2326 RTSP */
-  'DESCRIBE': 35,
-  'ANNOUNCE': 36,
-  'SETUP': 37,
-  'PLAY': 38,
-  'PAUSE': 39,
-  'TEARDOWN': 40,
-  'GET_PARAMETER': 41,
-  'SET_PARAMETER': 42,
-  'REDIRECT': 43,
-  'RECORD': 44,
-  /* RAOP */
-  'FLUSH': 45,
-  /* DRAFT https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-02.html */
-  'QUERY': 46,
-};
-
-export const STATUSES: IntDict = {
+export const STATUSES = {
   CONTINUE: 100,
   SWITCHING_PROTOCOLS: 101,
   PROCESSING: 102,
@@ -242,15 +183,15 @@ export const STATUSES: IntDict = {
   IDENTITY_PROVIDER_AUTHENTICATION_ERROR: 561, // Unofficial
   NETWORK_READ_TIMEOUT: 598, // Unofficial
   NETWORK_CONNECT_TIMEOUT: 599, // Unofficial
-};
+} as const;
 
-export const FINISH: IntDict = {
+export const FINISH = {
   SAFE: 0,
   SAFE_WITH_CB: 1,
   UNSAFE: 2,
-};
+} as const;
 
-export const HEADER_STATE: IntDict = {
+export const HEADER_STATE = {
   GENERAL: 0,
   CONNECTION: 1,
   CONTENT_LENGTH: 2,
@@ -260,229 +201,185 @@ export const HEADER_STATE: IntDict = {
   CONNECTION_CLOSE: 6,
   CONNECTION_UPGRADE: 7,
   TRANSFER_ENCODING_CHUNKED: 8,
-};
+} as const;
 
-// C headers
-export const METHODS_HTTP = [
-  METHODS.DELETE,
-  METHODS.GET,
-  METHODS.HEAD,
-  METHODS.POST,
-  METHODS.PUT,
-  METHODS.CONNECT,
-  METHODS.OPTIONS,
-  METHODS.TRACE,
-  METHODS.COPY,
-  METHODS.LOCK,
-  METHODS.MKCOL,
-  METHODS.MOVE,
-  METHODS.PROPFIND,
-  METHODS.PROPPATCH,
-  METHODS.SEARCH,
-  METHODS.UNLOCK,
-  METHODS.BIND,
-  METHODS.REBIND,
-  METHODS.UNBIND,
-  METHODS.ACL,
-  METHODS.REPORT,
-  METHODS.MKACTIVITY,
-  METHODS.CHECKOUT,
-  METHODS.MERGE,
-  METHODS['M-SEARCH'],
-  METHODS.NOTIFY,
-  METHODS.SUBSCRIBE,
-  METHODS.UNSUBSCRIBE,
-  METHODS.PATCH,
-  METHODS.PURGE,
-  METHODS.MKCALENDAR,
-  METHODS.LINK,
-  METHODS.UNLINK,
-  METHODS.PRI,
+export const METHODS_HTTP1_HEAD = {
+  HEAD: 2,
+} as const;
+
+/**
+ * HTTP methods as defined by RFC-9110 and other specifications.
+ * @see https://httpwg.org/specs/rfc9110.html#method.definitions
+ */
+export const METHODS_BASIC_HTTP = {
+  DELETE: 0,
+  GET: 1,
+  ...METHODS_HTTP1_HEAD,
+  POST: 3,
+  PUT: 4,
+  CONNECT: 5,
+  OPTIONS: 6,
+  TRACE: 7,
+
+  /**
+   * @see https://www.rfc-editor.org/rfc/rfc5789.html
+   */
+  PATCH: 28,
+
+  /* RFC-2068, section 19.6.1.2 */
+  LINK: 31,
+  UNLINK: 32,
+} as const;
+
+export const METHODS_WEBDAV = {
+  COPY: 8,
+  LOCK: 9,
+  MKCOL: 10,
+  MOVE: 11,
+  PROPFIND: 12,
+  PROPPATCH: 13,
+  SEARCH: 14,
+  UNLOCK: 15,
+  BIND: 16,
+  REBIND: 17,
+  UNBIND: 18,
+  ACL: 19,
+} as const;
+
+export const METHODS_SUBVERSION = {
+  REPORT: 20,
+  MKACTIVITY: 21,
+  CHECKOUT: 22,
+  MERGE: 23,
+} as const;
+
+export const METHODS_UPNP = {
+  'M-SEARCH': 24,
+  NOTIFY: 25,
+  SUBSCRIBE: 26,
+  UNSUBSCRIBE: 27,
+} as const;
+
+export const METHODS_CALDAV = {
+  MKCALENDAR: 30,
+} as const;
+
+export const METHODS_NON_STANDARD = {
+  /**
+   * Not defined in any RFC but commonly used
+   */
+  PURGE: 29,
+
+  /* DRAFT https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-02.html */
+  QUERY: 46,
+} as const;
+
+export const METHODS_ICECAST = {
+  SOURCE: 33,
+} as const;
+
+export const METHODS_AIRPLAY: Simplify<Pick<typeof METHODS_BASIC_HTTP, "GET" | "POST">> = {
+  GET: 1,
+  POST: 3,
+} as const;
+
+export const METHODS_RAOP = {
+  FLUSH: 45,
+} as const;
+
+/* RFC-2326 RTSP */
+export const METHODS_RTSP = {
+  OPTIONS: METHODS_BASIC_HTTP.OPTIONS,
+  DESCRIBE: 35,
+  ANNOUNCE: 36,
+  SETUP: 37,
+  PLAY: 38,
+  PAUSE: 39,
+  TEARDOWN: 40,
+  GET_PARAMETER: 41,
+  SET_PARAMETER: 42,
+  REDIRECT: 43,
+  RECORD: 44,
+
+  ...METHODS_AIRPLAY,
+  ...METHODS_RAOP,
+} as const;
+
+export const METHODS_HTTP1 = {
+  ...METHODS_BASIC_HTTP,
+  ...METHODS_WEBDAV,
+  ...METHODS_SUBVERSION,
+  ...METHODS_UPNP,
+  ...METHODS_CALDAV,
+  ...METHODS_NON_STANDARD,
 
   // TODO(indutny): should we allow it with HTTP?
-  METHODS.SOURCE,
-  METHODS.QUERY,
-];
+  ...METHODS_ICECAST,
+} as const;
 
-export const METHODS_ICE = [
-  METHODS.SOURCE,
-];
+export const METHODS_HTTP2 = {
+  /**
+   * RFC-9113, section 11.6
+   * @see https://www.rfc-editor.org/rfc/rfc9113.html#preface
+   */
+  PRI: 34,
+} as const;
 
-export const METHODS_RTSP = [
-  METHODS.OPTIONS,
-  METHODS.DESCRIBE,
-  METHODS.ANNOUNCE,
-  METHODS.SETUP,
-  METHODS.PLAY,
-  METHODS.PAUSE,
-  METHODS.TEARDOWN,
-  METHODS.GET_PARAMETER,
-  METHODS.SET_PARAMETER,
-  METHODS.REDIRECT,
-  METHODS.RECORD,
-  METHODS.FLUSH,
+export const METHODS_HTTP = {
+  ...METHODS_HTTP1,
+  ...METHODS_HTTP2,
+} as const;
 
-  // For AirPlay
-  METHODS.GET,
-  METHODS.POST,
-];
+export const METHODS = {
+  ...METHODS_HTTP1,
+  ...METHODS_HTTP2,
+  ...METHODS_RTSP,
+} as const;
 
-export const METHOD_MAP = enumToMap(METHODS);
-
-export const H_METHOD_MAP = Object.fromEntries(
-  Object.entries(METHODS).filter(([ k ]) => k.startsWith('H'))
-);
-
-export const STATUSES_HTTP = [
-  STATUSES.CONTINUE,
-  STATUSES.SWITCHING_PROTOCOLS,
-  STATUSES.PROCESSING,
-  STATUSES.EARLY_HINTS,
-  STATUSES.RESPONSE_IS_STALE,
-  STATUSES.REVALIDATION_FAILED,
-  STATUSES.DISCONNECTED_OPERATION,
-  STATUSES.HEURISTIC_EXPIRATION,
-  STATUSES.MISCELLANEOUS_WARNING,
-  STATUSES.OK,
-  STATUSES.CREATED,
-  STATUSES.ACCEPTED,
-  STATUSES.NON_AUTHORITATIVE_INFORMATION,
-  STATUSES.NO_CONTENT,
-  STATUSES.RESET_CONTENT,
-  STATUSES.PARTIAL_CONTENT,
-  STATUSES.MULTI_STATUS,
-  STATUSES.ALREADY_REPORTED,
-  STATUSES.TRANSFORMATION_APPLIED,
-  STATUSES.IM_USED,
-  STATUSES.MISCELLANEOUS_PERSISTENT_WARNING,
-  STATUSES.MULTIPLE_CHOICES,
-  STATUSES.MOVED_PERMANENTLY,
-  STATUSES.FOUND,
-  STATUSES.SEE_OTHER,
-  STATUSES.NOT_MODIFIED,
-  STATUSES.USE_PROXY,
-  STATUSES.SWITCH_PROXY,
-  STATUSES.TEMPORARY_REDIRECT,
-  STATUSES.PERMANENT_REDIRECT,
-  STATUSES.BAD_REQUEST,
-  STATUSES.UNAUTHORIZED,
-  STATUSES.PAYMENT_REQUIRED,
-  STATUSES.FORBIDDEN,
-  STATUSES.NOT_FOUND,
-  STATUSES.METHOD_NOT_ALLOWED,
-  STATUSES.NOT_ACCEPTABLE,
-  STATUSES.PROXY_AUTHENTICATION_REQUIRED,
-  STATUSES.REQUEST_TIMEOUT,
-  STATUSES.CONFLICT,
-  STATUSES.GONE,
-  STATUSES.LENGTH_REQUIRED,
-  STATUSES.PRECONDITION_FAILED,
-  STATUSES.PAYLOAD_TOO_LARGE,
-  STATUSES.URI_TOO_LONG,
-  STATUSES.UNSUPPORTED_MEDIA_TYPE,
-  STATUSES.RANGE_NOT_SATISFIABLE,
-  STATUSES.EXPECTATION_FAILED,
-  STATUSES.IM_A_TEAPOT,
-  STATUSES.PAGE_EXPIRED,
-  STATUSES.ENHANCE_YOUR_CALM,
-  STATUSES.MISDIRECTED_REQUEST,
-  STATUSES.UNPROCESSABLE_ENTITY,
-  STATUSES.LOCKED,
-  STATUSES.FAILED_DEPENDENCY,
-  STATUSES.TOO_EARLY,
-  STATUSES.UPGRADE_REQUIRED,
-  STATUSES.PRECONDITION_REQUIRED,
-  STATUSES.TOO_MANY_REQUESTS,
-  STATUSES.REQUEST_HEADER_FIELDS_TOO_LARGE_UNOFFICIAL,
-  STATUSES.REQUEST_HEADER_FIELDS_TOO_LARGE,
-  STATUSES.LOGIN_TIMEOUT,
-  STATUSES.NO_RESPONSE,
-  STATUSES.RETRY_WITH,
-  STATUSES.BLOCKED_BY_PARENTAL_CONTROL,
-  STATUSES.UNAVAILABLE_FOR_LEGAL_REASONS,
-  STATUSES.CLIENT_CLOSED_LOAD_BALANCED_REQUEST,
-  STATUSES.INVALID_X_FORWARDED_FOR,
-  STATUSES.REQUEST_HEADER_TOO_LARGE,
-  STATUSES.SSL_CERTIFICATE_ERROR,
-  STATUSES.SSL_CERTIFICATE_REQUIRED,
-  STATUSES.HTTP_REQUEST_SENT_TO_HTTPS_PORT,
-  STATUSES.INVALID_TOKEN,
-  STATUSES.CLIENT_CLOSED_REQUEST,
-  STATUSES.INTERNAL_SERVER_ERROR,
-  STATUSES.NOT_IMPLEMENTED,
-  STATUSES.BAD_GATEWAY,
-  STATUSES.SERVICE_UNAVAILABLE,
-  STATUSES.GATEWAY_TIMEOUT,
-  STATUSES.HTTP_VERSION_NOT_SUPPORTED,
-  STATUSES.VARIANT_ALSO_NEGOTIATES,
-  STATUSES.INSUFFICIENT_STORAGE,
-  STATUSES.LOOP_DETECTED,
-  STATUSES.BANDWIDTH_LIMIT_EXCEEDED,
-  STATUSES.NOT_EXTENDED,
-  STATUSES.NETWORK_AUTHENTICATION_REQUIRED,
-  STATUSES.WEB_SERVER_UNKNOWN_ERROR,
-  STATUSES.WEB_SERVER_IS_DOWN,
-  STATUSES.CONNECTION_TIMEOUT,
-  STATUSES.ORIGIN_IS_UNREACHABLE,
-  STATUSES.TIMEOUT_OCCURED,
-  STATUSES.SSL_HANDSHAKE_FAILED,
-  STATUSES.INVALID_SSL_CERTIFICATE,
-  STATUSES.RAILGUN_ERROR,
-  STATUSES.SITE_IS_OVERLOADED,
-  STATUSES.SITE_IS_FROZEN,
-  STATUSES.IDENTITY_PROVIDER_AUTHENTICATION_ERROR,
-  STATUSES.NETWORK_READ_TIMEOUT,
-  STATUSES.NETWORK_CONNECT_TIMEOUT,
-];
-
-// Internal
-
-export type CharList = (string | number)[];
-
-export const ALPHA: CharList = [];
-
-for (let i = 'A'.charCodeAt(0); i <= 'Z'.charCodeAt(0); i++) {
-  // Upper case
-  ALPHA.push(String.fromCharCode(i));
-
-  // Lower case
-  ALPHA.push(String.fromCharCode(i + 0x20));
-}
+// ALPHA: https://tools.ietf.org/html/rfc5234#appendix-B.1
+export const ALPHA = [
+  "A", "a", "B", "b", "C", "c", "D", "d",
+  "E", "e", "F", "f", "G", "g", "H", "h",
+  "I", "i", "J", "j", "K", "k", "L", "l",
+  "M", "m", "N", "n", "O", "o", "P", "p",
+  "Q", "q", "R", "r", "S", "s", "T", "t",
+  "U", "u", "V", "v", "W", "w", "X", "x",
+  "Y", "y", "Z", "z",
+] as const;
 
 export const NUM_MAP = {
   0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
   5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
-};
+} as const;
 
 export const HEX_MAP = {
   0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
   5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
   A: 0XA, B: 0XB, C: 0XC, D: 0XD, E: 0XE, F: 0XF,
   a: 0xa, b: 0xb, c: 0xc, d: 0xd, e: 0xe, f: 0xf,
-};
+} as const;
 
-export const NUM: CharList = [
+// DIGIT: https://tools.ietf.org/html/rfc5234#appendix-B.1
+export const DIGIT = [
   '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-];
+] as const;
 
-export const ALPHANUM: CharList = ALPHA.concat(NUM);
-export const MARK: CharList = [ '-', '_', '.', '!', '~', '*', '\'', '(', ')' ];
-export const USERINFO_CHARS: CharList = ALPHANUM
-  .concat(MARK)
-  .concat([ '%', ';', ':', '&', '=', '+', '$', ',' ]);
+export const ALPHANUM = [ ...ALPHA, ...DIGIT ] as const;
+export const MARK = [ '-', '_', '.', '!', '~', '*', '\'', '(', ')' ] as const;
+export const USERINFO_CHARS = [ ...ALPHANUM, ...MARK, '%', ';', ':', '&', '=', '+', '$', ',' ] as const;
 
 // TODO(indutny): use RFC
-export const URL_CHAR: CharList = ([
+export const URL_CHAR = [
   '!', '"', '$', '%', '&', '\'',
   '(', ')', '*', '+', ',', '-', '.', '/',
   ':', ';', '<', '=', '>',
   '@', '[', '\\', ']', '^', '_',
   '`',
   '{', '|', '}', '~',
-] as CharList).concat(ALPHANUM);
+  ...ALPHANUM
+] as const;
 
-export const HEX: CharList = NUM.concat(
-  [ 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F' ]);
+export const HEX = [ ...DIGIT, 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F' ] as const;
 
 /* Tokens as defined by rfc 2616. Also lowercases them.
  *        token       = 1*<any CHAR except CTLs or separators>
@@ -491,45 +388,98 @@ export const HEX: CharList = NUM.concat(
  *                    | "/" | "[" | "]" | "?" | "="
  *                    | "{" | "}" | SP | HT
  */
-export const TOKEN: CharList = ([
+export const TOKEN = [
   '!', '#', '$', '%', '&', '\'',
   '*', '+', '-', '.',
   '^', '_', '`',
   '|', '~',
-] as CharList).concat(ALPHANUM);
+  ...ALPHANUM
+] as const;
 
-/*
- * Verify that a char is a valid visible (printable) US-ASCII
- * character or %x80-FF
- */
-export const HEADER_CHARS: CharList = [ '\t' ];
-for (let i = 32; i <= 255; i++) {
-  if (i !== 127) {
-    HEADER_CHARS.push(i);
-  }
-}
+// HTAB: https://tools.ietf.org/html/rfc5234#appendix-B.1
+export const HTAB = [ '\t' ] as const;
 
-// ',' = \x44
-export const CONNECTION_TOKEN_CHARS: CharList =
-  HEADER_CHARS.filter((c: string | number) => c !== 44);
-
-export const QUOTED_STRING: CharList = [ '\t', ' ' ];
-for (let i = 0x21; i <= 0xff; i++) {
-  if (i !== 0x22 && i !== 0x5c) { // All characters in ASCII except \ and "
-    QUOTED_STRING.push(i);
-  }
-}
-
-export const HTAB_SP_VCHAR_OBS_TEXT: CharList = [ '\t', ' ' ];
+// SP: https://tools.ietf.org/html/rfc5234#appendix-B.1
+export const SP = [ ' ' ] as const;
 
 // VCHAR: https://tools.ietf.org/html/rfc5234#appendix-B.1
-for (let i = 0x21; i <= 0x7E; i++) {
-  HTAB_SP_VCHAR_OBS_TEXT.push(i);
-}
+const VCHAR = [
+  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
+  0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30,
+  0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+  0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40,
+  0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
+  0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50,
+  0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
+  0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60,
+  0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,
+  0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70,
+  0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,
+  0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e,
+] as const;
+
 // OBS_TEXT: https://datatracker.ietf.org/doc/html/rfc9110#name-collected-abnf
-for (let i = 0x80; i <= 0xff; i++) {
-  HTAB_SP_VCHAR_OBS_TEXT.push(i);
-}
+// 0x80 - 0xff
+const OBS_TEXT = [
+  0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87,
+  0x88, 0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f,
+  0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97,
+  0x98, 0x99, 0x9a, 0x9b, 0x9c, 0x9d, 0x9e, 0x9f,
+  0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7,
+  0xa8, 0xa9, 0xaa, 0xab, 0xac, 0xad, 0xae, 0xaf,
+  0xb0, 0xb1, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6, 0xb7,
+  0xb8, 0xb9, 0xba, 0xbb, 0xbc, 0xbd, 0xbe, 0xbf,
+  0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7,
+  0xc8, 0xc9, 0xca, 0xcb, 0xcc, 0xcd, 0xce, 0xcf,
+  0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0xd6, 0xd7,
+  0xd8, 0xd9, 0xda, 0xdb, 0xdc, 0xdd, 0xde, 0xdf,
+  0xe0, 0xe1, 0xe2, 0xe3, 0xe4, 0xe5, 0xe6, 0xe7,
+  0xe8, 0xe9, 0xea, 0xeb, 0xec, 0xed, 0xee, 0xef,
+  0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
+  0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
+] as const;
+
+export const HTAB_SP_VCHAR_OBS_TEXT = [ ...HTAB, ...SP, ...VCHAR, ...OBS_TEXT ] as const;
+
+export const HEADER_CHARS = HTAB_SP_VCHAR_OBS_TEXT;
+
+// ',' = \x2c
+export const CONNECTION_TOKEN_CHARS = [
+  ...HTAB, ...SP,
+  0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
+  0x29, 0x2a, 0x2b, /* */ 0x2d, 0x2e, 0x2f, 0x30,
+  0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+  0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40,
+  0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
+  0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50,
+  0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
+  0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60,
+  0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,
+  0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70,
+  0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,
+  0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e,
+  ...OBS_TEXT
+] as const;
+
+// QDTEXT: https://datatracker.ietf.org/doc/html/rfc9110#section-5.6.4
+export const QDTEXT = [
+  ...HTAB, ...SP,
+  0x21,
+  0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a,
+  0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32,
+  0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a,
+  0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0x40, 0x41, 0x42,
+  0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a,
+  0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52,
+  0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a,
+  0x5b,
+  0x5d, 0x5e, 0x5f, 0x60, 0x61, 0x62, 0x63, 0x64,
+  0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c,
+  0x6d, 0x6e, 0x6f, 0x70, 0x71, 0x72, 0x73, 0x74,
+  0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0x7b, 0x7c,
+  0x7d, 0x7e,
+  ...OBS_TEXT
+] as const;
 
 export const MAJOR = NUM_MAP;
 export const MINOR = MAJOR;
@@ -540,21 +490,20 @@ export const SPECIAL_HEADERS = {
   'proxy-connection': HEADER_STATE.CONNECTION,
   'transfer-encoding': HEADER_STATE.TRANSFER_ENCODING,
   'upgrade': HEADER_STATE.UPGRADE,
-};
+} as const;
 
 export default {
   ERROR,
   TYPE,
   FLAGS,
   LENIENT_FLAGS,
-  METHODS,
   STATUSES,
   FINISH,
   HEADER_STATE,
   ALPHA,
   NUM_MAP,
   HEX_MAP,
-  NUM,
+  DIGIT,
   ALPHANUM,
   MARK,
   USERINFO_CHARS,
@@ -563,15 +512,16 @@ export default {
   TOKEN,
   HEADER_CHARS,
   CONNECTION_TOKEN_CHARS,
-  QUOTED_STRING,
+  QDTEXT,
   HTAB_SP_VCHAR_OBS_TEXT,
   MAJOR,
   MINOR,
   SPECIAL_HEADERS,
+  METHODS,
   METHODS_HTTP,
-  METHODS_ICE,
+  METHODS_HTTP1_HEAD,
+  METHODS_HTTP1,
+  METHODS_HTTP2,
+  METHODS_ICECAST,
   METHODS_RTSP,
-  METHOD_MAP,
-  H_METHOD_MAP,
-  STATUSES_HTTP,
 }

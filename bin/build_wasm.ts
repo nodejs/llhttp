@@ -88,9 +88,6 @@ execSync(
 copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'constants.js'), join(WASM_OUT, 'constants.js'));
 copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'constants.js.map'), join(WASM_OUT, 'constants.js.map'));
 copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'constants.d.ts'), join(WASM_OUT, 'constants.d.ts'));
-copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'utils.js'), join(WASM_OUT, 'utils.js'));
-copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'utils.js.map'), join(WASM_OUT, 'utils.js.map'));
-copyFileSync(join(WASM_SRC, 'lib', 'llhttp', 'utils.d.ts'), join(WASM_OUT, 'utils.d.ts'));
 
 function isErrorWithCode(error: unknown): error is Error & { code: string } {
   return typeof error === 'object' && error !== null && 'code' in error;
