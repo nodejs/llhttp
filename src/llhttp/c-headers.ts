@@ -71,10 +71,8 @@ export class CHeaders {
         res += value;
       }
     }
-    res += '\n};\n';
-    res += `typedef enum ${name} ${name}_t;\n`;
 
-    return `enum ${name} {\n` + res;
+    return `enum ${name} {\n${res}\n};\ntypedef enum ${name} ${name}_t;\n`;
   }
 
   private buildMap(name: Uppercase<string>, map: IntDict): string {
