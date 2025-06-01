@@ -92,9 +92,7 @@ if(LLHTTP_BUILD_STATIC_LIBS)
   add_library(llhttp_static STATIC
       ${llhttp_src}
   )
-  if(LLHTTP_BUILD_SHARED_LIBS)
-    add_library(llhttp::llhttp ALIAS llhttp_shared)
-  else()
+  if(NOT LLHTTP_BUILD_SHARED_LIBS)
     add_library(llhttp::llhttp ALIAS llhttp_static)
   endif()
   config_library(llhttp_static)
