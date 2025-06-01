@@ -1,6 +1,5 @@
 import constants from './constants';
 import type { IntDict } from './constants';
-import { enumToMap } from './utils';
 
 type Encoding = 'none' | 'hex';
 
@@ -16,11 +15,6 @@ export class CHeaders {
     res += '#endif\n';
 
     res += '\n';
-
-    const httpMethodMap = enumToMap(constants.METHODS, constants.METHODS_HTTP, [
-      constants.METHODS.PRI,
-    ]);
-    const rtspMethodMap = enumToMap(constants.METHODS, constants.METHODS_RTSP);
 
     res += this.buildEnum('llhttp_errno', 'HPE', constants.ERROR);
     res += '\n';
@@ -42,9 +36,9 @@ export class CHeaders {
 
     res += this.buildMap('HTTP_ERRNO', constants.ERROR);
     res += '\n';
-    res += this.buildMap('HTTP_METHOD', httpMethodMap);
+    res += this.buildMap('HTTP_METHOD', constants.METHODS_HTTP1);
     res += '\n';
-    res += this.buildMap('RTSP_METHOD', rtspMethodMap);
+    res += this.buildMap('RTSP_METHOD', constants.METHODS_RTSP);
     res += '\n';
     res += this.buildMap('HTTP_ALL_METHOD', constants.METHODS);
     res += '\n';
@@ -64,35 +58,30 @@ export class CHeaders {
                     encoding: Encoding = 'none'): string {
     let res = '';
 
-    res += `enum ${name} {\n`;
-    const keys = Object.keys(map);
-    const keysLength = keys.length;
-    for (let i = 0; i < keysLength; i++) {
-      const key = keys[i];
-      const isLast = i === keysLength - 1;
-
-      let value: number | string = map[key];
-
-      if (encoding === 'hex') {
-        value = `0x${value.toString(16)}`;
+    for (const [ key, value ] of Object.entries(map).sort((a,b) => a[1] - b[1])) {
+      if (res !== "") {
+        res += ',\n';
       }
 
-      res += `  ${prefix}_${key.replace(/-/g, '')} = ${value}`;
-      if (!isLast) {
-        res += ',\n';
+      res += `  ${prefix}_${key.replace(/-/g, '')} = `
+
+      if (encoding === 'hex') {
+        res += `0x${value.toString(16)}`;
+      } else {
+        res += value;
       }
     }
     res += '\n};\n';
     res += `typedef enum ${name} ${name}_t;\n`;
 
-    return res;
+    return `enum ${name} {\n` + res;
   }
 
   private buildMap(name: Uppercase<string>, map: IntDict): string {
     let res = '';
 
     res += `#define ${name}_MAP(XX) \\\n`;
-    for (const [ key, value ] of Object.entries(map)) {
+    for (const [ key, value ] of Object.entries(map).sort((a,b) => a[1] - b[1])) {
       res += `  XX(${value}, ${key.replace(/-/g, '')}, ${key}) \\\n`;
     }
     res += '\n';

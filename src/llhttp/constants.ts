@@ -83,68 +83,6 @@ export const LENIENT_FLAGS = {
   SPACES_AFTER_CHUNK_SIZE: 1 << 9,
 } as const;
 
-export const METHODS = {
-  'DELETE': 0,
-  'GET': 1,
-  'HEAD': 2,
-  'POST': 3,
-  'PUT': 4,
-  /* pathological */
-  'CONNECT': 5,
-  'OPTIONS': 6,
-  'TRACE': 7,
-  /* WebDAV */
-  'COPY': 8,
-  'LOCK': 9,
-  'MKCOL': 10,
-  'MOVE': 11,
-  'PROPFIND': 12,
-  'PROPPATCH': 13,
-  'SEARCH': 14,
-  'UNLOCK': 15,
-  'BIND': 16,
-  'REBIND': 17,
-  'UNBIND': 18,
-  'ACL': 19,
-  /* subversion */
-  'REPORT': 20,
-  'MKACTIVITY': 21,
-  'CHECKOUT': 22,
-  'MERGE': 23,
-  /* upnp */
-  'M-SEARCH': 24,
-  'NOTIFY': 25,
-  'SUBSCRIBE': 26,
-  'UNSUBSCRIBE': 27,
-  /* RFC-5789 */
-  'PATCH': 28,
-  'PURGE': 29,
-  /* CalDAV */
-  'MKCALENDAR': 30,
-  /* RFC-2068, section 19.6.1.2 */
-  'LINK': 31,
-  'UNLINK': 32,
-  /* icecast */
-  'SOURCE': 33,
-  /* RFC-7540, section 11.6 */
-  'PRI': 34,
-  /* RFC-2326 RTSP */
-  'DESCRIBE': 35,
-  'ANNOUNCE': 36,
-  'SETUP': 37,
-  'PLAY': 38,
-  'PAUSE': 39,
-  'TEARDOWN': 40,
-  'GET_PARAMETER': 41,
-  'SET_PARAMETER': 42,
-  'REDIRECT': 43,
-  'RECORD': 44,
-  /* RAOP */
-  'FLUSH': 45,
-  /* DRAFT https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-02.html */
-  'QUERY': 46,
-} as const;
-
 export const STATUSES = {
   CONTINUE: 100,
   SWITCHING_PROTOCOLS: 101,
@@ -265,81 +203,141 @@ export const HEADER_STATE = {
   TRANSFER_ENCODING_CHUNKED: 8,
 } as const;
 
-// C headers
-export const METHODS_HTTP = [
-  METHODS.DELETE,
-  METHODS.GET,
-  METHODS.HEAD,
-  METHODS.POST,
-  METHODS.PUT,
-  METHODS.CONNECT,
-  METHODS.OPTIONS,
-  METHODS.TRACE,
-  METHODS.COPY,
-  METHODS.LOCK,
-  METHODS.MKCOL,
-  METHODS.MOVE,
-  METHODS.PROPFIND,
-  METHODS.PROPPATCH,
-  METHODS.SEARCH,
-  METHODS.UNLOCK,
-  METHODS.BIND,
-  METHODS.REBIND,
-  METHODS.UNBIND,
-  METHODS.ACL,
-  METHODS.REPORT,
-  METHODS.MKACTIVITY,
-  METHODS.CHECKOUT,
-  METHODS.MERGE,
-  METHODS['M-SEARCH'],
-  METHODS.NOTIFY,
-  METHODS.SUBSCRIBE,
-  METHODS.UNSUBSCRIBE,
-  METHODS.PATCH,
-  METHODS.PURGE,
-  METHODS.MKCALENDAR,
-  METHODS.LINK,
-  METHODS.UNLINK,
-  METHODS.PRI,
-
-  // TODO(indutny): should we allow it with HTTP?
-  METHODS.SOURCE,
-  METHODS.QUERY,
-] as const;
-
-export const METHODS_ICE = [
-  METHODS.SOURCE,
-] as const;
-
-export const METHODS_RTSP = [
-  METHODS.OPTIONS,
-  METHODS.DESCRIBE,
-  METHODS.ANNOUNCE,
-  METHODS.SETUP,
-  METHODS.PLAY,
-  METHODS.PAUSE,
-  METHODS.TEARDOWN,
-  METHODS.GET_PARAMETER,
-  METHODS.SET_PARAMETER,
-  METHODS.REDIRECT,
-  METHODS.RECORD,
-  METHODS.FLUSH,
-
-  // For AirPlay
-  METHODS.GET,
-  METHODS.POST,
-] as const;
-
-export const H_METHOD_MAP: Simplify<Pick<
-  typeof METHODS,
-  Extract<keyof typeof METHODS, `H${string}`>
->> = {
+/**
+ * HTTP methods as defined by RFC-9110 and other specifications.
+ * @see https://httpwg.org/specs/rfc9110.html#method.definitions
+ */
+export const METHODS_BASIC_HTTP = {
+  DELETE: 0,
+  GET: 1,
   HEAD: 2,
+  POST: 3,
+  PUT: 4,
+  CONNECT: 5,
+  OPTIONS: 6,
+  TRACE: 7,
+
+  /**
+   * @see https://www.rfc-editor.org/rfc/rfc5789.html
+   */
+  PATCH: 28,
+
+  /* RFC-2068, section 19.6.1.2 */
+  LINK: 31,
+  UNLINK: 32,
 } as const;
 
-// Internal
+export const METHODS_WEBDAV = {
+  COPY: 8,
+  LOCK: 9,
+  MKCOL: 10,
+  MOVE: 11,
+  PROPFIND: 12,
+  PROPPATCH: 13,
+  SEARCH: 14,
+  UNLOCK: 15,
+  BIND: 16,
+  REBIND: 17,
+  UNBIND: 18,
+  ACL: 19,
+} as const;
 
-export type CharList = (string | number)[];
+export const METHODS_SUBVERSION = {
+  REPORT: 20,
+  MKACTIVITY: 21,
+  CHECKOUT: 22,
+  MERGE: 23,
+} as const;
+
+export const METHODS_UPNP = {
+  'M-SEARCH': 24,
+  NOTIFY: 25,
+  SUBSCRIBE: 26,
+  UNSUBSCRIBE: 27,
+} as const;
+
+export const METHODS_CALDAV = {
+  MKCALENDAR: 30,
+} as const;
+
+export const METHODS_NON_STANDARD = {
+  /**
+   * Not defined in any RFC but commonly used
+   */
+  PURGE: 29,
+
+  /* DRAFT https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-02.html */
+  QUERY: 46,
+} as const;
+
+export const METHODS_ICECAST = {
+  SOURCE: 33,
+} as const;
+
+export const METHODS_AIRPLAY: Simplify<Pick<typeof METHODS_BASIC_HTTP, "GET" | "POST">> = {
+  GET: 1,
+  POST: 3,
+} as const;
+
+export const METHODS_RAOP = {
+  FLUSH: 45,
+} as const;
+
+/* RFC-2326 RTSP */
+export const METHODS_RTSP = {
+  OPTIONS: METHODS_BASIC_HTTP.OPTIONS,
+  DESCRIBE: 35,
+  ANNOUNCE: 36,
+  SETUP: 37,
+  PLAY: 38,
+  PAUSE: 39,
+  TEARDOWN: 40,
+  GET_PARAMETER: 41,
+  SET_PARAMETER: 42,
+  REDIRECT: 43,
+  RECORD: 44,
+
+  ...METHODS_AIRPLAY,
+  ...METHODS_RAOP,
+} as const;
+
+export const METHODS_HTTP1 = {
+  ...METHODS_BASIC_HTTP,
+  ...METHODS_WEBDAV,
+  ...METHODS_SUBVERSION,
+  ...METHODS_UPNP,
+  ...METHODS_CALDAV,
+  ...METHODS_NON_STANDARD,
+
+  // TODO(indutny): should we allow it with HTTP?
+  ...METHODS_ICECAST,
+} as const;
+
+export const METHODS_HTTP2 = {
+  /**
+   * RFC-9113, section 11.6
+   * @see https://www.rfc-editor.org/rfc/rfc9113.html#preface
+   */
+  PRI: 34,
+} as const;
+
+export const METHODS_HTTP = {
+  ...METHODS_HTTP1,
+  ...METHODS_HTTP2,
+} as const;
+
+export const METHODS = {
+  ...METHODS_HTTP1,
+  ...METHODS_HTTP2,
+  ...METHODS_RTSP,
+} as const;
+
+export const H_METHOD_MAP: Simplify<Pick<
+  typeof METHODS_BASIC_HTTP,
+  "HEAD">
+> = {
+  HEAD: 2,
+} as const;
 
 // ALPHA: https://tools.ietf.org/html/rfc5234#appendix-B.1
 export const ALPHA = [
@@ -502,7 +500,6 @@ export default {
   TYPE,
   FLAGS,
   LENIENT_FLAGS,
-  METHODS,
   STATUSES,
   FINISH,
   HEADER_STATE,
@@ -523,8 +520,11 @@ export default {
   MAJOR,
   MINOR,
   SPECIAL_HEADERS,
+  METHODS,
   METHODS_HTTP,
-  METHODS_ICE,
+  METHODS_HTTP1,
+  METHODS_HTTP2,
+  METHODS_ICECAST,
   METHODS_RTSP,
   H_METHOD_MAP,
 }

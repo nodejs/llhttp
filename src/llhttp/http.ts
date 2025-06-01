@@ -5,10 +5,12 @@ import Match = source.node.Match;
 import Node = source.node.Node;
 
 import {
+  type IntDict,
   CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, H_METHOD_MAP, HEADER_CHARS,
   HEADER_STATE, HEX_MAP, HTAB_SP_VCHAR_OBS_TEXT,
   LENIENT_FLAGS,
-  MAJOR, METHODS, METHODS_HTTP, METHODS_ICE, METHODS_RTSP,
+  MAJOR,
+  METHODS, METHODS_HTTP, METHODS_ICECAST, METHODS_RTSP,
   MINOR, NUM_MAP, QDTEXT, SPECIAL_HEADERS,
   TOKEN, TYPE,
 } from './constants';
@@ -455,13 +457,13 @@ export class HTTP {
           this.update('http_minor', 9, onUrlCompleteHTTP09)),
       );
 
-    const checkMethod = (methods: readonly number[], error: string): Node => {
+    const checkMethod = (methods: IntDict, error: string): Node => {
       const success = n('req_after_protocol');
       const failure = p.error(ERROR.INVALID_CONSTANT, error);
 
       const map: Record<number, Node> = {};
-      for (const method of methods) {
-        map[method] = success;
+      for (const method of Object.keys(methods)) {
+        map[methods[method]] = success;
       }
 
       return this.span.protocol.end(
@@ -478,7 +480,7 @@ export class HTTP {
         'Invalid method for HTTP/x.x request'))
       .match('RTSP', checkMethod(METHODS_RTSP,
         'Invalid method for RTSP/x.x request'))
-      .match('ICE', checkMethod(METHODS_ICE,
+      .match('ICE', checkMethod(METHODS_ICECAST,
         'Expected SOURCE method for ICE/x.x request'))
       .otherwise(this.span.protocol.end(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/, RTSP/ or ICE/')));
 
@@ -506,7 +508,7 @@ export class HTTP {
           'on_version_complete',
           ERROR.CB_VERSION_COMPLETE,
           this.load('method', {
-            [METHODS.PRI]: n('req_pri_upgrade'),
+            [METHODS_HTTP.PRI]: n('req_pri_upgrade'),
           }, n('req_http_complete')),
         ),
       ),
