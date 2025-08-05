@@ -1,11 +1,9 @@
 export type IntDict = Readonly<Record<string, number>>;
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-type Simplify<T> = T extends any[] | Date
-  ? T
-  : {
-    [K in keyof T]: T[K];
-  } & {};
+type Simplify<T> = T extends any[] | Date ? T : {
+  [K in keyof T]: T[K];
+} & {};
 
 export const ERROR = {
   OK: 0,
