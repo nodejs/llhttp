@@ -1,6 +1,5 @@
 import constants from './constants';
 import type { IntDict } from './constants';
-import { enumToMap } from './utils';
 
 type Encoding = 'none' | 'hex';
 
@@ -17,43 +16,33 @@ export class CHeaders {
 
     res += '\n';
 
-    const errorMap = enumToMap(constants.ERROR);
-    const methodMap = enumToMap(constants.METHODS);
-    const httpMethodMap = enumToMap(constants.METHODS, constants.METHODS_HTTP, [
-      constants.METHODS.PRI,
-    ]);
-    const rtspMethodMap = enumToMap(constants.METHODS, constants.METHODS_RTSP);
-    const statusMap = enumToMap(constants.STATUSES, constants.STATUSES_HTTP);
-
-    res += this.buildEnum('llhttp_errno', 'HPE', errorMap);
+    res += this.buildEnum('llhttp_errno', 'HPE', constants.ERROR);
     res += '\n';
-    res += this.buildEnum('llhttp_flags', 'F', enumToMap(constants.FLAGS),
+    res += this.buildEnum('llhttp_flags', 'F', constants.FLAGS,
       'hex');
     res += '\n';
     res += this.buildEnum('llhttp_lenient_flags', 'LENIENT',
-      enumToMap(constants.LENIENT_FLAGS), 'hex');
+      constants.LENIENT_FLAGS, 'hex');
     res += '\n';
-    res += this.buildEnum('llhttp_type', 'HTTP',
-      enumToMap(constants.TYPE));
+    res += this.buildEnum('llhttp_type', 'HTTP', constants.TYPE);
     res += '\n';
-    res += this.buildEnum('llhttp_finish', 'HTTP_FINISH',
-      enumToMap(constants.FINISH));
+    res += this.buildEnum('llhttp_finish', 'HTTP_FINISH', constants.FINISH);
     res += '\n';
-    res += this.buildEnum('llhttp_method', 'HTTP', methodMap);
+    res += this.buildEnum('llhttp_method', 'HTTP', constants.METHODS);
     res += '\n';
-    res += this.buildEnum('llhttp_status', 'HTTP_STATUS', statusMap);
+    res += this.buildEnum('llhttp_status', 'HTTP_STATUS', constants.STATUSES);
 
     res += '\n';
 
-    res += this.buildMap('HTTP_ERRNO', errorMap);
+    res += this.buildMap('HTTP_ERRNO', constants.ERROR);
     res += '\n';
-    res += this.buildMap('HTTP_METHOD', httpMethodMap);
+    res += this.buildMap('HTTP_METHOD', constants.METHODS_HTTP1);
     res += '\n';
-    res += this.buildMap('RTSP_METHOD', rtspMethodMap);
+    res += this.buildMap('RTSP_METHOD', constants.METHODS_RTSP);
     res += '\n';
-    res += this.buildMap('HTTP_ALL_METHOD', methodMap);
+    res += this.buildMap('HTTP_ALL_METHOD', constants.METHODS);
     res += '\n';
-    res += this.buildMap('HTTP_STATUS', statusMap);
+    res += this.buildMap('HTTP_STATUS', constants.STATUSES);
 
     res += '\n';
 
@@ -65,39 +54,32 @@ export class CHeaders {
     return res;
   }
 
-  private buildEnum(name: string, prefix: string, map: IntDict,
+  private buildEnum(name: Lowercase<string>, prefix: string, map: IntDict,
                     encoding: Encoding = 'none'): string {
     let res = '';
 
-    res += `enum ${name} {\n`;
-    const keys = Object.keys(map);
-    const keysLength = keys.length;
-    for (let i = 0; i < keysLength; i++) {
-      const key = keys[i];
-      const isLast = i === keysLength - 1;
-
-      let value: number | string = map[key];
-
-      if (encoding === 'hex') {
-        value = `0x${value.toString(16)}`;
-      }
-
-      res += `  ${prefix}_${key.replace(/-/g, '')} = ${value}`;
-      if (!isLast) {
+    for (const [ key, value ] of Object.entries(map).sort((a,b) => a[1] - b[1])) {
+      if (res !== "") {
         res += ',\n';
       }
-    }
-    res += '\n};\n';
-    res += `typedef enum ${name} ${name}_t;\n`;
 
-    return res;
+      res += `  ${prefix}_${key.replace(/-/g, '')} = `
+
+      if (encoding === 'hex') {
+        res += `0x${value.toString(16)}`;
+      } else {
+        res += value;
+      }
+    }
+
+    return `enum ${name} {\n${res}\n};\ntypedef enum ${name} ${name}_t;\n`;
   }
 
-  private buildMap(name: string, map: IntDict): string {
+  private buildMap(name: Uppercase<string>, map: IntDict): string {
     let res = '';
 
     res += `#define ${name}_MAP(XX) \\\n`;
-    for (const [ key, value ] of Object.entries(map)) {
+    for (const [ key, value ] of Object.entries(map).sort((a,b) => a[1] - b[1])) {
       res += `  XX(${value}, ${key.replace(/-/g, '')}, ${key}) \\\n`;
     }
     res += '\n';
