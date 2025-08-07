@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { execSync, execFileSync } from 'child_process';
 import { copyFileSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
 
@@ -59,28 +59,30 @@ try {
 execSync('npm run build', { cwd: WASM_SRC, stdio: 'inherit' });
 
 // Build wasm binary
-execSync(
-  `clang \
- --sysroot=/usr/share/wasi-sysroot \
- -target wasm32-unknown-wasi \
- -Ofast \
- -fno-exceptions \
- -fvisibility=hidden \
- -mexec-model=reactor \
- -Wl,-error-limit=0 \
- -Wl,-O3 \
- -Wl,--lto-O3 \
- -Wl,--strip-all \
- -Wl,--allow-undefined \
- -Wl,--export-dynamic \
- -Wl,--export-table \
- -Wl,--export=malloc \
- -Wl,--export=free \
- -Wl,--no-entry \
- ${join(WASM_SRC, 'build', 'c')}/*.c \
- ${join(WASM_SRC, 'src', 'native')}/*.c \
- -I${join(WASM_SRC, 'build')} \
- -o ${join(WASM_OUT, 'llhttp.wasm')}`,
+execFileSync(
+  'clang',
+  [
+    '--sysroot=/usr/share/wasi-sysroot',
+    '-target', 'wasm32-unknown-wasi',
+    '-Ofast',
+    '-fno-exceptions',
+    '-fvisibility=hidden',
+    '-mexec-model=reactor',
+    '-Wl,-error-limit=0',
+    '-Wl,-O3',
+    '-Wl,--lto-O3',
+    '-Wl,--strip-all',
+    '-Wl,--allow-undefined',
+    '-Wl,--export-dynamic',
+    '-Wl,--export-table',
+    '-Wl,--export=malloc',
+    '-Wl,--export=free',
+    '-Wl,--no-entry',
+    ...[`${join(WASM_SRC, 'build', 'c')}/*.c`],
+    ...[`${join(WASM_SRC, 'src', 'native')}/*.c`],
+    `-I${join(WASM_SRC, 'build')}`,
+    '-o', join(WASM_OUT, 'llhttp.wasm'),
+  ],
   { stdio: 'inherit' },
 );
 
