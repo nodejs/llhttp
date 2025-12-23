@@ -1269,8 +1269,7 @@ export class HTTP {
   }
 
   private pause(msg: string, next?: string | Node) {
-    const p = this.llparse;
-    const res = p.pause(ERROR.PAUSED, msg);
+    const res = this.llparse.pause(ERROR.PAUSED, msg);
     if (next !== undefined) {
       res.otherwise(this.node(next));
     }
