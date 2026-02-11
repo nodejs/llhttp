@@ -23,6 +23,7 @@ export type TestType = 'request' | 'response' | 'request-finish' | 'response-fin
   'request-lenient-optional-cr-before-lf' | 'response-lenient-optional-cr-before-lf' |
   'request-lenient-optional-crlf-after-chunk' | 'response-lenient-optional-crlf-after-chunk' |
   'request-lenient-spaces-after-chunk-size' | 'response-lenient-spaces-after-chunk-size' |
+  'request-lenient-header-value-relaxed' | 'response-lenient-header-value-relaxed' |
   'none' | 'url';
 
 export const allowedTypes: TestType[] = [
@@ -50,6 +51,8 @@ export const allowedTypes: TestType[] = [
   'response-lenient-optional-crlf-after-chunk',
   'request-lenient-spaces-after-chunk-size',
   'response-lenient-spaces-after-chunk-size',
+  'request-lenient-header-value-relaxed',
+  'response-lenient-header-value-relaxed',
 ];
 
 const BUILD_DIR = path.join(__dirname, '..', 'tmp');

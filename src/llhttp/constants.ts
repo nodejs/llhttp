@@ -79,6 +79,7 @@ export const LENIENT_FLAGS = {
   OPTIONAL_CRLF_AFTER_CHUNK: 1 << 7,
   OPTIONAL_CR_BEFORE_LF: 1 << 8,
   SPACES_AFTER_CHUNK_SIZE: 1 << 9,
+  HEADER_VALUE_RELAXED: 1 << 10,
 } as const;
 
 export const STATUSES = {
@@ -441,6 +442,19 @@ export const HTAB_SP_VCHAR_OBS_TEXT = [ ...HTAB, ...SP, ...VCHAR, ...OBS_TEXT ] 
 
 export const HEADER_CHARS = HTAB_SP_VCHAR_OBS_TEXT;
 
+const RELAXED_CTRL_CHARS = [
+  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, // Before TAB
+  0x0b, 0x0c,                                     // VT, FF (between TAB and CR)
+  0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, // After CR/LF, before space
+  0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d,
+  0x1e, 0x1f,
+  0x7f,                                           // DEL
+] as const;
+
+// Relaxed header chars includes control characters (above) that are not allowed
+// by default. This excludes only NULL (0x00), CR (0x0d), LF (0x0a).
+export const RELAXED_HEADER_CHARS = [ ...RELAXED_CTRL_CHARS, ...HEADER_CHARS ] as const;
+
 // ',' = \x2c
 export const CONNECTION_TOKEN_CHARS = [
   ...HTAB, ...SP,
@@ -509,6 +523,7 @@ export default {
   HEX,
   TOKEN,
   HEADER_CHARS,
+  RELAXED_HEADER_CHARS,
   CONNECTION_TOKEN_CHARS,
   QDTEXT,
   HTAB_SP_VCHAR_OBS_TEXT,
