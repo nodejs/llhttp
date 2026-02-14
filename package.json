@@ -40,18 +40,18 @@
   },
   "homepage": "https://github.com/nodejs/llhttp#readme",
   "devDependencies": {
-    "@eslint/js": "^9.18.0",
-    "@stylistic/eslint-plugin": "^5.2.2",
-    "@types/node": "^24.2.0",
-    "eslint": "^9.18.0",
+    "@eslint/js": "^9.39.2",
+    "@stylistic/eslint-plugin": "^5.8.0",
+    "@types/node": "^24.10.13",
+    "eslint": "^9.39.2",
     "llparse-dot": "^1.0.1",
-    "llparse-test-fixture": "^5.0.2",
+    "llparse-test-fixture": "^5.1.0",
     "mdgator": "^1.1.2",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.19.1"
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.55.0"
   },
   "dependencies": {
-    "llparse": "^7.3.0"
+    "llparse": "^7.3.1"
   }
 }
