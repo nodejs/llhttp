@@ -397,6 +397,16 @@ With this flag this check is disabled.
 
 **Enabling this flag can pose a security issue since you will be exposed to request smuggling attacks. USE WITH CAUTION!**
 
+### `void llhttp_set_lenient_header_value_relaxed(llhttp_t* parser, int enabled)`
+
+Enables/disables relaxed handling of control characters in header values.
+
+Normally `llhttp` would error when header values contain characters not in the valid set (HTAB, SP, VCHAR, OBS_TEXT). With
+this flag, control characters (except for NULL, CR & LF) will be accepted in header values.
+
+This does not create any known security issue, but does allow content considered 'invalid' by
+[RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#name-field-values) and so should be avoided by default.
+
 ## Build Instructions
 
 Make sure you have [Node.js](https://nodejs.org/), npm and npx installed. Then under project directory run:

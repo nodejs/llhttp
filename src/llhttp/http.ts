@@ -10,6 +10,7 @@ import {
   type IntDict,
   CONNECTION_TOKEN_CHARS, ERROR, FINISH, FLAGS, HEADER_CHARS,
   HEADER_STATE, HEX_MAP, HTAB_SP_VCHAR_OBS_TEXT,
+  RELAXED_HEADER_CHARS,
   LENIENT_FLAGS,
   MAJOR,
   METHODS, METHODS_HTTP, METHODS_HTTP1_HEAD, METHODS_ICECAST, METHODS_RTSP,
@@ -72,6 +73,7 @@ const NODES = [
   'header_value',
   'header_value_otherwise',
   'header_value_lenient',
+  'header_value_relaxed',
   'header_value_lenient_failed',
   'header_value_lws',
   'header_value_te_chunked',
@@ -832,9 +834,13 @@ export class HTTP {
       return this.testLenientFlags(LENIENT_FLAGS.OPTIONAL_CR_BEFORE_LF, { 1: success }, failure);
     };
 
+    // LENIENT.HEADERS: accepts anything in values, drops some other header validation too
+    // LENIENT.HEADER_VALUE_RELAXED: accepts only specific extra (common but discouraged) chars in values
     const checkLenient = this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
       1: n('header_value_lenient'),
-    }, span.headerValue.end(p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char')));
+    }, this.testLenientFlags(LENIENT_FLAGS.HEADER_VALUE_RELAXED, {
+      1: n('header_value_relaxed'),
+    }, span.headerValue.end(p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char'))));
 
     n('header_value_otherwise')
       .peek('\r', span.headerValue.end().skipTo(n('header_value_almost_done')))
@@ -853,6 +859,10 @@ export class HTTP {
       .peek('\r', span.headerValue.end().skipTo(n('header_value_almost_done')))
       .peek('\n', span.headerValue.end(n('header_value_almost_done')))
       .skipTo(n('header_value_lenient'));
+
+    n('header_value_relaxed')
+      .match(RELAXED_HEADER_CHARS, n('header_value_relaxed'))
+      .otherwise(n('header_value_otherwise'));
 
     n('header_value_almost_done')
       .match('\n', n('header_value_lws'))
