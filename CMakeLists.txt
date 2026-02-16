@@ -78,6 +78,17 @@ function(config_library target)
     NAMESPACE llhttp::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/llhttp
   )
+
+  include(CMakePackageConfigHelpers)
+  write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/llhttp-config-version.cmake
+    COMPATIBILITY AnyNewerVersion
+  )
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/llhttp-config-version.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/llhttp
+  )
+
 endfunction(config_library target)
 
 if(LLHTTP_BUILD_SHARED_LIBS)
