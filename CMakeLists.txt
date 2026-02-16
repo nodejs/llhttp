@@ -27,6 +27,9 @@ endif()
 option(LLHTTP_BUILD_SHARED_LIBS "Build shared libraries (.dll/.so)" ON)
 option(LLHTTP_BUILD_STATIC_LIBS "Build static libraries (.lib/.a)" OFF)
 
+# Shared library versioning support
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libllhttp.map")
+
 # Source code
 set(LLHTTP_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/llhttp.c

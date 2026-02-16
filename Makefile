@@ -54,6 +54,7 @@ release: clean generate
 	cp -rf src/common.gypi release/
 	sed s/_RELEASE_/$(RELEASE)/ CMakeLists.txt > release/CMakeLists.txt
 	cp -rf libllhttp.pc.in release/
+	cp -rf libllhttp.map release/
 	cp -rf README.md release/
 	cp -rf LICENSE release/
 
