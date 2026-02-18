@@ -15,7 +15,7 @@
     "prebuild-wasm": "npm run wasm -- --prebuild && npm run wasm -- --setup",
     "build-wasm": "npm run wasm -- --docker",
     "wasm": "node --import tsx bin/build_wasm.ts",
-    "clean": "rm -rf lib && rm -rf test/tmp",
+    "clean": "node --import tsx bin/clean.ts",
     "prepare": "npm run clean && npm run build-ts",
     "test": "node --import tsx ./test/md-test.ts",
     "lint": "eslint",
