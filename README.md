@@ -112,7 +112,7 @@ The following callbacks can return `0` (proceed normally), `-1` (error) or `HPE_
 * `on_message_complete`: Invoked when a request/response has been completedly parsed.
 * `on_url_complete`: Invoked after the URL has been parsed.
 * `on_method_complete`: Invoked after the HTTP method has been parsed.
-* `on_protocol_complete`: Invoked after the HTTP version has been parsed.
+* `on_protocol_complete`: Invoked after the protocol has been parsed.
 * `on_version_complete`: Invoked after the HTTP version has been parsed.
 * `on_status_complete`: Invoked after the status code has been parsed.
 * `on_header_field_complete`: Invoked after a header name has been parsed.
