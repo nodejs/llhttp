@@ -3,6 +3,7 @@ cmake_policy(SET CMP0069 NEW)
 
 project(llhttp VERSION _RELEASE_)
 include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 set(CMAKE_C_STANDARD 99)
 
@@ -66,29 +67,6 @@ function(config_library target)
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
   )
-
-  install(FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/libllhttp.pc
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-  )
-
-  # This is required to work with FetchContent
-  install(EXPORT llhttp
-    FILE llhttp-config.cmake
-    NAMESPACE llhttp::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/llhttp
-  )
-
-  include(CMakePackageConfigHelpers)
-  write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/llhttp-config-version.cmake
-    COMPATIBILITY AnyNewerVersion
-  )
-  install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/llhttp-config-version.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/llhttp
-  )
-
 endfunction(config_library target)
 
 if(LLHTTP_BUILD_SHARED_LIBS)
@@ -107,6 +85,36 @@ if(LLHTTP_BUILD_STATIC_LIBS)
     add_library(llhttp::llhttp ALIAS llhttp_static)
   endif()
   config_library(llhttp_static)
+endif()
+
+if(TARGET llhttp_shared OR TARGET llhttp_static)
+  install(FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/libllhttp.pc
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+  )
+
+  install(EXPORT llhttp
+    FILE llhttp-targets.cmake
+    NAMESPACE llhttp::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/llhttp
+  )
+
+  configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/llhttp-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/llhttp-config.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/llhttp
+  )
+
+  write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/llhttp-config-version.cmake
+    COMPATIBILITY AnyNewerVersion
+  )
+
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/llhttp-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/llhttp-config-version.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/llhttp
+  )
 endif()
 
 # On windows with Visual Studio, add a debug postfix so that release
