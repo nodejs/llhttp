@@ -15,6 +15,7 @@ export default tseslint.config(
       "bin/**/*.ts",
       "bench/**/*.ts",
       "src/**/*.ts",
+      "scripts/**/*.ts",
       "test/**/*.ts",
       "eslint.config.js",
     ],    
