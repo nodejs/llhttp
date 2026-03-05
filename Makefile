@@ -45,6 +45,7 @@ build/native:
 release: clean generate
 	@echo "${RELEASE}" | grep -q -E ".+" || { echo "Please make sure the RELEASE argument is set."; exit 1; }
 	rm -rf release
+	mkdir -p release/cmake
 	mkdir -p release/src
 	mkdir -p release/include
 	cp -rf build/llhttp.h release/include/
@@ -52,6 +53,7 @@ release: clean generate
 	cp -rf src/native/*.c release/src/
 	cp -rf src/llhttp.gyp release/
 	cp -rf src/common.gypi release/
+	cp -rf cmake/llhttp-config.cmake.in release/cmake
 	sed s/_RELEASE_/$(RELEASE)/ CMakeLists.txt > release/CMakeLists.txt
 	cp -rf libllhttp.pc.in release/
 	cp -rf README.md release/

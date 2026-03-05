@@ -353,6 +353,23 @@ void llhttp_set_lenient_optional_crlf_after_chunk(llhttp_t* parser, int enabled)
 LLHTTP_EXPORT
 void llhttp_set_lenient_spaces_after_chunk_size(llhttp_t* parser, int enabled);
 
+/* Enables/disables relaxed handling of unusual characters in header values.
+ *
+ * RFC 9110 describes NULL, CR and LF as 'dangerous' and says they MUST be
+ * rejected, while other control characters are merely 'invalid' and discouraged,
+ * and are explicitly allowed by other standards (e.g. WHATWG Fetch) and
+ * in surprisingly common use on the web.
+ *
+ * This flag enables these 'invalid but common' characters, aiming to
+ * maximize compatibility without enabling any potentially dangerous scenarios.
+ *
+ * Unlike `llhttp_set_lenient_headers()`, this does NOT enable any other
+ * potentially unsafe behaviors (like accepting whitespace before colons
+ * or after the start line).
+ */
+LLHTTP_EXPORT
+void llhttp_set_lenient_header_value_relaxed(llhttp_t* parser, int enabled);
+
 #ifdef __cplusplus
 }  /* extern "C" */
 #endif
