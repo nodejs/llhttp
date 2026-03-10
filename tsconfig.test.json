@@ -4,5 +4,5 @@
     "allowJs": true,
     "checkJs": true
   },
-  "include": ["bench/**/*.ts", "bin/**/*.ts", "src/**/*.ts", "test/**/*.ts", "eslint.config.mjs"],
+  "include": ["bench/**/*.ts", "bin/**/*.ts", "src/**/*.ts", "test/**/*.ts", "scripts/**/*.ts","eslint.config.mjs"],
 }
