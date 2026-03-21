@@ -782,7 +782,7 @@ export class HTTP {
       .otherwise(n('header_value_content_length_ws'));
 
     n('header_value_content_length_ws')
-      .match(' ', n('header_value_content_length_ws'))
+      .match([ ' ', '\t' ], n('header_value_content_length_ws'))
       .peek([ '\r', '\n' ],
         this.setFlag(FLAGS.CONTENT_LENGTH, 'header_value_otherwise'))
       .otherwise(invalidContentLength('Invalid character in Content-Length'));
