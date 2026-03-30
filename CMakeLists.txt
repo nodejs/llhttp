@@ -100,19 +100,19 @@ if(TARGET llhttp_shared OR TARGET llhttp_static)
   )
 
   configure_package_config_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/llhttp-config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/llhttp-config.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/llhttpConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/llhttpConfig.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/llhttp
   )
 
   write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/llhttp-config-version.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/llhttpConfigVersion.cmake
     COMPATIBILITY AnyNewerVersion
   )
 
   install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/llhttp-config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/llhttp-config-version.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/llhttpConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/llhttpConfigVersion.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/llhttp
   )
 endif()
