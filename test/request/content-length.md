@@ -314,6 +314,33 @@ off=39 header_value complete
 off=41 headers complete method=3 v=1/1 flags=20 content_length=42
 ```
 
+### Tabs in `Content-Length` (surrounding)
+
+<!-- meta={"type": "request"} -->
+```http
+POST / HTTP/1.1
+Content-Length:\t42\t  
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
+off=5 len=1 span[url]="/"
+off=7 url complete
+off=7 len=4 span[protocol]="HTTP"
+off=11 protocol complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
+off=17 len=14 span[header_field]="Content-Length"
+off=32 header_field complete
+off=33 len=5 span[header_value]="42\t  "
+off=40 header_value complete
+off=42 headers complete method=3 v=1/1 flags=20 content_length=42
+```
+
 ### Spaces in `Content-Length` #2
 
 <!-- meta={"type": "request"} -->

@@ -164,3 +164,28 @@ off=80 headers complete status=200 v=1/1 flags=20 content_length=456
 off=80 skip body
 off=80 message complete
 ```
+
+## Tabs in `Content-Length` (surrounding)
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK
+Content-Length:\t42\t
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
+off=4 protocol complete
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=2 span[status]="OK"
+off=17 status complete
+off=17 len=14 span[header_field]="Content-Length"
+off=32 header_field complete
+off=33 len=3 span[header_value]="42\t"
+off=38 header_value complete
+off=40 headers complete status=200 v=1/1 flags=20 content_length=42
+```
