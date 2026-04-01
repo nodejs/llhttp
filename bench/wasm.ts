@@ -20,6 +20,7 @@ function formatNumber(num, precision) {
     .replaceAll(",", "_");
 }
 
+/* eslint-disable @stylistic/max-len */
 const samples = {
   seanmonstar_httparse: http(`
     GET /wp-content/uploads/2010/03/hello-kitty-darth-vader-pink.jpg HTTP/1.1\\r\\n
@@ -50,6 +51,7 @@ const samples = {
     Cache-Control: max-age=0\\r\\n\\r\\nb\\r\\nhello world\\r\\n0\\r\\n\\r\\n
   `)  
 };
+/* eslint-enable @stylistic/max-len */
 
 async function main () {
   const mod = await WebAssembly.compile(
@@ -85,7 +87,7 @@ async function main () {
     },
   });
 
-  for (const [name, payload] of Object.entries(samples)) {
+  for (const [ name, payload ] of Object.entries(samples)) {
     const len = payload.length;
     const iterations = 2 ** 33 / len;
     const total = iterations * len;
@@ -94,9 +96,9 @@ async function main () {
     const ptr = llhttp.malloc(len);
     new Uint8Array(llhttp.memory.buffer, ptr, len).set(Buffer.from(payload));
 
-    let start = process.hrtime.bigint();
+    const start = process.hrtime.bigint();
     for (let i = 0; i < iterations; i++) {
-      const ret = llhttp.llhttp_execute(parser, ptr, len);
+      llhttp.llhttp_execute(parser, ptr, len);
     }
 
     llhttp.free(ptr);
