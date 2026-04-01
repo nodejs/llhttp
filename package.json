@@ -9,7 +9,8 @@
     "src"
   ],
   "scripts": {
-    "bench": "node --import tsx bench/index.ts",
+    "bench": "node --import tsx bench/native.ts",
+    "bench-wasm": "node --import tsx bench/wasm.ts",
     "build": "node --import tsx bin/generate.ts",
     "build-ts": "tsc",
     "prebuild-wasm": "npm run wasm -- --prebuild && npm run wasm -- --setup",

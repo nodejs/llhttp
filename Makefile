@@ -20,6 +20,7 @@ all: build/libllhttp.a build/libllhttp.so
 clean:
 	rm -rf release/
 	rm -rf build/
+	rm -rf test/tmp
 
 build/libllhttp.so: build/c/llhttp.o build/native/api.o \
 		build/native/http.o
