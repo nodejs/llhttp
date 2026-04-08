@@ -370,6 +370,15 @@ void llhttp_set_lenient_spaces_after_chunk_size(llhttp_t* parser, int enabled);
 LLHTTP_EXPORT
 void llhttp_set_lenient_header_value_relaxed(llhttp_t* parser, int enabled);
 
+
+/* Enables/disables relaxed handling of the host header, which can allow multiple 
+ * or no host headers, when disabled it strictly prohibits these form of requests 
+ * from being accepted.
+ */
+LLHTTP_EXPORT
+void llhttp_set_lenient_host_relaxed(llhttp_t* parser, int enabled);
+
+
 #ifdef __cplusplus
 }  /* extern "C" */
 #endif
