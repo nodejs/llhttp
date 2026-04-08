@@ -550,6 +550,21 @@ export class HTTP {
     this.buildHeaderValue();
   }
 
+  private buildHostCheck(next: Node): Node {
+    // Check if the lentient flag given is not set to HOST_RELAXED
+    // This will reject repetative versions of the host header
+    const p = this.llparse;
+    return this.testLenientFlags(
+      ~LENIENT_FLAGS.HOST_RELAXED, 
+      {1: next}, 
+      this.testFlags(
+        FLAGS.HOST_SEEN,
+        {1: p.error(ERROR.HOST_PREVIOUSLY_SEEN, "host provided multiple times.")}, 
+        this.setFlag(FLAGS.HOST_SEEN, next),
+      )
+    );
+  }
+
   private buildHeaderField(): void {
     const p = this.llparse;
     const span = this.span;
@@ -578,12 +593,18 @@ export class HTTP {
       )
       .peek(':', p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header token'))
       .otherwise(span.headerField.start(n('header_field')));
+    
+
+    const reset_header_state = this.resetHeaderState('header_field_general');
 
     n('header_field')
       .transform(p.transform.toLower())
       // Match headers that need special treatment
       .select(SPECIAL_HEADERS, this.store('header_state', 'header_field_colon'))
-      .otherwise(this.resetHeaderState('header_field_general'));
+      // check to see if host was given once or multiple times which if not 
+      // relaxed should be easily rejected.
+      .match('host', this.buildHostCheck(reset_header_state))
+      .otherwise(reset_header_state);
 
     /* https://www.rfc-editor.org/rfc/rfc7230.html#section-3.3.3, paragraph 3.
      *
@@ -1165,7 +1186,17 @@ export class HTTP {
 
     beforeHeadersComplete.otherwise(onHeadersComplete);
 
-    return beforeHeadersComplete;
+    // before leaving header state if Host is not set to being 
+    // relaxed see if no host has been provided at all...
+    return this.testLenientFlags(
+      ~LENIENT_FLAGS.HOST_RELAXED,
+      {1:this.testFlags(
+        FLAGS.HOST_SEEN, 
+        {1: beforeHeadersComplete}, 
+        p.error(ERROR.HOST_NOT_PROVIDED, "No host header or value was provided.")
+      )},
+      beforeHeadersComplete,
+    );
   }
 
   private node<T extends Node>(name: string | T): T {
