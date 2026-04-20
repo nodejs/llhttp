@@ -49,7 +49,7 @@
     "llparse-test-fixture": "^5.1.0",
     "mdgator": "^1.1.2",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.55.0"
   },
   "dependencies": {
