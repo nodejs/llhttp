@@ -201,7 +201,7 @@ void llhttp__test_init_response_lenient_header_value_relaxed(llparse_t* s) {
   s->lenient_flags |= LENIENT_HEADER_VALUE_RELAXED;
 }
 
-void llhttp__test_init_request_lenient_host_header_relaxed(llparse_t* s) {
+void llhttp__test_init_request_lenient_host_header(llparse_t* s) {
   llhttp__test_init_request(s);
   s->lenient_flags |= LENIENT_HOST_HEADER;
 }
