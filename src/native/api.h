@@ -376,7 +376,7 @@ void llhttp_set_lenient_header_value_relaxed(llhttp_t* parser, int enabled);
  * from being accepted.
  */
 LLHTTP_EXPORT
-void llhttp_set_lenient_host_relaxed(llhttp_t* parser, int enabled);
+void llhttp_set_lenient_host_header(llhttp_t* parser, int enabled);
 
 
 #ifdef __cplusplus

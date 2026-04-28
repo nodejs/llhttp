@@ -324,11 +324,11 @@ void llhttp_set_lenient_header_value_relaxed(llhttp_t* parser, int enabled) {
   }
 }
 
-void llhttp_set_lenient_host_relaxed(llhttp_t* parser, int enabled) {
+void llhttp_set_lenient_host_header(llhttp_t* parser, int enabled) {
   if (enabled) {
-    parser->lenient_flags |= LENIENT_HOST_RELAXED;
+    parser->lenient_flags |= LENIENT_HOST_HEADER;
   } else {
-    parser->lenient_flags &= ~LENIENT_HOST_RELAXED;
+    parser->lenient_flags &= ~LENIENT_HOST_HEADER;
   }
 }
 

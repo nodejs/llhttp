@@ -551,11 +551,11 @@ export class HTTP {
   }
 
   private buildHostCheck(next: Node): Node {
-    // Check if the lentient flag given is not set to HOST_RELAXED
+    // Check if the lentient flag given is not set to HOST_HEADER
     // This will reject repetative versions of the host header
     const p = this.llparse;
     return this.testLenientFlags(
-      ~LENIENT_FLAGS.HOST_RELAXED, 
+      ~LENIENT_FLAGS.HOST_HEADER, 
       {1: next}, 
       this.testFlags(
         FLAGS.HOST_SEEN,
@@ -1189,7 +1189,7 @@ export class HTTP {
     // before leaving header state if Host is not set to being 
     // relaxed see if no host has been provided at all...
     return this.testLenientFlags(
-      ~LENIENT_FLAGS.HOST_RELAXED,
+      ~LENIENT_FLAGS.HOST_HEADER,
       {1:this.testFlags(
         FLAGS.HOST_SEEN, 
         {1: beforeHeadersComplete}, 

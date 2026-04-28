@@ -83,7 +83,7 @@ export const LENIENT_FLAGS = {
   OPTIONAL_CR_BEFORE_LF: 1 << 8,
   SPACES_AFTER_CHUNK_SIZE: 1 << 9,
   HEADER_VALUE_RELAXED: 1 << 10,
-  HOST_RELAXED: 1 << 11,
+  HOST_HEADER: 1 << 11,
 } as const;
 
 export const STATUSES = {
