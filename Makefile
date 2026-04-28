@@ -76,7 +76,7 @@ postversion: release
 	git push
 	git checkout release --
 	cp -rf release/* ./
-	rm -rf release
+	rm -rf build cmake release
 	git add include src *.gyp *.gypi CMakeLists.txt README.md LICENSE libllhttp.pc.in
 	git commit -a -m "release: $(RELEASE)"
 	git tag "release/v$(RELEASE)"
