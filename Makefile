@@ -54,7 +54,7 @@ release: clean generate
 	cp -rf src/native/*.c release/src/
 	cp -rf src/llhttp.gyp release/
 	cp -rf src/common.gypi release/
-	cp -rf cmake/llhttp-config.cmake.in release/cmake
+	cp -rf cmake/llhttpConfig.cmake.in release/cmake
 	sed s/_RELEASE_/$(RELEASE)/ CMakeLists.txt > release/CMakeLists.txt
 	cp -rf libllhttp.pc.in release/
 	cp -rf README.md release/
@@ -76,7 +76,7 @@ postversion: release
 	git push
 	git checkout release --
 	cp -rf release/* ./
-	rm -rf release
+	rm -rf build cmake release
 	git add include src *.gyp *.gypi CMakeLists.txt README.md LICENSE libllhttp.pc.in
 	git commit -a -m "release: $(RELEASE)"
 	git tag "release/v$(RELEASE)"
