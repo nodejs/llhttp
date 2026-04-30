@@ -43,7 +43,7 @@ build/c/llhttp.c: generate
 build/native:
 	mkdir -p build/native
 
-release: clean generate
+release: clean all generate
 	@echo "${RELEASE}" | grep -q -E ".+" || { echo "Please make sure the RELEASE argument is set."; exit 1; }
 	rm -rf release
 	mkdir -p release/cmake
