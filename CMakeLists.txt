@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.25.0)
 cmake_policy(SET CMP0069 NEW)
 
-project(llhttp VERSION 9.4.0)
+project(llhttp VERSION 9.4.1)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
