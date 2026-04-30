@@ -57,6 +57,7 @@ release: clean build generate
 	cp -rf cmake/llhttpConfig.cmake.in release/cmake
 	sed s/_RELEASE_/$(RELEASE)/ CMakeLists.txt > release/CMakeLists.txt
 	cp -rf libllhttp.pc.in release/
+	cp -rf libllhttp.map release/
 	cp -rf README.md release/
 	cp -rf LICENSE release/
 
