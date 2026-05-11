@@ -422,7 +422,7 @@ export class HTTP {
       .skipTo(n('res_status'));
 
     n('res_line_almost_done')
-      .match([ '\r', '\n' ], onStatusComplete)
+      .match('\n', onStatusComplete)
       .otherwise(this.testLenientFlags(LENIENT_FLAGS.OPTIONAL_LF_AFTER_CR, {
         1: onStatusComplete,
       }, p.error(ERROR.STRICT, 'Expected LF after CR')));
