@@ -815,7 +815,7 @@ export class HTTP {
 
     n('header_value_connection_ws')
       .match(',', this.setHeaderFlags('header_value_connection'))
-      .match(' ', n('header_value_connection_ws'))
+      .match([ ' ', '\t' ], n('header_value_connection_ws'))
       .peek([ '\r', '\n' ], n('header_value_otherwise'))
       .otherwise(this.resetHeaderState('header_value_connection_token'));
 
