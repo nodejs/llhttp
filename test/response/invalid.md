@@ -129,6 +129,69 @@ off=22 len=1 span[header_value]="1"
 off=24 error code=3 reason="Missing expected LF after header value"
 ```
 
+### Bare CR after response line
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK\rContent-Length: 0
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
+off=4 protocol complete
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=2 span[status]="OK"
+off=16 error code=2 reason="Expected LF after CR"
+```
+
+### Bare CR after response line (lenient)
+
+<!-- meta={"type": "response-lenient-optional-lf-after-cr"} -->
+```http
+HTTP/1.1 200 OK\rContent-Length: 0
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
+off=4 protocol complete
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=2 span[status]="OK"
+off=16 status complete
+off=16 len=14 span[header_field]="Content-Length"
+off=31 header_field complete
+off=32 len=1 span[header_value]="0"
+off=35 header_value complete
+off=37 headers complete status=200 v=1/1 flags=20 content_length=0
+off=37 message complete
+```
+
+### Bare CR followed by CR after response line
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK\r\rContent-Length: 4
+
+Evil
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
+off=4 protocol complete
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=2 span[status]="OK"
+off=16 error code=2 reason="Expected LF after CR"
+```
+
 ### Invalid HTTP version
 
 <!-- meta={"type": "response"} -->
