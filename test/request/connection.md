@@ -261,6 +261,34 @@ off=40 headers complete method=4 v=1/1 flags=2 content_length=0
 off=40 message complete
 ```
 
+### Setting flag on `close` followed by tab
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Connection: close\t
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
+off=4 len=4 span[url]="/url"
+off=9 url complete
+off=9 len=4 span[protocol]="HTTP"
+off=13 protocol complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
+off=19 len=10 span[header_field]="Connection"
+off=30 header_field complete
+off=31 len=6 span[header_value]="close\t"
+off=39 header_value complete
+off=41 headers complete method=4 v=1/1 flags=2 content_length=0
+off=41 message complete
+```
+
 ### CRLF between requests, explicit `close`
 
 `close` means closed connection
@@ -309,6 +337,56 @@ off=129 headers complete method=3 v=1/1 flags=22 content_length=4
 off=129 len=4 span[body]="q=42"
 off=133 message complete
 off=138 error code=5 reason="Data after `Connection: close`"
+```
+
+### CRLF between requests, explicit `close` followed by tab
+
+`close` means closed connection even when followed by optional whitespace.
+
+<!-- meta={"type": "request" } -->
+```http
+POST / HTTP/1.1
+Host: www.example.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 4
+Connection: close\t
+
+q=42
+
+GET / HTTP/1.1
+```
+_Note the trailing CRLF above_
+
+```log
+off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
+off=5 len=1 span[url]="/"
+off=7 url complete
+off=7 len=4 span[protocol]="HTTP"
+off=11 protocol complete
+off=12 len=3 span[version]="1.1"
+off=15 version complete
+off=17 len=4 span[header_field]="Host"
+off=22 header_field complete
+off=23 len=15 span[header_value]="www.example.com"
+off=40 header_value complete
+off=40 len=12 span[header_field]="Content-Type"
+off=53 header_field complete
+off=54 len=33 span[header_value]="application/x-www-form-urlencoded"
+off=89 header_value complete
+off=89 len=14 span[header_field]="Content-Length"
+off=104 header_field complete
+off=105 len=1 span[header_value]="4"
+off=108 header_value complete
+off=108 len=10 span[header_field]="Connection"
+off=119 header_field complete
+off=120 len=6 span[header_value]="close\t"
+off=128 header_value complete
+off=130 headers complete method=3 v=1/1 flags=22 content_length=4
+off=130 len=4 span[body]="q=42"
+off=134 message complete
+off=139 error code=5 reason="Data after `Connection: close`"
 ```
 
 ### CRLF between requests, explicit `close` (lenient)
