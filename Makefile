@@ -1,6 +1,7 @@
 CLANG ?= clang
 CFLAGS ?=
 OS ?=
+REMOTE ?= origin
 
 CFLAGS += -Os -g3 -Wall -Wextra -Wno-unused-parameter
 ifneq ($(OS),Windows_NT) 
@@ -72,15 +73,15 @@ github-release:
 	open $$(gh release view release/${RELEASE_V} --json url -t "{{.url}}")
 
 postversion: release	
-	git fetch origin
-	git push
+	git fetch $(REMOTE)
+	git push $(REMOTE)
 	git checkout release --
 	cp -rf release/* ./
 	rm -rf build release
 	git add include src *.gyp *.gypi CMakeLists.txt README.md LICENSE libllhttp.pc.in cmake/llhttpConfig.cmake.in
-	git commit -a -m "release: $(RELEASE)"
+	git commit -a -n -m "release: $(RELEASE)"
 	git tag "release/v$(RELEASE)"
-	git push && git push --tags
+	git push $(REMOTE) && git push $(REMOTE) --tags
 	git checkout main
 
 generate:
