@@ -24,6 +24,8 @@ export const ERROR = {
   INVALID_STATUS: 13,
   INVALID_EOF_STATE: 14,
   INVALID_TRANSFER_ENCODING: 15,
+  HOST_PREVIOUSLY_SEEN: 39,
+  HOST_NOT_PROVIDED: 40,
 
   CB_MESSAGE_BEGIN: 16,
   CB_HEADERS_COMPLETE: 17,
@@ -66,6 +68,7 @@ export const FLAGS = {
   TRAILING: 1 << 7,
   // 1 << 8 is unused
   TRANSFER_ENCODING: 1 << 9,
+  HOST_SEEN: 1 << 10,
 } as const;
 
 export const LENIENT_FLAGS = {
@@ -80,6 +83,7 @@ export const LENIENT_FLAGS = {
   OPTIONAL_CR_BEFORE_LF: 1 << 8,
   SPACES_AFTER_CHUNK_SIZE: 1 << 9,
   HEADER_VALUE_RELAXED: 1 << 10,
+  HOST_HEADER: 1 << 11,
 } as const;
 
 export const STATUSES = {
