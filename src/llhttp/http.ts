@@ -39,7 +39,7 @@ const NODES = [
   'res_status_code_digit_1',
   'res_status_code_digit_2',
   'res_status_code_digit_3',
-  'res_status_code_otherwise',
+  'res_status_trailing_space',
   'res_status_start',
   'res_status',
   'res_line_almost_done',
@@ -385,7 +385,7 @@ export class HTTP {
     n('res_status_code_digit_3')
       .select(NUM_MAP, this.mulAdd('status_code', {
         overflow: p.error(ERROR.INVALID_STATUS, 'Invalid status code'),
-        success: 'res_status_code_otherwise',
+        success: 'res_status_trailing_space',
       }))
       .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid status code'));
 
@@ -393,16 +393,8 @@ export class HTTP {
       'on_status_complete', ERROR.CB_STATUS_COMPLETE, n('headers_start'),
     );
 
-    n('res_status_code_otherwise')
+    n('res_status_trailing_space')
       .match(' ', n('res_status_start'))
-      .match('\r', n('res_line_almost_done'))
-      .match(
-        '\n',
-        checkIfAllowLFWithoutCR(
-          onStatusComplete,
-          p.error(ERROR.INVALID_STATUS, 'Invalid response status'),
-        ),
-      )
       .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid response status'));
 
     n('res_status_start')
