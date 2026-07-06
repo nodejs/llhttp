@@ -685,8 +685,11 @@ export class HTTP {
 
     const emptyContentLengthError = p.error(
       ERROR.INVALID_CONTENT_LENGTH, 'Empty Content-Length');
-    const checkContentLengthEmptiness = this.load('header_state', {
+    const emptyTransferEncodingError = p.error(
+      ERROR.INVALID_TRANSFER_ENCODING, 'Empty Transfer-Encoding');
+    const checkEmptyHeaderValue = this.load('header_state', {
       [HEADER_STATE.CONTENT_LENGTH]: emptyContentLengthError,
+      [HEADER_STATE.TRANSFER_ENCODING]: emptyTransferEncodingError,
     }, this.setHeaderFlags(
       this.emptySpan(span.headerValue, onHeaderValueComplete)));
 
@@ -694,7 +697,7 @@ export class HTTP {
       .match([ ' ', '\t' ], this.testLenientFlags(LENIENT_FLAGS.HEADERS, {
         1: n('header_value_discard_ws'),
       }, p.error(ERROR.INVALID_HEADER_TOKEN, 'Invalid header value char')))
-      .otherwise(checkContentLengthEmptiness);
+      .otherwise(checkEmptyHeaderValue);
 
     // Multiple `Transfer-Encoding` headers should be treated as one, but with
     // values separate by a comma.

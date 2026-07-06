@@ -1,6 +1,32 @@
 Transfer-Encoding header
 ========================
 
+## Empty `Transfer-Encoding` with `Content-Length`
+
+<!-- meta={"type": "request"} -->
+```http
+POST /first HTTP/1.1
+Transfer-Encoding:
+Content-Length: 5
+
+hello
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
+off=5 len=6 span[url]="/first"
+off=12 url complete
+off=12 len=4 span[protocol]="HTTP"
+off=16 protocol complete
+off=17 len=3 span[version]="1.1"
+off=20 version complete
+off=22 len=17 span[header_field]="Transfer-Encoding"
+off=40 header_field complete
+off=42 error code=15 reason="Empty Transfer-Encoding"
+```
+
 ## `chunked`
 
 ### Parsing and setting flag

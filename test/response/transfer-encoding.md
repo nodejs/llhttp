@@ -1,6 +1,30 @@
 Transfer-Encoding header
 ========================
 
+## Empty `Transfer-Encoding` with `Content-Length`
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK
+Transfer-Encoding:
+Content-Length: 5
+
+hello
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
+off=4 protocol complete
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=2 span[status]="OK"
+off=17 status complete
+off=17 len=17 span[header_field]="Transfer-Encoding"
+off=35 header_field complete
+off=37 error code=15 reason="Empty Transfer-Encoding"
+```
+
 ## Trailing space on chunked body
 
 <!-- meta={"type": "response"} -->
@@ -427,4 +451,3 @@ off=66 len=1 span[body]=lf
 off=67 len=1 span[body]=cr
 off=68 len=1 span[body]=lf
 ```
-
