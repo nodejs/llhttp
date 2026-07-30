@@ -225,6 +225,11 @@ export const METHODS_BASIC_HTTP = {
    */
   PATCH: 28,
 
+  /**
+   * @see https://www.rfc-editor.org/rfc/rfc10008.html
+   */
+  QUERY: 46,
+
   /* RFC-2068, section 19.6.1.2 */
   LINK: 31,
   UNLINK: 32,
@@ -268,9 +273,6 @@ export const METHODS_NON_STANDARD = {
    * Not defined in any RFC but commonly used
    */
   PURGE: 29,
-
-  /* DRAFT https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-02.html */
-  QUERY: 46,
 } as const;
 
 export const METHODS_ICECAST = {
