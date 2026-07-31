@@ -395,7 +395,13 @@ export class HTTP {
 
     n('res_status_trailing_space')
       .match(' ', n('res_status_start'))
-      .otherwise(p.error(ERROR.INVALID_STATUS, 'Invalid response status'));
+      .otherwise(
+        this.testLenientFlags(
+          LENIENT_FLAGS.OPTIONAL_SP_AFTER_STATUS,
+          { 1: n('res_line_almost_done') },
+          p.error(ERROR.INVALID_STATUS, 'Invalid response status')
+        )
+      );
 
     n('res_status_start')
       .otherwise(span.status.start(n('res_status')));
