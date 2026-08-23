@@ -32,6 +32,7 @@ function buildURL() {
   // Loop
   node.exit.toHTTP.otherwise(node.entry.normal);
   node.exit.toHTTP09.otherwise(node.entry.normal);
+  node.exit.toHTTP09BareLF.otherwise(node.entry.normal);
 
   return { llparse: p, entry: node.entry.normal };
 }
