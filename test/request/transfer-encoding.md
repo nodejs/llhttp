@@ -56,6 +56,33 @@ off=47 header_value complete
 off=49 headers complete method=4 v=1/1 flags=208 content_length=0
 ```
 
+### Tabs around `chunked` (surrounding)
+
+<!-- meta={"type": "request"} -->
+```http
+PUT /url HTTP/1.1
+Transfer-Encoding:\tchunked\t
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
+off=4 len=4 span[url]="/url"
+off=9 url complete
+off=9 len=4 span[protocol]="HTTP"
+off=13 protocol complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
+off=19 len=17 span[header_field]="Transfer-Encoding"
+off=37 header_field complete
+off=38 len=8 span[header_value]="chunked\t"
+off=48 header_value complete
+off=50 headers complete method=4 v=1/1 flags=208 content_length=0
+```
+
 ### Parse chunks with lowercase size
 
 <!-- meta={"type": "request"} -->
@@ -665,6 +692,37 @@ off=67 len=17 span[header_field]="Transfer-Encoding"
 off=85 header_field complete
 off=86 len=7 span[header_value]="chunked"
 off=94 error code=15 reason="Invalid `Transfer-Encoding` header value"
+```
+
+## POST with `chunked` followed by a tab before other transfer coding names
+
+<!-- meta={"type": "request", "noScan": true} -->
+```http
+POST /post_identity_body_world?q=search#hey HTTP/1.1
+Accept: */*
+Transfer-Encoding: chunked\t, deflate
+
+World
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[method]="POST"
+off=4 method complete
+off=5 len=38 span[url]="/post_identity_body_world?q=search#hey"
+off=44 url complete
+off=44 len=4 span[protocol]="HTTP"
+off=48 protocol complete
+off=49 len=3 span[version]="1.1"
+off=52 version complete
+off=54 len=6 span[header_field]="Accept"
+off=61 header_field complete
+off=62 len=3 span[header_value]="*/*"
+off=67 header_value complete
+off=67 len=17 span[header_field]="Transfer-Encoding"
+off=85 header_field complete
+off=86 len=8 span[header_value]="chunked\t"
+off=95 error code=15 reason="Invalid `Transfer-Encoding` header value"
 ```
 
 ## POST with `chunked` and duplicate transfer-encoding

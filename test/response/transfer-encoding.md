@@ -25,6 +25,41 @@ off=35 header_field complete
 off=37 error code=15 reason="Empty Transfer-Encoding"
 ```
 
+## Tabs around `chunked` (surrounding)
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 200 OK
+Transfer-Encoding:\tchunked\t
+
+5
+hello
+0
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
+off=4 protocol complete
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=2 span[status]="OK"
+off=17 status complete
+off=17 len=17 span[header_field]="Transfer-Encoding"
+off=35 header_field complete
+off=36 len=8 span[header_value]="chunked\t"
+off=46 header_value complete
+off=48 headers complete status=200 v=1/1 flags=208 content_length=0
+off=51 chunk header len=5
+off=51 len=5 span[body]="hello"
+off=58 chunk complete
+off=61 chunk header len=0
+off=63 chunk complete
+off=63 message complete
+```
+
 ## Trailing space on chunked body
 
 <!-- meta={"type": "response"} -->
