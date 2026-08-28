@@ -268,6 +268,14 @@ void llhttp_set_lenient_transfer_encoding(llhttp_t* parser, int enabled) {
   }
 }
 
+void llhttp_set_lenient_duplicate_content_length(llhttp_t* parser, int enabled) {
+  if (enabled) {
+    parser->lenient_flags |= LENIENT_DUPLICATE_CONTENT_LENGTH;
+  } else {
+    parser->lenient_flags &= ~LENIENT_DUPLICATE_CONTENT_LENGTH;
+  }
+}
+
 void llhttp_set_lenient_version(llhttp_t* parser, int enabled) {
   if (enabled) {
     parser->lenient_flags |= LENIENT_VERSION;

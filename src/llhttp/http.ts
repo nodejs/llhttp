@@ -775,7 +775,9 @@ export class HTTP {
     n('header_value_content_length_once')
       .otherwise(this.testFlags(FLAGS.CONTENT_LENGTH, {
         0: n('header_value_content_length'),
-      }, p.error(ERROR.UNEXPECTED_CONTENT_LENGTH, 'Duplicate Content-Length')));
+      }, this.testLenientFlags(LENIENT_FLAGS.DUPLICATE_CONTENT_LENGTH, {
+        1: fallback,
+      }, p.error(ERROR.UNEXPECTED_CONTENT_LENGTH, 'Duplicate Content-Length'))));
 
     n('header_value_content_length')
       .select(NUM_MAP, this.mulAdd('content_length', {
