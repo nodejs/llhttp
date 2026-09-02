@@ -18,7 +18,7 @@
     "wasm": "node --import tsx bin/build_wasm.ts",
     "clean": "node --import tsx scripts/clean.ts",
     "prepare": "npm run clean && npm run build-ts",
-    "test": "node --import tsx ./test/md-test.ts",
+    "test": "node --import tsx ./test/md-test.ts && node --import tsx ./test/headers-test.ts",
     "lint": "eslint",
     "lint-fix": "eslint --fix",
     "postversion": "RELEASE=`node -e \"process.stdout.write(require('./package').version)\"` make -B postversion",

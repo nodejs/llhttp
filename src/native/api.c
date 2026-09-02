@@ -219,7 +219,7 @@ const char* llhttp_method_name(llhttp_method_t method) {
 #define HTTP_METHOD_GEN(NUM, NAME, STRING) case HTTP_##NAME: return #STRING;
   switch (method) {
     HTTP_ALL_METHOD_MAP(HTTP_METHOD_GEN)
-    default: abort();
+    default: return NULL;
   }
 #undef HTTP_METHOD_GEN
 }
