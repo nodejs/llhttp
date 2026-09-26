@@ -863,9 +863,13 @@ export class HTTP {
       .peek('\n', span.headerValue.end(n('header_value_almost_done')))
       .skipTo(n('header_value_lenient'));
 
+    // After consuming a relaxed byte, return to the ordinary fast path.
+    // Staying in this state would duplicate the entire header-value scanning
+    // loop (including its vectorized blocks) on the hot state machine.
     n('header_value_relaxed')
-      .match(RELAXED_HEADER_CHARS, n('header_value_relaxed'))
-      .otherwise(n('header_value_otherwise'));
+      .match(RELAXED_HEADER_CHARS, n('header_value'))
+      .otherwise(span.headerValue.end(p.error(ERROR.INVALID_HEADER_TOKEN,
+        'Invalid header value char')));
 
     n('header_value_almost_done')
       .match('\n', n('header_value_lws'))

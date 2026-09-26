@@ -35,6 +35,60 @@ off=43 headers complete method=1 v=1/1 flags=0 content_length=0
 off=43 message complete
 ```
 
+## Consecutive control chars return to the ordinary header scanner
+
+<!-- meta={"type": "request-lenient-header-value-relaxed"} -->
+```http
+GET /url HTTP/1.1
+Header1: hello\f\fworld
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
+off=4 len=4 span[url]="/url"
+off=9 url complete
+off=9 len=4 span[protocol]="HTTP"
+off=13 protocol complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
+off=19 len=7 span[header_field]="Header1"
+off=27 header_field complete
+off=28 len=12 span[header_value]="hello\f\fworld"
+off=42 header_value complete
+off=44 headers complete method=1 v=1/1 flags=0 content_length=0
+off=44 message complete
+```
+
+## Bare CR after a relaxed control char is still rejected
+
+<!-- meta={"type": "request-lenient-header-value-relaxed"} -->
+```http
+GET /url HTTP/1.1
+Header1: hello\f\rworld
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
+off=4 len=4 span[url]="/url"
+off=9 url complete
+off=9 len=4 span[protocol]="HTTP"
+off=13 protocol complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
+off=19 len=7 span[header_field]="Header1"
+off=27 header_field complete
+off=28 len=6 span[header_value]="hello\f"
+off=35 error code=3 reason="Missing expected LF after header value"
+```
+
 ## Control char in header value (strict)
 
 Control characters should be rejected in strict mode.
