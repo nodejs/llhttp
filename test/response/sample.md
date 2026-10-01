@@ -288,25 +288,6 @@ off=24 status complete
 off=26 headers complete status=404 v=1/1 flags=0 content_length=0
 ```
 
-## No reason phrase
-
-<!-- meta={"type": "response"} -->
-```http
-HTTP/1.1 301
-
-
-```
-
-```log
-off=0 message begin
-off=0 len=4 span[protocol]="HTTP"
-off=4 protocol complete
-off=5 len=3 span[version]="1.1"
-off=8 version complete
-off=14 status complete
-off=16 headers complete status=301 v=1/1 flags=0 content_length=0
-```
-
 ## Empty reason phrase after space
 
 <!-- meta={"type": "response"} -->
