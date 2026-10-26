@@ -35,7 +35,7 @@ if (process.argv[2] === '--docker') {
   let cmd = `docker run --rm --platform=${platform.toString().trim()}`;
   // Try to avoid root permission problems on compiled assets
   // when running on linux.
-  // It will work flawessly if uid === gid === 1000
+  // It will work flawlessly if uid === gid === 1000
   // there will be some warnings otherwise.
   if (process.platform === 'linux') {
     cmd += ` --user ${process.getuid!()}:${process.getegid!()}`;

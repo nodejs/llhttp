@@ -1,5 +1,5 @@
 /**
- * A minimal Parser that mimicks a small fraction of the Node.js parser
+ * A minimal Parser that mimics a small fraction of the Node.js parser
  * API.
  * To run:
  * - `npm run build-wasm`
