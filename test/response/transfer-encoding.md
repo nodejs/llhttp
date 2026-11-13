@@ -131,7 +131,7 @@ off=89 headers complete status=200 v=1/1 flags=200 content_length=0
 off=89 len=5 span[body]="World"
 ```
 
-## `chunkedchunked` transfer-encoding does not enable chunked enconding
+## `chunkedchunked` transfer-encoding does not enable chunked encoding
 
 This check that the word `chunked` repeat more than once (with or without spaces) does not mistakenly enables chunked encoding.
 
