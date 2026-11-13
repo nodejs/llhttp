@@ -35,6 +35,18 @@ set(LLHTTP_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/api.c
 )
 
+# On x86-64, compile a second instantiation of the parser with SSE4.2 enabled so
+# llhttp_execute() can select it at runtime (see src/api.c). The default build
+# passes no -march, so the SSE4.2 span scanners in the generated code are
+# otherwise never compiled in. Skipped on MSVC (no __builtin_cpu_supports).
+if(NOT MSVC AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|amd64|AMD64)$")
+  list(APPEND LLHTTP_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/llhttp_sse42.c)
+  set_source_files_properties(
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/llhttp_sse42.c
+    PROPERTIES COMPILE_OPTIONS "-msse4.2"
+  )
+endif()
+
 set(LLHTTP_HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/include/llhttp.h
 )

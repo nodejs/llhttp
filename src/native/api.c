@@ -122,9 +122,33 @@ void llhttp_reset(llhttp_t* parser) {
 }
 
 
+#if (defined(__x86_64__) || defined(_M_X64)) && !defined(__SSE4_2__) && \
+    (defined(__GNUC__) || defined(__clang__))
+/* A second instantiation of the generated parser, compiled with -msse4.2 (see
+ * llhttp_sse42.c), which turns on the SSE4.2 span scanners that the generated
+ * code guards with `#ifdef __SSE4_2__`. The default x86-64 build (no -march)
+ * never contains them, so pick the SSE4.2 build once at runtime. Both
+ * instantiations come from the same generated source, so the parser state
+ * layout is identical and a parser may be driven by either. */
+llhttp_errno_t llhttp__internal_execute_sse42(llhttp_t* state, const char* p,
+                                              const char* endp);
+
+static int llhttp__sse42 = -1;
+
+llhttp_errno_t llhttp_execute(llhttp_t* parser, const char* data, size_t len) {
+  if (llhttp__sse42 < 0) {
+    llhttp__sse42 = __builtin_cpu_supports("sse4.2") ? 1 : 0;
+  }
+  if (llhttp__sse42) {
+    return llhttp__internal_execute_sse42(parser, data, data + len);
+  }
+  return llhttp__internal_execute(parser, data, data + len);
+}
+#else
 llhttp_errno_t llhttp_execute(llhttp_t* parser, const char* data, size_t len) {
   return llhttp__internal_execute(parser, data, data + len);
 }
+#endif
 
 
 void llhttp_settings_init(llhttp_settings_t* settings) {
