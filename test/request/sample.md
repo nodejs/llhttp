@@ -330,6 +330,38 @@ off=9 headers complete method=1 v=0/9 flags=0 content_length=0
 off=9 message complete
 ```
 
+## No HTTP version with bare LF
+
+<!-- meta={"type": "request"} -->
+```http
+GET /\n\n
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
+off=4 len=1 span[url]="/"
+off=6 error code=25 reason="Missing expected CR after request line"
+```
+
+## No HTTP version with bare LF (lenient)
+
+<!-- meta={"type": "request-lenient-optional-cr-before-lf"} -->
+```http
+GET /\n\n
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="GET"
+off=3 method complete
+off=4 len=1 span[url]="/"
+off=6 url complete
+off=7 headers complete method=1 v=0/9 flags=0 content_length=0
+off=7 message complete
+```
+
 ## Line folding in header value with CRLF
 
 <!-- meta={"type": "request-lenient-headers"} -->

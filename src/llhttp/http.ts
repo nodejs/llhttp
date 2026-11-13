@@ -458,11 +458,17 @@ export class HTTP {
       'on_url_complete', ERROR.CB_URL_COMPLETE, n('headers_start'),
     );
 
+    const toHTTP09 = this.update('http_major', 0,
+      this.update('http_minor', 9, onUrlCompleteHTTP09));
+
     url.exit.toHTTP09
-      .otherwise(
-        this.update('http_major', 0,
-          this.update('http_minor', 9, onUrlCompleteHTTP09)),
-      );
+      .otherwise(toHTTP09);
+
+    url.exit.toHTTP09BareLF
+      .otherwise(checkIfAllowLFWithoutCR(
+        toHTTP09,
+        p.error(ERROR.CR_EXPECTED, 'Missing expected CR after request line'),
+      ));
 
     const checkMethod = (methods: IntDict, error: string): Node => {
       const success = n('req_after_protocol');
