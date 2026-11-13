@@ -126,6 +126,40 @@ off=53 header_field complete
 off=54 error code=4 reason="Duplicate Content-Length"
 ```
 
+## Lenient duplicate `Content-Length` with identical values
+
+<!-- meta={"type": "request-lenient-duplicate-content-length"} -->
+```http
+PUT /url HTTP/1.1
+Content-Length: 3
+Content-Length: 3
+
+abc
+```
+
+```log
+off=0 message begin
+off=0 len=3 span[method]="PUT"
+off=3 method complete
+off=4 len=4 span[url]="/url"
+off=9 url complete
+off=9 len=4 span[protocol]="HTTP"
+off=13 protocol complete
+off=14 len=3 span[version]="1.1"
+off=17 version complete
+off=19 len=14 span[header_field]="Content-Length"
+off=34 header_field complete
+off=35 len=1 span[header_value]="3"
+off=38 header_value complete
+off=38 len=14 span[header_field]="Content-Length"
+off=53 header_field complete
+off=54 len=1 span[header_value]="3"
+off=57 header_value complete
+off=59 headers complete method=4 v=1/1 flags=20 content_length=3
+off=59 len=3 span[body]="abc"
+off=62 message complete
+```
+
 ## Error on simultaneous `Content-Length` and `Transfer-Encoding: identity`
 
 <!-- meta={"type": "request"} -->

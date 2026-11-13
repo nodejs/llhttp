@@ -279,6 +279,21 @@ void llhttp_set_lenient_keep_alive(llhttp_t* parser, int enabled);
 LLHTTP_EXPORT
 void llhttp_set_lenient_transfer_encoding(llhttp_t* parser, int enabled);
 
+/* Enables/disables lenient handling of a repeated `Content-Length` header.
+ *
+ * Normally `llhttp` would error when `Content-Length` appears more than once.
+ * This is important to prevent request smuggling, but RFC 9112 Section 6.3 also
+ * permits collapsing duplicates whose values are identical.
+ * With this flag the repeat is parsed as an ordinary header and the body is
+ * framed using the first value. llhttp does not compare the values; the caller
+ * must reject the message itself when they differ.
+ *
+ * **Enabling this flag can pose a security issue since you will be exposed to
+ * request smuggling attacks unless you compare the values. USE WITH CAUTION!**
+ */
+LLHTTP_EXPORT
+void llhttp_set_lenient_duplicate_content_length(llhttp_t* parser, int enabled);
+
 /* Enables/disables lenient handling of HTTP version.
  *
  * Normally `llhttp` would error when the HTTP version in the request or status line
