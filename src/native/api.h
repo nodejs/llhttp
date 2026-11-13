@@ -212,7 +212,9 @@ const char* llhttp_get_error_pos(const llhttp_t* parser);
 LLHTTP_EXPORT
 const char* llhttp_errno_name(llhttp_errno_t err);
 
-/* Returns textual name of HTTP method */
+/* Returns textual name of HTTP method, or NULL if `method` is unknown.
+ * Method ids run from 0 up to HTTP_ALL_METHOD_COUNT-1.
+ */
 LLHTTP_EXPORT
 const char* llhttp_method_name(llhttp_method_t method);
 
