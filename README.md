@@ -407,6 +407,15 @@ this flag, control characters (except for NULL, CR & LF) will be accepted in hea
 This does not create any known security issue, but does allow content considered 'invalid' by
 [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#name-field-values) and so should be avoided by default.
 
+### `void llhttp_set_lenient_optional_sp_after_status(llhttp_t* parser, int enabled)`
+
+Enables/disables lenient handling of spaces after status code
+
+As per [RFC 9112](https://www.rfc-editor.org/info/rfc9112/#section-4-8):
+> A server MUST send the space that separates the status-code from the reason-phrase even when the reason-phrase is absent (i.e., the status-line would end with the space).
+
+This flag allows status code with no trailing space.
+
 ## Build Instructions
 
 Make sure you have [Node.js](https://nodejs.org/), npm and npx installed. Then under project directory run:

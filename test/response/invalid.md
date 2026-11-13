@@ -67,7 +67,6 @@ off=5 len=3 span[version]="1.0"
 off=8 version complete
 off=8 error code=9 reason="Expected space after version"
 ```
--->
 
 ### Tab after HTTP version
 
@@ -264,6 +263,24 @@ off=8 version complete
 off=13 len=3 span[status]=" OK"
 off=18 status complete
 off=20 headers complete status=200 v=1/1 flags=0 content_length=0
+```
+
+### No space after status code (no reason)
+
+<!-- meta={"type": "response"} -->
+```http
+HTTP/1.1 301
+
+
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
+off=4 protocol complete
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=12 error code=13 reason="Invalid response status"
 ```
 
 ### One-digit status code

@@ -370,6 +370,18 @@ void llhttp_set_lenient_spaces_after_chunk_size(llhttp_t* parser, int enabled);
 LLHTTP_EXPORT
 void llhttp_set_lenient_header_value_relaxed(llhttp_t* parser, int enabled);
 
+/* Enables/disables lenient handling of spaces after status code
+ *
+ * As per RFC 9112:
+ * A server MUST send the space that separates the status-code from the 
+ * reason-phrase even when the reason-phrase is absent 
+ * (i.e., the status-line would end with the space).
+ *
+ * This flag allows status code with no trailing space.
+ */
+LLHTTP_EXPORT
+void llhttp_set_lenient_optional_sp_after_status(llhttp_t* parser, int enabled);
+
 #ifdef __cplusplus
 }  /* extern "C" */
 #endif

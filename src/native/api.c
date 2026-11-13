@@ -324,6 +324,14 @@ void llhttp_set_lenient_header_value_relaxed(llhttp_t* parser, int enabled) {
   }
 }
 
+void llhttp_set_lenient_optional_sp_after_status(llhttp_t* parser, int enabled) {
+  if (enabled) {
+    parser->lenient_flags |= LENIENT_OPTIONAL_SP_AFTER_STATUS;
+  } else {
+    parser->lenient_flags &= ~LENIENT_OPTIONAL_SP_AFTER_STATUS;
+  }
+}
+
 /* Callbacks */
 
 

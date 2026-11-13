@@ -201,6 +201,16 @@ void llhttp__test_init_response_lenient_header_value_relaxed(llparse_t* s) {
   s->lenient_flags |= LENIENT_HEADER_VALUE_RELAXED;
 }
 
+void llhttp__test_init_request_lenient_optional_sp_after_status(llparse_t* s) {
+  llhttp__test_init_request(s);
+  s->lenient_flags |= LENIENT_OPTIONAL_SP_AFTER_STATUS;
+}
+
+void llhttp__test_init_response_lenient_optional_sp_after_status(llparse_t* s) {
+  llhttp__test_init_response(s);
+  s->lenient_flags |= LENIENT_OPTIONAL_SP_AFTER_STATUS;
+}
+
 
 void llhttp__test_finish(llparse_t* s) {
   llparse__print(NULL, NULL, "finish=%d", s->finish);
