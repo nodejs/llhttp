@@ -229,9 +229,11 @@ function run(name: string): void {
   }
 }
 
+
 run('request/sample');
 run('request/lenient-headers');
 run('request/lenient-header-value-relaxed');
+run('request/lenient-host-header');
 run('request/lenient-version');
 run('request/method');
 run('request/uri');
