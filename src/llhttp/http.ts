@@ -84,6 +84,8 @@ const NODES = [
   'header_value_content_length',
   'header_value_content_length_ws',
   'header_value_connection',
+  'header_value_connection_close',
+  'header_value_connection_close_ws',
   'header_value_connection_ws',
   'header_value_connection_token',
   'header_value_almost_done',
@@ -802,7 +804,7 @@ export class HTTP {
       .match(
         'close',
         this.update('header_state', HEADER_STATE.CONNECTION_CLOSE,
-          'header_value_connection_ws'),
+          'header_value_connection_close'),
       )
       .match(
         'upgrade',
@@ -815,6 +817,19 @@ export class HTTP {
           'header_value_connection_ws'),
       )
       .otherwise(n('header_value_connection_token'));
+
+    n('header_value_connection_close')
+      .match(',', this.setHeaderFlags('header_value_connection'))
+      .match([ ' ', '\t' ], n('header_value_connection_close_ws'))
+      .peek([ '\r', '\n' ], n('header_value_otherwise'))
+      .otherwise(this.resetHeaderState('header_value_connection_token'));
+
+    // Preserve a recognized close directive after optional whitespace.
+    n('header_value_connection_close_ws')
+      .match(',', this.setHeaderFlags('header_value_connection'))
+      .match([ ' ', '\t' ], n('header_value_connection_close_ws'))
+      .peek([ '\r', '\n' ], n('header_value_otherwise'))
+      .otherwise(this.setHeaderFlags('header_value_connection_token'));
 
     n('header_value_connection_ws')
       .match(',', this.setHeaderFlags('header_value_connection'))

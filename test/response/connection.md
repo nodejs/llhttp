@@ -188,6 +188,33 @@ off=46 message complete
 off=47 error code=5 reason="Data after `Connection: close`"
 ```
 
+## HTTP/1.1 with malformed close continuation and 204 status
+
+<!-- meta={"type": "response" } -->
+```http
+HTTP/1.1 204 No content
+Connection: close foo
+
+HTTP/1.1 200 OK
+```
+
+```log
+off=0 message begin
+off=0 len=4 span[protocol]="HTTP"
+off=4 protocol complete
+off=5 len=3 span[version]="1.1"
+off=8 version complete
+off=13 len=10 span[status]="No content"
+off=25 status complete
+off=25 len=10 span[header_field]="Connection"
+off=36 header_field complete
+off=37 len=9 span[header_value]="close foo"
+off=48 header_value complete
+off=50 headers complete status=204 v=1/1 flags=2 content_length=0
+off=50 message complete
+off=51 error code=5 reason="Data after `Connection: close`"
+```
+
 ## HTTP/1.1 with keep-alive disabled, content-length (lenient)
 
 Parser should discard extra request in lenient mode.
