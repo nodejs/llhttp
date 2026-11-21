@@ -16,6 +16,7 @@ export type TestType = 'request' | 'response' | 'request-finish' | 'response-fin
   'request-lenient-all' | 'response-lenient-all' |
   'request-lenient-headers' | 'response-lenient-headers' |
   'request-lenient-chunked-length' | 'request-lenient-transfer-encoding' |
+  'request-lenient-duplicate-content-length' |
   'request-lenient-keep-alive' | 'response-lenient-keep-alive' |
   'request-lenient-version' | 'response-lenient-version' |
   'request-lenient-data-after-close' | 'response-lenient-data-after-close' |
@@ -39,6 +40,7 @@ export const allowedTypes: TestType[] = [
   'response-lenient-keep-alive',
   'request-lenient-chunked-length',
   'request-lenient-transfer-encoding',
+  'request-lenient-duplicate-content-length',
   'request-lenient-version',
   'response-lenient-version',
   'request-lenient-data-after-close',

@@ -118,6 +118,11 @@ void llhttp__test_init_request_lenient_transfer_encoding(llparse_t* s) {
   s->lenient_flags |= LENIENT_TRANSFER_ENCODING;
 }
 
+void llhttp__test_init_request_lenient_duplicate_content_length(llparse_t* s) {
+  llhttp__test_init_request(s);
+  s->lenient_flags |= LENIENT_DUPLICATE_CONTENT_LENGTH;
+}
+
 
 void llhttp__test_init_request_lenient_version(llparse_t* s) {
   llhttp__test_init_request(s);
