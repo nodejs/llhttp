@@ -41,6 +41,7 @@ export class CHeaders {
     res += this.buildMap('RTSP_METHOD', constants.METHODS_RTSP);
     res += '\n';
     res += this.buildMap('HTTP_ALL_METHOD', constants.METHODS);
+    res += `#define HTTP_ALL_METHOD_COUNT ${this.maxValue(constants.METHODS) + 1}\n`;
     res += '\n';
     res += this.buildMap('HTTP_STATUS', constants.STATUSES);
 
@@ -85,5 +86,9 @@ export class CHeaders {
     res += '\n';
 
     return res;
+  }
+
+  private maxValue(map: IntDict): number {
+    return Math.max(...Object.values(map));
   }
 }
