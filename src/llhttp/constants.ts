@@ -174,6 +174,7 @@ export const STATUSES = {
   CONNECTION_TIMEOUT: 522, // Unofficial
   ORIGIN_IS_UNREACHABLE: 523, // Unofficial
   TIMEOUT_OCCURED: 524, // Unofficial
+  TIMEOUT_OCCURRED: 524, // Unofficial
   SSL_HANDSHAKE_FAILED: 525, // Unofficial
   INVALID_SSL_CERTIFICATE: 526, // Unofficial
   RAILGUN_ERROR: 527, // Unofficial
