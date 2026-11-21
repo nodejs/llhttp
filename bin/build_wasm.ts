@@ -68,8 +68,8 @@ execSync('npm run build', { cwd: WASM_SRC, stdio: 'inherit' });
 execSync(
   `clang \
  --sysroot=/usr/share/wasi-sysroot \
- -target wasm32-unknown-wasi \
- -Ofast \
+ -target wasm32-wasip1 \
+ -O3 -ffast-math \
  -fno-exceptions \
  -fvisibility=hidden \
  -mexec-model=reactor \
