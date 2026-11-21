@@ -74,6 +74,7 @@ github-release:
 
 postversion: release	
 	git fetch $(REMOTE)
+	@git show-ref --verify --quiet refs/heads/release || git branch --track release $(REMOTE)/release
 	git push $(REMOTE)
 	git checkout release --
 	cp -rf release/* ./

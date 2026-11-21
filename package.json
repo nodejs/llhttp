@@ -1,6 +1,6 @@
 {
   "name": "llhttp",
-  "version": "9.4.3",
+  "version": "9.4.4",
   "description": "HTTP parser in LLVM IR",
   "main": "lib/llhttp.js",
   "types": "lib/llhttp.d.ts",
@@ -18,7 +18,7 @@
     "wasm": "node --import tsx bin/build_wasm.ts",
     "clean": "node --import tsx scripts/clean.ts",
     "prepare": "npm run clean && npm run build-ts",
-    "test": "node --import tsx ./test/md-test.ts",
+    "test": "node --import tsx ./test/md-test.ts && node --import tsx ./test/headers-test.ts",
     "lint": "eslint",
     "lint-fix": "eslint --fix",
     "postversion": "RELEASE=`node -e \"process.stdout.write(require('./package').version)\"` make -B postversion",
@@ -43,7 +43,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.8.0",
-    "@types/node": "^25.3.0",
+    "@types/node": "^26.6.4",
     "eslint": "^10.0.3",
     "llparse-dot": "^1.0.1",
     "llparse-test-fixture": "^5.1.0",

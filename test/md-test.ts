@@ -6,6 +6,8 @@ import { Group, MDGator, Metadata, Test } from 'mdgator';
 import path from 'path';
 import vm from 'vm';
 
+import './header-value-relaxed-test';
+
 import llhttp from '../src/llhttp';
 import { allowedTypes, build, FixtureResult, Node, TestType } from './fixtures';
 

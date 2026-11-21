@@ -745,7 +745,7 @@ export class HTTP {
       .otherwise(n('header_value_te_token'));
 
     n('header_value_te_chunked_last')
-      .match(' ', n('header_value_te_chunked_last'))
+      .match([ ' ', '\t' ], n('header_value_te_chunked_last'))
       .peek([ '\r', '\n' ], this.update('header_state',
         HEADER_STATE.TRANSFER_ENCODING_CHUNKED,
         'header_value_otherwise'))
