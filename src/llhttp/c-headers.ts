@@ -60,10 +60,6 @@ export class CHeaders {
     let res = '';
 
     for (const [ key, value ] of Object.entries(map).sort((a,b) => a[1] - b[1])) {
-      if (res !== "") {
-        res += ',\n';
-      }
-
       res += `  ${prefix}_${key.replace(/-/g, '')} = `
 
       if (encoding === 'hex') {
@@ -71,9 +67,10 @@ export class CHeaders {
       } else {
         res += value;
       }
+      res += ',\n';
     }
 
-    return `enum ${name} {\n${res}\n};\ntypedef enum ${name} ${name}_t;\n`;
+    return `enum ${name} {\n${res}};\ntypedef enum ${name} ${name}_t;\n`;
   }
 
   private buildMap(name: Uppercase<string>, map: IntDict): string {
