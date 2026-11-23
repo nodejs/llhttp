@@ -111,11 +111,11 @@ async function main () {
     const samples = formatNumber(iterations, 0).padStart(12);
     const size = formatNumber(total / (1024 * 1024), 2).padStart(8);
     const speed = formatNumber(bw / (1024 * 1024), 2).padStart(10);
-    const throughtput = formatNumber(iterations / time, 2).padStart(10);
+    const throughput = formatNumber(iterations / time, 2).padStart(10);
     const duration = formatNumber(time, 2).padStart(6);
 
     console.log(
-      `${label} | ${samples} samples | ${size} MB | ${speed} MB/s | ${throughtput} ops/sec | ${duration} s`
+      `${label} | ${samples} samples | ${size} MB | ${speed} MB/s | ${throughput} ops/sec | ${duration} s`
     );
   }
 }
