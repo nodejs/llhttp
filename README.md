@@ -40,9 +40,9 @@ llhttp is faster by approximately **156%**.
 ## Maintenance
 
 llhttp project has about 1400 lines of TypeScript code describing the parser
-itself and around 450 lines of C code and headers providing the helper methods.
-The whole [http_parser][0] is implemented in approximately 2500 lines of C, and
-436 lines of headers.
+itself and around 450 lines of C99 code and headers providing the helper methods.
+The whole [http_parser][0] is implemented in approximately 2500 lines of C89,
+and 436 lines of headers.
 
 All optimizations and multi-character matching in llhttp are generated
 automatically, and thus doesn't add any extra maintenance cost. On the contrary,
@@ -481,9 +481,9 @@ If you are getting `unresolved external symbol` linker errors you are likely att
 
 #### LICENSE
 
-This software is licensed under the MIT License.
+MIT License
 
-Copyright Fedor Indutny, 2018.
+Copyright © 2018 Fedor Indutny
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
