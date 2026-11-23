@@ -42,7 +42,7 @@
   "homepage": "https://github.com/nodejs/llhttp#readme",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@stylistic/eslint-plugin": "^5.8.0",
+    "@stylistic/eslint-plugin": "^6.0.1",
     "@types/node": "^26.6.4",
     "eslint": "^10.0.3",
     "llparse-dot": "^1.0.1",
