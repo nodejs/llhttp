@@ -1,6 +1,6 @@
 # How to release a new version of llhttp
 
-## What does releasing involves?
+## What does releasing involve?
 
 These are the required steps to release a new version of llhttp:
 
@@ -23,9 +23,9 @@ npm run build
 npm run test
 ```
 
-If all goes good, you are ready to go!
+If all goes well, you are ready to go!
 
-To release a new version of llhttp, first increase the version using `npm` and make sure it also execute the `postversion` script. Unless you have some very specific setup, this should happen automatically, which means the following command will suffice:
+To release a new version of llhttp, first increase the version using `npm` and make sure it also executes the `postversion` script. Unless you have some very specific setup, this should happen automatically, which means the following command will suffice:
 
 ```
 npm version [major|minor|patch]
@@ -43,7 +43,7 @@ npm run github-release
 
 This command will create a draft release on GitHub and then show it in your browser so you can review and publish it.
 
-Congratulation, you are all set!
+Congratulations, you are all set!
 
 ## Create a GitHub release without GitHub CLI
 
@@ -51,16 +51,16 @@ Congratulation, you are all set!
 
 If you don't want to or can't use GitHub CLI, you can still create the release on GitHub following this procedure.
 
-1. Go on GitHub and start creating a new release which targets tag `$VERSION`. Generate the notes using the `Generate release notes` button.
+1. Go to GitHub and start creating a new release which targets tag `$VERSION`. Generate the notes using the `Generate release notes` button.
 
-2. At the bottom of the generated notes, make sure the previous and current version in the notes are correct.
+2. At the bottom of the generated notes, make sure the previous and current versions in the notes are correct.
    
    The last line should be something like this: `**Full Changelog**: https://github.com/nodejs/llhttp/compare/v6.0.8...v6.0.9`
 
-   In this case it says we are creating release `v6.0.9` and we are showing the changes between `v6.0.8` and `v6.0.9`.
+   In this case, it says we are creating release `v6.0.9` and we are showing the changes between `v6.0.8` and `v6.0.9`.
 
-3. Change the target of the release to point to tag `release/$VERSION`.
+3. Change the target of the release to point to the tag `release/$VERSION`.
 
 4. Review and then publish the release.
 
-Congratulation, you are all set!
+Congratulations, you are all set!

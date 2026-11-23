@@ -270,7 +270,7 @@ void llhttp_set_lenient_keep_alive(llhttp_t* parser, int enabled);
  *
  * Normally `llhttp` would error when a `Transfer-Encoding` has `chunked` value
  * and another value after it (either in a single header or in multiple
- * headers whose value are internally joined using `, `).
+ * headers whose values are internally joined using `, `).
  * This is mandated by the spec to reliably determine request body size and thus
  * avoid request smuggling.
  * With this flag the extra value will be parsed normally.
