@@ -78,9 +78,12 @@ export class CHeaders {
 
   private buildMap(name: Uppercase<string>, map: IntDict): string {
     let res = '';
+    const seen = new Set<number>();
 
     res += `#define ${name}_MAP(XX) \\\n`;
-    for (const [ key, value ] of Object.entries(map).sort((a,b) => a[1] - b[1])) {
+    for (const [ key, value ] of Object.entries(map)
+      .filter((x) => !seen.has(x[1]) && seen.add(x[1]))
+      .sort((a,b) => a[1] - b[1])) {
       res += `  XX(${value}, ${key.replace(/-/g, '')}, ${key}) \\\n`;
     }
     res += '\n';
