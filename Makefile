@@ -101,6 +101,14 @@ postversion: release
 generate:
 	node --import tsx bin/generate.ts
 
+# Links a small C program against the built library (which contains api.c and,
+# on x86-64, both parser instantiations) and drives the runtime dispatch added
+# in src/native/api.c. The markdown test suite never compiles api.c.
+test-c: build/libllhttp.a
+	$(CLANG) $(CFLAGS) $(INCLUDES) test/dispatch/dispatch_test.c \
+		build/libllhttp.a -o build/dispatch_test
+	./build/dispatch_test
+
 install: build/libllhttp.a build/libllhttp.so
 	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)
 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)
@@ -108,4 +116,4 @@ install: build/libllhttp.a build/libllhttp.so
 	$(INSTALL) -C build/libllhttp.a $(DESTDIR)$(LIBDIR)/libllhttp.a
 	$(INSTALL) build/libllhttp.so $(DESTDIR)$(LIBDIR)/libllhttp.so
 
-.PHONY: all generate clean release postversion github-release
+.PHONY: all generate clean release postversion github-release test-c
