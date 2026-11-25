@@ -20,6 +20,7 @@ export interface IURLResult {
   readonly exit: {
     readonly toHTTP: Node;
     readonly toHTTP09: Node;
+    readonly toHTTP09BareLF: Node;
   };
 }
 
@@ -140,12 +141,13 @@ export class URL {
     // Adaptors
     const toHTTP = this.node('to_http');
     const toHTTP09 = this.node('to_http_09');
+    const toHTTP09BareLF = this.node('to_http_09_bare_lf');
 
     const skipToHTTP = this.node('skip_to_http')
       .skipTo(toHTTP);
 
     const skipToHTTP09 = this.node('skip_to_http09')
-      .skipTo(toHTTP09);
+      .skipTo(toHTTP09BareLF);
 
     const skipCRLF = this.node('skip_lf_to_http09')
       .match('\r\n', toHTTP09)
@@ -181,6 +183,7 @@ export class URL {
       exit: {
         toHTTP,
         toHTTP09,
+        toHTTP09BareLF,
       },
     };
   }
