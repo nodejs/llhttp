@@ -12,7 +12,7 @@ This project aims to:
 
 * Make it maintainable
 * Verifiable
-* Improving benchmarks where possible
+* Improve benchmarks where possible
 
 More details in [Fedor Indutny's talk at JSConf EU 2019](https://youtu.be/x3k_5Mi66sY)
 
@@ -46,17 +46,17 @@ and 436 lines of headers.
 
 All optimizations and multi-character matching in llhttp are generated
 automatically, and thus doesn't add any extra maintenance cost. On the contrary,
-most of http_parser's code is hand-optimized and unrolled. Instead describing
+most of http_parser's code is hand-optimized and unrolled. Instead of describing
 "how" it should parse the HTTP requests/responses, a maintainer should
-implement the new features in [http_parser][0] cautiously, considering
+implement new features in [http_parser][0] cautiously, considering
 possible performance degradation and manually optimizing the new code.
 
 ## Verification
 
 The state machine graph is encoded explicitly in llhttp. The [llparse][1]
-automatically checks the graph for absence of loops and correct reporting of the
-input ranges (spans) like header names and values. In the future, additional
-checks could be performed to get even stricter verification of the llhttp.
+automatically checks the graph for the absence of loops and correct reporting of
+the input ranges (spans) like header names and values. In the future, additional
+checks could be performed to achieve even stricter verification of llhttp.
 
 ## Usage
 
@@ -74,19 +74,19 @@ int main() {
 	llhttp_t parser;
 	llhttp_settings_t settings;
 
-	/*Initialize user callbacks and settings */
+	/* Initialize user callbacks and settings */
 	llhttp_settings_init(&settings);
 
-	/*Set user callback */
+	/* Set user callback */
 	settings.on_message_complete = handle_on_message_complete;
 
-	/*Initialize the parser in HTTP_BOTH mode, meaning that it will select between
-	*HTTP_REQUEST and HTTP_RESPONSE parsing automatically while reading the first
-	*input.
-	*/
+	/* Initialize the parser in HTTP_BOTH mode, meaning that it will select between
+	 * HTTP_REQUEST and HTTP_RESPONSE parsing automatically while reading the first
+	 * input.
+	 */
 	llhttp_init(&parser, HTTP_BOTH, &settings);
 
-	/*Parse request! */
+	/* Parse request! */
 	const char* request = "GET / HTTP/1.1\r\n\r\n";
 	int request_len = strlen(request);
 
@@ -98,7 +98,7 @@ int main() {
 	}
 }
 ```
-For more information on API usage, please refer to [src/native/api.h](https://github.com/nodejs/llhttp/blob/main/src/native/api.h).
+For more information about API usage, please refer to [src/native/api.h](https://github.com/nodejs/llhttp/blob/main/src/native/api.h).
 
 ## API
 
@@ -129,14 +129,14 @@ The following callbacks can return `0` (proceed normally), `-1` (error) or `HPE_
 * `on_url`: Invoked when another character of the URL is received. 
 * `on_status`: Invoked when another character of the status is received.
 * `on_method`: Invoked when another character of the method is received. 
-   When parser is created with `HTTP_BOTH` and the input is a response, this also invoked for the sequence `HTTP/`
+   When parser is created with `HTTP_BOTH` and the input is a response, also invoked for the sequence `HTTP/`
    of the first message.
 * `on_protocol`: Invoked when another character of the protocol is received.
 * `on_version`: Invoked when another character of the version is received.
 * `on_header_field`: Invoked when another character of a header name is received.
 * `on_header_value`: Invoked when another character of a header value is received.
 * `on_chunk_extension_name`: Invoked when another character of a chunk extension name is received.
-* `on_chunk_extension_value`: Invoked when another character of a extension value is received.
+* `on_chunk_extension_value`: Invoked when another character of an extension value is received.
 
 The callback `on_headers_complete`, invoked when headers are completed, can return:
 
@@ -168,7 +168,7 @@ Returns the method of the current request.
 
 ### `int llhttp_get_status_code(llhttp_t* parser)`
 
-Returns the method of the current response.
+Returns the status code of the current response.
 
 ### `uint8_t llhttp_get_upgrade(llhttp_t* parser)`
 
@@ -187,17 +187,17 @@ Initialize the settings object.
 
 Parse full or partial request/response, invoking user callbacks along the way.
 
-If any of `llhttp_data_cb` returns errno not equal to `HPE_OK` - the parsing interrupts, 
-and such errno is returned from `llhttp_execute()`. If `HPE_PAUSED` was used as a errno, 
-the execution can be resumed with `llhttp_resume()` call. In that case the input should be advanced 
-to the last processed byte from the parser, which can be obtained via `llhttp_get_error_pos()`.
+If any of `llhttp_data_cb` returns errno not equal to `HPE_OK`, the parsing is interrupted, 
+and the errno is returned from `llhttp_execute()`. If `HPE_PAUSED` was used as an errno, 
+the execution can be resumed with a `llhttp_resume()` call. In that case the input should be advanced 
+to the last processed byte by the parser, which can be obtained via `llhttp_get_error_pos()`.
 
-In a special case of CONNECT/Upgrade request/response `HPE_PAUSED_UPGRADE` is returned 
+In the special case of CONNECT/Upgrade request/response `HPE_PAUSED_UPGRADE` is returned 
 after fully parsing the request/response. If the user wishes to continue parsing, 
 they need to invoke `llhttp_resume_after_upgrade()`.
 
 **if this function ever returns a non-pause type error, it will continue to return 
-the same error upon each successive call up until `llhttp_init()` is called.**
+the same error upon each successive call until `llhttp_init()` is called.**
 
 If this function returns `HPE_OK`, it means all the input has been consumed and parsed.
 
@@ -207,11 +207,11 @@ This method should be called when the other side has no further bytes to
 send (e.g. shutdown of readable side of the TCP connection.)
 
 Requests without `Content-Length` and other messages might require treating
-all incoming bytes as the part of the body, up to the last byte of the
+all incoming bytes as part of the body, up to the last byte of the
 connection. 
 
 This method will invoke `on_message_complete()` callback if the
-request was terminated safely. Otherwise a error code would be returned.
+request was terminated safely. Otherwise an error code would be returned.
 
 
 ### `int llhttp_message_needs_eof(const llhttp_t* parser)`
@@ -220,12 +220,12 @@ Returns `1` if the incoming message is parsed until the last byte, and has to be
 
 ### `int llhttp_should_keep_alive(const llhttp_t* parser)`
 
-Returns `1` if there might be any other messages following the last that was
+Returns `1` if there might be other messages following the last that was
 successfully parsed.
 
 ### `void llhttp_pause(llhttp_t* parser)`
 
-Make further calls of `llhttp_execute()` return `HPE_PAUSED` and set
+Make further calls to `llhttp_execute()` return `HPE_PAUSED` and set
 appropriate error reason.
 
 **Do not call this from user callbacks! User callbacks must return
@@ -233,18 +233,17 @@ appropriate error reason.
 
 ### `void llhttp_resume(llhttp_t* parser)`
 
-Might be called to resume the execution after the pause in user's callback.
-
+May be called to resume execution after a pause in user's callback.
 See `llhttp_execute()` above for details.
 
 **Call this only if `llhttp_execute()` returns `HPE_PAUSED`.**
 
 ### `void llhttp_resume_after_upgrade(llhttp_t* parser)`
 
-Might be called to resume the execution after the pause in user's callback.
+May be called to resume execution after a pause in user's callback.
 See `llhttp_execute()` above for details.
 
-**Call this only if `llhttp_execute()` returns `HPE_PAUSED_UPGRADE`**
+**Call this only if `llhttp_execute()` returns `HPE_PAUSED_UPGRADE`.**
 
 ### `llhttp_errno_t llhttp_get_errno(const llhttp_t* parser)`
 
@@ -254,12 +253,12 @@ Returns the latest error.
 
 Returns the verbal explanation of the latest returned error.
 
-**User callback should set error reason when returning the error. See
-`llhttp_set_error_reason()` for details.**
+**User callback should set the error reason when returning the error.
+See `llhttp_set_error_reason()` for details.**
 
 ### `void llhttp_set_error_reason(llhttp_t* parser, const char* reason)`
 
-Assign verbal description to the returned error. Must be called in user
+Assign verbal description to the returned error. Must be called from user
 callbacks right before returning the errno.
 
 **`HPE_USER` error code might be useful in user callbacks.**
@@ -328,7 +327,7 @@ Enables/disables lenient handling of `Transfer-Encoding` header.
 
 Normally `llhttp` would error when a `Transfer-Encoding` has `chunked` value
 and another value after it (either in a single header or in multiple
-headers whose value are internally joined using `, `).
+headers whose values are internally joined using `, `).
 
 This is mandated by the spec to reliably determine request body size and thus
 avoid request smuggling.
