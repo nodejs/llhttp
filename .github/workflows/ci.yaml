@@ -58,6 +58,11 @@ jobs:
         run: |
           make build/libllhttp.a
 
+      - name: Run dispatch test
+        shell: bash
+        run: |
+          make test-c
+
       - name: Build WebAssembly
         run: npm run build-wasm
         if: runner.os == 'Linux'

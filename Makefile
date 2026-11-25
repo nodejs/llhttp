@@ -11,6 +11,15 @@ endif
 
 INCLUDES += -Ibuild/
 
+# On x86-64, also build a second instantiation of the generated parser with
+# -msse4.2 so llhttp_execute() can select the SSE4.2 span scanners at runtime
+# (see src/native/api.c). The default build passes no -march, so without this
+# the SSE4.2 code generated under `#ifdef __SSE4_2__` is never compiled in.
+ARCH ?= $(shell uname -m)
+ifneq (,$(filter $(ARCH),x86_64 amd64 AMD64))
+	SSE42_OBJ = build/c/llhttp_sse42.o
+endif
+
 INSTALL ?= install
 PREFIX ?= /usr/local
 LIBDIR = $(PREFIX)/lib
@@ -23,16 +32,19 @@ clean:
 	rm -rf build/
 	rm -rf test/tmp
 
-build/libllhttp.so: build/c/llhttp.o build/native/api.o \
+build/libllhttp.so: build/c/llhttp.o $(SSE42_OBJ) build/native/api.o \
 		build/native/http.o
 	$(CLANG) -shared $^ -o $@
 
-build/libllhttp.a: build/c/llhttp.o build/native/api.o \
+build/libllhttp.a: build/c/llhttp.o $(SSE42_OBJ) build/native/api.o \
 		build/native/http.o
-	$(AR) rcs $@ build/c/llhttp.o build/native/api.o build/native/http.o
+	$(AR) rcs $@ build/c/llhttp.o $(SSE42_OBJ) build/native/api.o build/native/http.o
 
 build/c/llhttp.o: build/c/llhttp.c
 	$(CLANG) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+build/c/llhttp_sse42.o: build/c/llhttp_sse42.c build/c/llhttp.c
+	$(CLANG) $(CFLAGS) -msse4.2 $(INCLUDES) -c $< -o $@
 
 build/native/%.o: src/native/%.c build/llhttp.h src/native/api.h \
 		build/native
@@ -52,6 +64,8 @@ release: clean all generate
 	mkdir -p release/include
 	cp -rf build/llhttp.h release/include/
 	cp -rf build/c/llhttp.c release/src/
+	cp -rf build/c/llhttp_sse42.c release/src/
+	cp -rf build/c/llhttp_sse42_rename.h release/src/
 	cp -rf src/native/*.c release/src/
 	cp -rf src/llhttp.gyp release/
 	cp -rf src/common.gypi release/
@@ -88,6 +102,14 @@ postversion: release
 generate:
 	node --import tsx bin/generate.ts
 
+# Links a small C program against the built library (which contains api.c and,
+# on x86-64, both parser instantiations) and drives the runtime dispatch added
+# in src/native/api.c. The markdown test suite never compiles api.c.
+test-c: build/libllhttp.a
+	$(CLANG) $(CFLAGS) $(INCLUDES) test/dispatch/dispatch_test.c \
+		build/libllhttp.a -o build/dispatch_test
+	./build/dispatch_test
+
 install: build/libllhttp.a build/libllhttp.so
 	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)
 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)
@@ -95,4 +117,4 @@ install: build/libllhttp.a build/libllhttp.so
 	$(INSTALL) -C build/libllhttp.a $(DESTDIR)$(LIBDIR)/libllhttp.a
 	$(INSTALL) build/libllhttp.so $(DESTDIR)$(LIBDIR)/libllhttp.so
 
-.PHONY: all generate clean release postversion github-release
+.PHONY: all generate clean release postversion github-release test-c
